@@ -9,14 +9,14 @@ import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 public class CategoryExtension implements
-        BeforeEachCallback,
-        AfterEachCallback,
+        BeforeTestExecutionCallback,
+        AfterTestExecutionCallback,
         ParameterResolver {
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CategoryExtension.class);
     private final SpendClient apiClient = new SpendApiClient();
 
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeTestExecution(ExtensionContext context) {
         AnnotationSupport.findAnnotation(
                 context.getRequiredTestMethod(),
                 Category.class
@@ -48,7 +48,7 @@ public class CategoryExtension implements
     }
 
     @Override
-    public void afterEach(ExtensionContext context) {
+    public void afterTestExecution(ExtensionContext context) {
         try {
             CategoryJson category = context.getStore(NAMESPACE)
                     .get(context.getUniqueId(), CategoryJson.class);
