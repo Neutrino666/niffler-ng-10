@@ -3,6 +3,7 @@ package guru.qa.niffler.api.spend;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
+import java.util.Date;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -18,8 +19,8 @@ public interface SpendApi {
     @GET("internal/spends/all")
     Call<List<SpendJson>> getAllSpends(@Query("username") String username,
                                        @Query("filterCurrency") CurrencyValues currencyValue,
-                                       @Query("from") String from,
-                                       @Query("to") String to);
+                                       @Query("from") Date from,
+                                       @Query("to") Date to);
 
     @POST("internal/spends/add")
     Call<SpendJson> createSpend(@Body SpendJson spend);

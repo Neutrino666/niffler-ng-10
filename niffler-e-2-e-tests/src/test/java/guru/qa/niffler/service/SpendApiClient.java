@@ -5,6 +5,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
+import java.util.Date;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -39,7 +40,7 @@ public class SpendApiClient implements SpendClient{
     return response.body();
   }
 
-  public List<SpendJson> getAllSpends(String username, CurrencyValues currencyValue, String from, String to) {
+  public List<SpendJson> getAllSpends(String username, CurrencyValues currencyValue, Date from, Date to) {
     final Response<List<SpendJson>> response;
     try {
       response = spendApi.getAllSpends(username, currencyValue, from, to)

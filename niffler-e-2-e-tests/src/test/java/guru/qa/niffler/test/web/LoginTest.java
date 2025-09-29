@@ -15,28 +15,28 @@ import org.openqa.selenium.chrome.ChromeOptions;
 @ExtendWith(BrowserExtension.class)
 public class LoginTest {
 
-    private static final Config CFG = Config.getInstance();
-    private LoginPage loginPage;
+  private static final Config CFG = Config.getInstance();
+  private LoginPage loginPage;
 
-    @BeforeEach
-    void before() {
-        Configuration.browserCapabilities = new ChromeOptions().addArguments("--accept-lang=en_US");
-        loginPage = Selenide.open(CFG.frontUrl(), LoginPage.class);
-    }
+  @BeforeEach
+  void before() {
+    Configuration.browserCapabilities = new ChromeOptions().addArguments("--accept-lang=en_US");
+    loginPage = Selenide.open(CFG.frontUrl(), LoginPage.class);
+  }
 
-    @Test
-    @DisplayName("Успешный вход")
-    void mainPageShouldBeDisplayedAfterSuccessLogin() {
-        loginPage.login("admin", "admin")
-                .checkThatPageLoaded();
-    }
+  @Test
+  @DisplayName("Успешный вход")
+  void mainPageShouldBeDisplayedAfterSuccessLogin() {
+    loginPage.login("admin", "admin")
+        .checkThatPageLoaded();
+  }
 
-    @Test
-    @DisplayName("Ошибка не валидных логина / пароля")
-    void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
-        loginPage.setUsername("notExistUser")
-                .setPassword("wrongPass")
-                .submit()
-                .checkError("Bad credentials");
-    }
+  @Test
+  @DisplayName("Ошибка не валидных логина / пароля")
+  void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
+    loginPage.setUsername("notExistUser")
+        .setPassword("wrongPass")
+        .submit()
+        .checkError("Bad credentials");
+  }
 }
