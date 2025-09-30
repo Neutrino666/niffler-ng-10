@@ -1,9 +1,6 @@
 package guru.qa.niffler.page.auth;
 
-import static com.codeborne.selenide.Condition.editable;
-import static com.codeborne.selenide.Condition.interactable;
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.SelenideElement;

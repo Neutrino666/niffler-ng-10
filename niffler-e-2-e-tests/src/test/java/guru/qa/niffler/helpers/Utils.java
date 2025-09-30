@@ -15,9 +15,9 @@ public class Utils {
    * @return String matching reqEx [a-zA-Z]{length}
    */
   public static String getRandomString(@NonNull final Integer length) {
-      if (length <= 0 || length > 100) {
-          throw new IllegalArgumentException("length should be from 1 to 100");
-      }
+    if (length <= 0 || length > 100) {
+      throw new IllegalArgumentException("length should be from 1 to 100");
+    }
     char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     Random random = new Random();
     return IntStream.range(0, length)

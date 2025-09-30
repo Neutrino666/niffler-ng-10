@@ -1,7 +1,6 @@
 package guru.qa.niffler.page;
 
 import static com.codeborne.selenide.Condition.disabled;
-import static com.codeborne.selenide.Condition.editable;
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.interactable;
 import static com.codeborne.selenide.Condition.not;
@@ -76,9 +75,9 @@ public class ProfilePage {
   @Step("Check categories contains in any order: '{categories}'")
   public ProfilePage checkActiveCategoriesIsDisplayedInAnyOrder(
       @NonNull final String... categories) {
-      for (String category : categories) {
-          activeCategories.find(text(category)).shouldBe(visible);
-      }
+    for (String category : categories) {
+      activeCategories.find(text(category)).shouldBe(visible);
+    }
     return this;
   }
 
@@ -86,18 +85,18 @@ public class ProfilePage {
   public ProfilePage checkArchivedCategoriesIsDisplayedInAnyOrder(
       @NonNull final String... categories) {
     showArchive(true);
-      for (String category : categories) {
-          archiveCategories.find(text(category)).shouldBe(visible);
-      }
+    for (String category : categories) {
+      archiveCategories.find(text(category)).shouldBe(visible);
+    }
     return this;
   }
 
   @Step("Check categories contains in any order: '{categories}'")
   public ProfilePage checkArchivedCategoriesIsNotExist(@NonNull final String... categories) {
     showArchive(false);
-      for (String category : categories) {
-          archiveCategories.find(text(category)).shouldBe(not(exist));
-      }
+    for (String category : categories) {
+      archiveCategories.find(text(category)).shouldBe(not(exist));
+    }
     return this;
   }
 
