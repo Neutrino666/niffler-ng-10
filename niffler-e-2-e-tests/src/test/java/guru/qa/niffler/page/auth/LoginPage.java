@@ -1,14 +1,17 @@
 package guru.qa.niffler.page.auth;
 
+import static com.codeborne.selenide.Condition.clickable;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.MainPage;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.$;
-
 public class LoginPage {
+
   private final SelenideElement usernameInput = $("#username");
   private final SelenideElement passwordInput = $("#password");
   private final SelenideElement submitBtn = $("#login-button");
@@ -25,26 +28,25 @@ public class LoginPage {
 
   @Step("Open registration page")
   public RegistrationPage openRegistrationPage() {
-    registerBtn.shouldBe(visible, clickable)
-            .click();
+    registerBtn.click();
     return new RegistrationPage();
   }
 
   @Step("Set username: '{username}'")
   public LoginPage setUsername(@NonNull final String username) {
-    usernameInput.shouldBe(visible).val(username);
+    usernameInput.val(username);
     return this;
   }
 
   @Step("Set password: '{password}'")
   public LoginPage setPassword(@NonNull final String password) {
-    passwordInput.shouldBe(visible).val(password);
+    passwordInput.val(password);
     return this;
   }
 
   @Step("Click submit")
   public LoginPage submit() {
-    submitBtn.shouldBe(visible, clickable).click();
+    submitBtn.click();
     return this;
   }
 

@@ -1,7 +1,6 @@
 package guru.qa.niffler.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,4 +19,5 @@ public record SpendJson(
     String description,
     @JsonProperty("username")
     String username) {
+
 }

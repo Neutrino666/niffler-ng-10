@@ -23,15 +23,14 @@ public class RegistrationTest {
     loginPage = Selenide.open(CFG.frontUrl(), LoginPage.class);
   }
 
-  // Todo добавить очистку созданных пользователей
   @Test
   @DisplayName("Создание нового пользователя")
   void shouldRegisterNewUser() {
-    final String USERNAME = "auto_" + getRandomString(5);
-    final String PASSWORD = "auto_" + getRandomString(5);
+    String username = "auto_" + getRandomString(5);
+    final String password = "auto_" + getRandomString(5);
     loginPage.openRegistrationPage()
-        .registrationUser(USERNAME, PASSWORD)
-        .login(USERNAME, PASSWORD)
+        .registrationUser(username, password)
+        .login(username, password)
         .checkThatPageLoaded();
   }
 

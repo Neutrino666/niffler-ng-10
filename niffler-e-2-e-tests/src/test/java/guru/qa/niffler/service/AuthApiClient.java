@@ -1,15 +1,14 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.api.AuthApi;
+import java.io.IOException;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-
-import java.io.IOException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 
 public class AuthApiClient {
 

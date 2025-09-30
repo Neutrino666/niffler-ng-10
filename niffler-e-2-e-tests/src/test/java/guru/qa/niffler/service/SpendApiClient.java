@@ -1,23 +1,24 @@
 package guru.qa.niffler.service;
 
+import static org.apache.hc.core5.http.HttpStatus.SC_ACCEPTED;
+import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
+
 import guru.qa.niffler.api.spend.SpendApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
-import static org.apache.hc.core5.http.HttpStatus.*;
-
-public class SpendApiClient implements SpendClient{
+public class SpendApiClient implements SpendClient {
 
   private static final Config CFG = Config.getInstance();
 
@@ -32,7 +33,7 @@ public class SpendApiClient implements SpendClient{
     final Response<SpendJson> response;
     try {
       response = spendApi.getSpendById(id, username)
-              .execute();
+          .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
@@ -40,11 +41,12 @@ public class SpendApiClient implements SpendClient{
     return response.body();
   }
 
-  public List<SpendJson> getAllSpends(String username, CurrencyValues currencyValue, Date from, Date to) {
+  public List<SpendJson> getAllSpends(String username, CurrencyValues currencyValue, Date from,
+      Date to) {
     final Response<List<SpendJson>> response;
     try {
       response = spendApi.getAllSpends(username, currencyValue, from, to)
-              .execute();
+          .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
@@ -57,7 +59,7 @@ public class SpendApiClient implements SpendClient{
     final Response<SpendJson> response;
     try {
       response = spendApi.createSpend(spend)
-              .execute();
+          .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
@@ -70,7 +72,7 @@ public class SpendApiClient implements SpendClient{
     final Response<SpendJson> response;
     try {
       response = spendApi.editSpend(spend)
-              .execute();
+          .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
@@ -82,7 +84,7 @@ public class SpendApiClient implements SpendClient{
     final Response<Void> response;
     try {
       response = spendApi.removeSpends(username, ids)
-              .execute();
+          .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
@@ -93,7 +95,7 @@ public class SpendApiClient implements SpendClient{
     final Response<List<CategoryJson>> response;
     try {
       response = spendApi.getCategories(username, excludeArchived)
-              .execute();
+          .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
@@ -106,7 +108,7 @@ public class SpendApiClient implements SpendClient{
     final Response<CategoryJson> response;
     try {
       response = spendApi.createCategory(category)
-              .execute();
+          .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
@@ -118,7 +120,7 @@ public class SpendApiClient implements SpendClient{
     final Response<CategoryJson> response;
     try {
       response = spendApi.updateCategory(category)
-              .execute();
+          .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
@@ -127,7 +129,8 @@ public class SpendApiClient implements SpendClient{
   }
 
   @Override
-  public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
+  public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName,
+      String username) {
     throw new UnsupportedOperationException("Not implemented :(");
   }
 }
