@@ -3,16 +3,16 @@ package guru.qa.niffler.service;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
-import org.springframework.dao.EmptyResultDataAccessException;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-
-import java.sql.*;
-import java.util.Optional;
-import java.util.UUID;
 
 public class SpendDbClient implements SpendClient {
 
@@ -33,12 +33,14 @@ public class SpendDbClient implements SpendClient {
       );
 
       final KeyHolder kh = new GeneratedKeyHolder();
-      final CategoryJson existingCategory = findCategoryByNameAndUsername(spend.category().name(), spend.username())
+      final CategoryJson existingCategory = findCategoryByNameAndUsername(spend.category().name(),
+          spend.username())
           .orElseGet(() -> createCategory(spend.category()));
 
       jdbcTemplate.update(conn -> {
         PreparedStatement ps = conn.prepareStatement(
-            "INSERT INTO \"spend\" (username, spend_date, currency, amount, description, category_id) " +
+            "INSERT INTO \"spend\" (username, spend_date, currency, amount, description, category_id) "
+                +
                 "VALUES (?, ?, ?, ?, ?, ?)",
             Statement.RETURN_GENERATED_KEYS
         );
@@ -102,7 +104,8 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Override
-  public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName, String username) {
+  public Optional<CategoryJson> findCategoryByNameAndUsername(String categoryName,
+      String username) {
     try {
       final JdbcTemplate jdbcTemplate = new JdbcTemplate(
           new SingleConnectionDataSource(
@@ -130,5 +133,10 @@ public class SpendDbClient implements SpendClient {
     } catch (Exception e) {
       return Optional.empty();
     }
+  }
+
+  @Override
+  public CategoryJson updateCategory(CategoryJson category) {
+    throw new UnsupportedOperationException("Not implemented :(");
   }
 }

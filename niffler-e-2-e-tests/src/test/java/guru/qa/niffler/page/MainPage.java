@@ -1,16 +1,23 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.SelenideElement;
-
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.components.HeaderToolbar;
+import lombok.Getter;
+
 public class MainPage {
+
   private final SelenideElement spendingTable = $("#spendings");
+  private final SelenideElement statistics = $("#stat");
+  @Getter
+  private final HeaderToolbar headerToolbar = new HeaderToolbar();
 
   public MainPage checkThatPageLoaded() {
     spendingTable.should(visible);
+    statistics.should(visible);
     return this;
   }
 

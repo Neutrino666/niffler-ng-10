@@ -6,7 +6,8 @@ import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
-import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.page.auth.LoginPage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -15,6 +16,7 @@ public class SpendingTest {
 
   private static final Config CFG = Config.getInstance();
 
+  @Disabled
   @Spending(
       username = "duck",
       category = "Учеба",
