@@ -17,4 +17,9 @@ enum LocalConfig implements Config {
   public String spendJdbcUrl() {
     return "jdbc:postgresql://localhost:5432/niffler-spend";
   }
+
+  @Override
+  public String githubUrl() {
+    return "https://api.github.com";
+  }
 }
