@@ -8,16 +8,19 @@ import guru.qa.niffler.service.SpendClient;
 import java.util.Date;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
 
-public class CreateSpendingExtension implements BeforeEachCallback {
+public class SpendingExtension implements BeforeEachCallback, ParameterResolver {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
-      CreateSpendingExtension.class);
+      SpendingExtension.class);
   private final SpendClient spendClient = new SpendApiClient();
 
   @Override
-  public void beforeEach(ExtensionContext context) throws Exception {
+  public void beforeEach(ExtensionContext context) {
     AnnotationSupport.findAnnotation(
         context.getRequiredTestMethod(),
         Spending.class
@@ -45,5 +48,18 @@ public class CreateSpendingExtension implements BeforeEachCallback {
           );
         }
     );
+  }
+
+  @Override
+  public boolean supportsParameter(ParameterContext parameterContext,
+      ExtensionContext extensionContext) throws ParameterResolutionException {
+    return parameterContext.getParameter().getType().isAssignableFrom(SpendJson.class);
+  }
+
+  @Override
+  public SpendJson resolveParameter(ParameterContext parameterContext,
+      ExtensionContext extensionContext) throws ParameterResolutionException {
+    return extensionContext.getStore(SpendingExtension.NAMESPACE)
+        .get(extensionContext.getUniqueId(), SpendJson.class);
   }
 }
