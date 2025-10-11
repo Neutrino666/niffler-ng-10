@@ -15,7 +15,7 @@ public interface SuiteExtension extends BeforeAllCallback {
   default void beforeAll(ExtensionContext context) throws Exception {
     final ExtensionContext rootContext = context.getRoot();
     rootContext.getStore(ExtensionContext.Namespace.GLOBAL)
-        .getOrComputeIfAbsent(
+        .computeIfAbsent(
             this.getClass(),
             key -> {
               beforeSuite(rootContext);

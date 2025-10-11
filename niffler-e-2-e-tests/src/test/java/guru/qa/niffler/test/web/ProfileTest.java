@@ -30,7 +30,7 @@ public class ProfileTest {
   @DisplayName("Архивная категория должна отображаться в списке")
   void archivedCategoryShouldPresentInCategoriesList(CategoryJson category) {
     mainPage.getHeaderToolbar()
-        .openProfilePage()
+        .goToProfilePage()
         .checkArchivedCategoriesIsDisplayedInAnyOrder(category.name());
   }
 
@@ -39,7 +39,7 @@ public class ProfileTest {
   @DisplayName("Архивная категория не должна отображаться в списке")
   void archivedCategoryShouldNotPresentInCategoriesList(CategoryJson category) {
     mainPage.getHeaderToolbar()
-        .openProfilePage()
+        .goToProfilePage()
         .checkArchivedCategoriesIsNotExist(category.name());
   }
 
@@ -48,7 +48,7 @@ public class ProfileTest {
   @DisplayName("Активная категория должна отображаться в списке")
   void activeCategoryShouldPresentInCategoriesList(CategoryJson category) {
     mainPage.getHeaderToolbar()
-        .openProfilePage()
+        .goToProfilePage()
         .showArchive(false)
         .checkActiveCategoriesIsDisplayedInAnyOrder(category.name());
   }
@@ -58,7 +58,7 @@ public class ProfileTest {
   @DisplayName("Активная категория должны отображаться в списке когда отображаются архивные")
   void activeCategoryShouldPresentInCategoriesListWhenShowedArchived(CategoryJson category) {
     mainPage.getHeaderToolbar()
-        .openProfilePage()
+        .goToProfilePage()
         .showArchive(true)
         .checkActiveCategoriesIsDisplayedInAnyOrder(category.name());
   }
