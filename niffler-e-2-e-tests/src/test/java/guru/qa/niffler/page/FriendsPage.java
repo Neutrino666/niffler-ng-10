@@ -42,25 +42,25 @@ public class FriendsPage {
   }
 
   @Step("Проверяем отсутствие друзей")
-  public FriendsPage checkNotExistFriends() {
+  public FriendsPage checkFriendsNotExist() {
     users.shouldHave(size(0));
     return this;
   }
 
   @Step("Проверяем наличие друга: '{friend}'")
-  public FriendsPage checkVisibleFriend(@NonNull final String friend) {
+  public FriendsPage checkFriendIsVisible(@NonNull final String friend) {
     friends.find(text(friend)).shouldBe(visible);
     return this;
   }
 
   @Step("Проверяем наличие входящего запроса в друзья от: '{friend}'")
-  public FriendsPage checkVisibleIncomeInvitation(@NonNull final String friend) {
+  public FriendsPage checkIncomeInvitationIsVisible(@NonNull final String friend) {
     requests.find(text(friend)).shouldBe(visible);
     return this;
   }
 
   @Step("Проверяем наличие исходящего запроса в друзья к: '{friend}'")
-  public FriendsPage checkVisibleOutcomeInvitation(@NonNull final String friend) {
+  public FriendsPage checkOutcomeInvitationIsVisible(@NonNull final String friend) {
     switchTab(Tab.ALL_PEOPLE);
     all.find(text(friend)).shouldBe(visible);
     return this;

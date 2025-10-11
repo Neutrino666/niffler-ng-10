@@ -35,27 +35,27 @@ public class FriendsTest {
   @DisplayName("[Таблица друзей] У пользователя отображается друг")
   void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) @NonNull StaticUser user) {
     goToFriendsPage(user)
-        .checkVisibleFriend(user.friend());
+        .checkFriendIsVisible(user.friend());
   }
 
   @Test
   @DisplayName("[Таблица друзей] У нового пользователя нет друзей")
   void friendsTableShouldBeEmptyForNewUser(@UserType(EMPTY) @NonNull StaticUser user) {
     goToFriendsPage(user)
-        .checkNotExistFriends();
+        .checkFriendsNotExist();
   }
 
   @Test
   @DisplayName("[Таблица друзей] Отображение входящего запроса в друзья")
   void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) @NonNull StaticUser user) {
     goToFriendsPage(user)
-        .checkVisibleIncomeInvitation(user.income());
+        .checkIncomeInvitationIsVisible(user.income());
   }
 
   @Test
   @DisplayName("[Все пользователи] Отображение исходящего запроса в друзья")
   void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) @NonNull StaticUser user) {
     goToFriendsPage(user)
-        .checkVisibleOutcomeInvitation(user.outcome());
+        .checkOutcomeInvitationIsVisible(user.outcome());
   }
 }

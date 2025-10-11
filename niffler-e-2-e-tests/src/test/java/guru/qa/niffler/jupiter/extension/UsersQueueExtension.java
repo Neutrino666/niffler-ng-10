@@ -47,12 +47,6 @@ public class UsersQueueExtension implements
         new StaticUser("outcomeReq", "outcomeReq", null, null, "incomeReq"));
   }
 
-  private Stream<UserType> getUserTypes(@NonNull final ExtensionContext context) {
-    return Stream.of(context.getRequiredTestMethod().getParameters())
-        .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class))
-        .map(p -> p.getAnnotation(UserType.class));
-  }
-
   @Override
   public void beforeEach(@NonNull ExtensionContext context) {
     Queue<StaticUser> users = getUserTypes(context)
@@ -61,14 +55,7 @@ public class UsersQueueExtension implements
               Optional<StaticUser> user = Optional.empty();
               StopWatch sw = StopWatch.createStarted();
               while (user.isEmpty() && sw.getTime(TimeUnit.SECONDS) < 30) {
-                user = switch (ut.value()) {
-                  case EMPTY -> Optional.ofNullable(EMPTY_USERS.poll());
-                  case WITH_FRIEND -> Optional.ofNullable(WITH_FRIENDS_USERS.poll());
-                  case WITH_INCOME_REQUEST -> Optional.ofNullable(WITH_INCOME_REQUEST_USERS.poll());
-                  case WITH_OUTCOME_REQUEST ->
-                      Optional.ofNullable(WITH_OUTCOME_REQUEST_USERS.poll());
-                  default -> throw new IllegalStateException("Can't determine user type: " + ut);
-                };
+                user = Optional.ofNullable(getQueueByUserType(ut).poll());
               }
               Allure.getLifecycle().updateTestCase(testCase ->
                   testCase.setStart(new Date().getTime())
@@ -89,21 +76,11 @@ public class UsersQueueExtension implements
     Queue<StaticUser> users = (Queue<StaticUser>) context
         .getStore(NAMESPACE)
         .get(context.getUniqueId(), ConcurrentLinkedQueue.class);
-    if (users == null || users.isEmpty()) {
-      throw new RuntimeException("Can't find users for return in queue");
-    }
-    getUserTypes(context)
-        .forEach(ut -> {
-          switch (ut.value()) {
-            case EMPTY -> EMPTY_USERS.add(users.poll());
-            case WITH_FRIEND -> WITH_FRIENDS_USERS.add(users.poll());
-            case WITH_INCOME_REQUEST -> WITH_INCOME_REQUEST_USERS.add(users.poll());
-            case WITH_OUTCOME_REQUEST -> WITH_OUTCOME_REQUEST_USERS.add(users.poll());
-            default -> throw new IllegalStateException("Can't determine user type: " + ut.value());
-          }
-        });
-    if (!users.isEmpty()) {
-      throw new RuntimeException("All users should be returned after test");
+    if (users != null) {
+      getUserTypes(context)
+          .forEach(ut -> {
+            getQueueByUserType(ut).add(users.poll());
+          });
     }
   }
 
@@ -123,9 +100,27 @@ public class UsersQueueExtension implements
     Queue<StaticUser> users = (Queue<StaticUser>) extensionContext
         .getStore(NAMESPACE)
         .get(extensionContext.getUniqueId(), ConcurrentLinkedQueue.class);
-    assertThat(users).isNotNull().isNotEmpty();
+    if (users == null || users.isEmpty()) {
+      throw new ParameterResolutionException("no available users in test store");
+    }
     StaticUser user = users.poll();
     users.add(user);
     return user;
+  }
+
+  private Queue<StaticUser> getQueueByUserType(UserType userType) {
+    return switch (userType.value()) {
+      case EMPTY -> EMPTY_USERS;
+      case WITH_FRIEND -> WITH_FRIENDS_USERS;
+      case WITH_INCOME_REQUEST -> WITH_INCOME_REQUEST_USERS;
+      case WITH_OUTCOME_REQUEST -> WITH_OUTCOME_REQUEST_USERS;
+    };
+  }
+
+  private Stream<UserType> getUserTypes(@NonNull final ExtensionContext context) {
+    return Stream.of(context.getRequiredTestMethod().getParameters())
+        .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class)
+            && p.getType().isAssignableFrom(StaticUser.class))
+        .map(p -> p.getAnnotation(UserType.class));
   }
 }

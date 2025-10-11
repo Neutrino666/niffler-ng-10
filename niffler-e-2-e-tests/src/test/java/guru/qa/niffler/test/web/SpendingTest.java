@@ -8,7 +8,6 @@ import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.auth.LoginPage;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -26,7 +25,6 @@ public class SpendingTest {
       description = "Обучение Niffler 2.0 юбилейный поток!"
   )
   @DisabledByIssue("2")
-  @DisplayName("@DisabledByIssue(2)")
   @Test
   void spendingDescriptionShouldBeEditedByTableAction(SpendJson spending) {
     final String newDescription = "Обучение Niffler Next Generation";
