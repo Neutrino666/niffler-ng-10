@@ -1,18 +1,16 @@
 package guru.qa.niffler.test.web;
 
-import static guru.qa.niffler.helpers.Utils.getRandomString;
-
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.helpers.RandomDataUtils;
+import guru.qa.niffler.jupiter.meta.WebTest;
 import guru.qa.niffler.page.auth.LoginPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
+@WebTest
 @DisplayName("Регистрация")
-@ExtendWith(BrowserExtension.class)
 public class RegistrationTest {
 
   private static final Config CFG = Config.getInstance();
@@ -26,8 +24,8 @@ public class RegistrationTest {
   @Test
   @DisplayName("Создание нового пользователя")
   void shouldRegisterNewUser() {
-    String username = "auto_" + getRandomString(5);
-    final String password = "auto_" + getRandomString(5);
+    String username = RandomDataUtils.getRandomUserName();
+    final String password = RandomDataUtils.getRandomPassword();
     loginPage.openRegistrationPage()
         .registrationUser(username, password)
         .login(username, password)
@@ -52,11 +50,10 @@ public class RegistrationTest {
   @Test
   @DisplayName("Ошибка не совпадения пароля и подтверждения")
   void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual() {
-    final String PASSWORD = "auto_" + getRandomString(5);
     loginPage.openRegistrationPage()
-        .setUsername("other_" + getRandomString(5))
+        .setUsername(RandomDataUtils.getRandomUserName())
         .setPassword("wrongPwd")
-        .setPasswordSubmit(PASSWORD)
+        .setPasswordSubmit("otherPwd")
         .submitRegistration()
         .checkError("Passwords should be equal");
   }

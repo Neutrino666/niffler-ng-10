@@ -8,6 +8,18 @@ enum LocalConfig implements Config {
     return "http://localhost:3000/";
   }
 
+  public String authUrl() {
+    return "http://localhost:9000/";
+  }
+
+  public String gatewayUrl() {
+    return "http://localhost:8090/";
+  }
+
+  public String userdataUrl() {
+    return "http://localhost:8089/";
+  }
+
   @Override
   public String spendUrl() {
     return "http://localhost:8093/";

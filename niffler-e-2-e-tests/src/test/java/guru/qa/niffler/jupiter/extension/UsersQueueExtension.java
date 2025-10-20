@@ -1,7 +1,5 @@
 package guru.qa.niffler.jupiter.extension;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import guru.qa.niffler.jupiter.annotation.UserType;
 import guru.qa.niffler.model.StaticUser;
 import io.qameta.allure.Allure;
