@@ -12,10 +12,10 @@ public class Databases {
   private Databases() {
   }
 
-  private static final Map<String, DataSource> datasources = new ConcurrentHashMap<>();
+  private static final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
 
   private static DataSource dataSource(String jdbcUrl) {
-    return datasources.computeIfAbsent(
+    return dataSources.computeIfAbsent(
         jdbcUrl,
         key -> {
           PGSimpleDataSource ds = new PGSimpleDataSource();
