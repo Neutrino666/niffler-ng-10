@@ -8,7 +8,7 @@ import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.SpendApiClient;
 import guru.qa.niffler.service.SpendClient;
 import java.util.Date;
-import lombok.NonNull;
+import javax.annotation.Nonnull;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -22,7 +22,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
   private final SpendClient spendClient = new SpendApiClient();
 
   @Override
-  public void beforeEach(@NonNull ExtensionContext context) {
+  public void beforeEach(@Nonnull ExtensionContext context) {
     AnnotationProvider.findTestMethodAnnotation(context, User.class)
         .ifPresent(
             anno -> {
@@ -55,12 +55,12 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
 
   @Override
   public boolean supportsParameter(ParameterContext parameterContext,
-      @NonNull ExtensionContext extensionContext) throws ParameterResolutionException {
+      @Nonnull ExtensionContext extensionContext) throws ParameterResolutionException {
     return parameterContext.getParameter().getType().isAssignableFrom(SpendJson.class);
   }
 
   @Override
-  public SpendJson resolveParameter(@NonNull ParameterContext parameterContext,
+  public SpendJson resolveParameter(@Nonnull ParameterContext parameterContext,
       ExtensionContext extensionContext) throws ParameterResolutionException {
     return extensionContext.getStore(SpendingExtension.NAMESPACE)
         .get(extensionContext.getUniqueId(), SpendJson.class);

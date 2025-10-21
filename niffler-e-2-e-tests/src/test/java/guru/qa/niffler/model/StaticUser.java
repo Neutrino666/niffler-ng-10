@@ -1,9 +1,9 @@
 package guru.qa.niffler.model;
 
-import lombok.NonNull;
+import javax.annotation.Nonnull;
 
-public record StaticUser(@NonNull String username,
-                         @NonNull String password,
+public record StaticUser(@Nonnull String username,
+                         @Nonnull String password,
                          String friend,
                          String income,
                          String outcome) {
