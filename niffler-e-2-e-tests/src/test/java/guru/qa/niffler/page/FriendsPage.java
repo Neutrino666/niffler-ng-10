@@ -10,8 +10,8 @@ import static com.codeborne.selenide.Selenide.$$;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import javax.annotation.Nonnull;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
@@ -35,7 +35,7 @@ public class FriendsPage {
   }
 
   @Step("Открываем вкладку друзей '{tab}'")
-  public void switchTab(@NonNull final Tab tab) {
+  public void switchTab(@Nonnull final Tab tab) {
     SelenideElement el = tabs.find(text(tab.getValue())).as(tab.getValue());
     el.click();
     el.shouldHave(attribute("aria-selected", "true"));
@@ -48,19 +48,19 @@ public class FriendsPage {
   }
 
   @Step("Проверяем наличие друга: '{friend}'")
-  public FriendsPage checkFriendIsVisible(@NonNull final String friend) {
+  public FriendsPage checkFriendIsVisible(@Nonnull final String friend) {
     friends.find(text(friend)).shouldBe(visible);
     return this;
   }
 
   @Step("Проверяем наличие входящего запроса в друзья от: '{friend}'")
-  public FriendsPage checkIncomeInvitationIsVisible(@NonNull final String friend) {
+  public FriendsPage checkIncomeInvitationIsVisible(@Nonnull final String friend) {
     requests.find(text(friend)).shouldBe(visible);
     return this;
   }
 
   @Step("Проверяем наличие исходящего запроса в друзья к: '{friend}'")
-  public FriendsPage checkOutcomeInvitationIsVisible(@NonNull final String friend) {
+  public FriendsPage checkOutcomeInvitationIsVisible(@Nonnull final String friend) {
     switchTab(Tab.ALL_PEOPLE);
     all.find(text(friend)).shouldBe(visible);
     return this;

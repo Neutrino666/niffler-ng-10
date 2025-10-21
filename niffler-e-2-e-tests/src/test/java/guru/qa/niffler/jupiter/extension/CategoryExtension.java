@@ -7,7 +7,7 @@ import guru.qa.niffler.jupiter.annotation.provider.AnnotationProvider;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.service.SpendApiClient;
 import guru.qa.niffler.service.SpendClient;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -25,7 +25,7 @@ public class CategoryExtension implements
   private final SpendClient apiClient = new SpendApiClient();
 
   @Override
-  public void beforeTestExecution(@NotNull ExtensionContext context) {
+  public void beforeTestExecution(@Nonnull ExtensionContext context) {
     AnnotationProvider.findTestMethodAnnotation(context, User.class)
         .ifPresent(
             anno -> {
@@ -61,7 +61,7 @@ public class CategoryExtension implements
   }
 
   @Override
-  public void afterTestExecution(@NotNull ExtensionContext context) {
+  public void afterTestExecution(@Nonnull ExtensionContext context) {
     AnnotationProvider.findTestMethodAnnotation(context, User.class)
         .ifPresent(anno -> {
               if (anno.categories().length > 0) {
@@ -83,12 +83,12 @@ public class CategoryExtension implements
 
   @Override
   public boolean supportsParameter(ParameterContext parameterContext,
-      @NotNull ExtensionContext extensionContext) throws ParameterResolutionException {
-    return parameterContext.getParameter().getType().isAssignableFrom(User.class);
+      @Nonnull ExtensionContext extensionContext) throws ParameterResolutionException {
+    return parameterContext.getParameter().getType().isAssignableFrom(CategoryJson.class);
   }
 
   @Override
-  public CategoryJson resolveParameter(@NotNull ParameterContext parameterContext,
+  public CategoryJson resolveParameter(@Nonnull ParameterContext parameterContext,
       ExtensionContext extensionContext) throws ParameterResolutionException {
     return extensionContext.getStore(CategoryExtension.NAMESPACE)
         .get(extensionContext.getUniqueId(), CategoryJson.class);

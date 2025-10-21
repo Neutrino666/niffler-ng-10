@@ -7,7 +7,7 @@ import static com.codeborne.selenide.Selenide.$;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.MainPage;
 import io.qameta.allure.Step;
-import lombok.NonNull;
+import javax.annotation.Nonnull;
 
 public class LoginPage {
 
@@ -32,13 +32,13 @@ public class LoginPage {
   }
 
   @Step("Set username: '{username}'")
-  public LoginPage setUsername(@NonNull final String username) {
+  public LoginPage setUsername(@Nonnull final String username) {
     usernameInput.val(username);
     return this;
   }
 
   @Step("Set password: '{password}'")
-  public LoginPage setPassword(@NonNull final String password) {
+  public LoginPage setPassword(@Nonnull final String password) {
     passwordInput.val(password);
     return this;
   }
@@ -50,7 +50,7 @@ public class LoginPage {
   }
 
   @Step("Check error message: '{message}'")
-  public LoginPage checkError(@NonNull final String message) {
+  public LoginPage checkError(@Nonnull final String message) {
     formError.shouldHave(text(message), visible);
     return this;
   }
