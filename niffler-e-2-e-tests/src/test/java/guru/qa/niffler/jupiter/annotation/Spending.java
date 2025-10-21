@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(SpendingExtension.class)
 public @interface Spending {
 
-  String username();
-
   String category();
 
   String description();

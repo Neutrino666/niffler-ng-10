@@ -14,7 +14,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import java.io.File;
-import lombok.NonNull;
+import javax.annotation.Nonnull;
 import org.openqa.selenium.Keys;
 
 public class ProfilePage {
@@ -38,7 +38,7 @@ public class ProfilePage {
     Unarchive
   }
 
-  private String getCategoryBtn(@NonNull final CategoryButton categoryBtn) {
+  private String getCategoryBtn(@Nonnull final CategoryButton categoryBtn) {
     return "button[aria-label='%s category']".formatted(categoryBtn);
   }
 
@@ -67,20 +67,20 @@ public class ProfilePage {
   }
 
   @Step("Set name: '{name}'")
-  public ProfilePage setName(@NonNull final String name) {
+  public ProfilePage setName(@Nonnull final String name) {
     nameInput.val(name);
     return this;
   }
 
   @Step("Add category: '{category}'")
-  public ProfilePage addNewCategory(@NonNull final String category) {
+  public ProfilePage addNewCategory(@Nonnull final String category) {
     categoryInput.val(category);
     return this;
   }
 
   @Step("Check categories contains in any order: '{categories}'")
   public ProfilePage checkActiveCategoriesIsDisplayedInAnyOrder(
-      @NonNull final String... categories) {
+      @Nonnull final String... categories) {
     for (String category : categories) {
       activeCategories.find(text(category)).shouldBe(visible);
     }
@@ -89,7 +89,7 @@ public class ProfilePage {
 
   @Step("Check categories contains in any order: '{categories}'")
   public ProfilePage checkArchivedCategoriesIsDisplayedInAnyOrder(
-      @NonNull final String... categories) {
+      @Nonnull final String... categories) {
     showArchive(true);
     for (String category : categories) {
       archiveCategories.find(text(category)).shouldBe(visible);
@@ -98,7 +98,7 @@ public class ProfilePage {
   }
 
   @Step("Check categories contains in any order: '{categories}'")
-  public ProfilePage checkArchivedCategoriesIsNotExist(@NonNull final String... categories) {
+  public ProfilePage checkArchivedCategoriesIsNotExist(@Nonnull final String... categories) {
     showArchive(false);
     for (String category : categories) {
       archiveCategories.find(text(category)).shouldBe(not(exist));
@@ -107,8 +107,8 @@ public class ProfilePage {
   }
 
   @Step("Edit active category name old: '{fromCategory}' new: '{toCategory}'")
-  public ProfilePage editActiveCategory(@NonNull final String fromCategory,
-      @NonNull final String toCategory) {
+  public ProfilePage editActiveCategory(@Nonnull final String fromCategory,
+      @Nonnull final String toCategory) {
     activeCategories.findBy(text(fromCategory))
         .find(getCategoryBtn(CategoryButton.Edit))
         .click();
@@ -120,7 +120,7 @@ public class ProfilePage {
   }
 
   @Step("Click archive")
-  public ProfilePage clickArchive(@NonNull final String title) {
+  public ProfilePage clickArchive(@Nonnull final String title) {
     activeCategories.findBy(text(title))
         .find(getCategoryBtn(CategoryButton.Archive))
         .click();
@@ -128,7 +128,7 @@ public class ProfilePage {
   }
 
   @Step("Click unarchive")
-  public ProfilePage clickUnarchive(@NonNull final String title) {
+  public ProfilePage clickUnarchive(@Nonnull final String title) {
     archiveCheckbox.shouldBe(selected);
     archiveCategories.findBy(text(title))
         .find(getCategoryBtn(CategoryButton.Unarchive))
@@ -137,7 +137,7 @@ public class ProfilePage {
   }
 
   @Step("Switch to archive category: '{isSelected}'")
-  public ProfilePage showArchive(@NonNull final Boolean isSelected) {
+  public ProfilePage showArchive(@Nonnull final Boolean isSelected) {
     if (isSelectedArchive() != isSelected) {
       archiveCheckbox.click();
       archiveCheckbox.shouldBe(interactable, isSelected ? selected : not(selected));
