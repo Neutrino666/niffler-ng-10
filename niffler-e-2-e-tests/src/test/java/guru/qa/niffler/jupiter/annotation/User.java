@@ -12,7 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith({CategoryExtension.class, SpendingExtension.class})
 public @interface User {
+
   String username() default "admin2";
+
   Category[] categories() default {};
+
   Spending[] spendings() default {};
 }

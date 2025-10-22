@@ -32,12 +32,6 @@ public class ProfilePage {
   private final SelenideElement archiveCheckbox = $("input[class*=PrivateSwitchBase-input]");
   private final SelenideElement editExistCategoryInput = $("form.MuiBox-root #category");
 
-  private enum CategoryButton {
-    Edit,
-    Archive,
-    Unarchive
-  }
-
   private String getCategoryBtn(@Nonnull final CategoryButton categoryBtn) {
     return "button[aria-label='%s category']".formatted(categoryBtn);
   }
@@ -147,5 +141,11 @@ public class ProfilePage {
 
   private boolean isSelectedArchive() {
     return archiveCheckbox.shouldBe(interactable).isSelected();
+  }
+
+  private enum CategoryButton {
+    Edit,
+    Archive,
+    Unarchive
   }
 }

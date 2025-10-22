@@ -5,8 +5,8 @@ import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.provider.AnnotationProvider;
 import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.service.SpendApiClient;
-import guru.qa.niffler.service.SpendClient;
+import guru.qa.niffler.service.category.CategoryApiClient;
+import guru.qa.niffler.service.category.CategoryClient;
 import javax.annotation.Nonnull;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
@@ -22,7 +22,7 @@ public class CategoryExtension implements
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       CategoryExtension.class);
-  private final SpendClient apiClient = new SpendApiClient();
+  private final CategoryClient apiClient = new CategoryApiClient();
 
   @Override
   public void beforeTestExecution(@Nonnull ExtensionContext context) {
@@ -31,7 +31,7 @@ public class CategoryExtension implements
             anno -> {
               if (anno.categories().length > 0) {
                 Category category = anno.categories()[0];
-                final CategoryJson created = apiClient.createCategory(
+                final CategoryJson created = apiClient.create(
                     new CategoryJson(
                         null,
                         RandomDataUtils.getRandomName(),
@@ -48,7 +48,7 @@ public class CategoryExtension implements
                   );
                   context.getStore(NAMESPACE).put(
                       context.getUniqueId(),
-                      apiClient.updateCategory(update)
+                      apiClient.update(update)
                   );
                 } else {
                   context.getStore(NAMESPACE).put(
@@ -74,7 +74,7 @@ public class CategoryExtension implements
                       category.username(),
                       true
                   );
-                  apiClient.updateCategory(update);
+                  apiClient.update(update);
                 }
               }
             }

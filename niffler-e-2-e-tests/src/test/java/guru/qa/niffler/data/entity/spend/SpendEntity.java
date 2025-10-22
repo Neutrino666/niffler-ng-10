@@ -1,16 +1,15 @@
 package guru.qa.niffler.data.entity.spend;
 
+import guru.qa.niffler.data.entity.category.CategoryEntity;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class SpendEntity implements Serializable {
 
   private UUID id;

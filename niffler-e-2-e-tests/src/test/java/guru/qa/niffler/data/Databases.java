@@ -9,10 +9,10 @@ import org.postgresql.ds.PGSimpleDataSource;
 
 public class Databases {
 
+  private static final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
+
   private Databases() {
   }
-
-  private static final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
 
   private static DataSource dataSource(String jdbcUrl) {
     return dataSources.computeIfAbsent(
