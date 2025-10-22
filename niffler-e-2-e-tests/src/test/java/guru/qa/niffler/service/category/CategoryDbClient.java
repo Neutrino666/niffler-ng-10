@@ -1,6 +1,8 @@
 package guru.qa.niffler.service.category;
 
-import guru.qa.niffler.data.dao.CategoryDao;
+import static guru.qa.niffler.data.Databases.transaction;
+
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.entity.CategoryEntity;
 import guru.qa.niffler.model.CategoryJson;
@@ -10,21 +12,33 @@ import javax.annotation.Nonnull;
 
 public class CategoryDbClient implements CategoryClient {
 
-  private final CategoryDao categoryDao = new CategoryDaoJdbc();
+  private final static Config CFG = Config.getInstance();
 
   public @Nonnull Optional<CategoryEntity> findByUsernameAndName(
       @Nonnull String username,
       @Nonnull String categoryName
   ) {
-    return categoryDao.findByUsernameAndName(username, categoryName);
+    return transaction(connection -> {
+          return new CategoryDaoJdbc(connection).findByUsernameAndName(username, categoryName);
+        },
+        CFG.spendJdbcUrl()
+    );
   }
 
   public @Nonnull List<CategoryEntity> findAllByUsername(@Nonnull String username) {
-    return categoryDao.findAllByUsername(username);
+    return transaction(connection -> {
+          return new CategoryDaoJdbc(connection).findAllByUsername(username);
+        },
+        CFG.spendJdbcUrl()
+    );
   }
 
   public void delete(@Nonnull CategoryEntity category) {
-    categoryDao.delete(category);
+    transaction(connection -> {
+          new CategoryDaoJdbc(connection).delete(category);
+        },
+        CFG.spendJdbcUrl()
+    );
   }
 
   @Override
@@ -35,6 +49,12 @@ public class CategoryDbClient implements CategoryClient {
   @Override
   public @Nonnull CategoryJson create(@Nonnull CategoryJson category) {
     CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-    return CategoryJson.fromEntity(categoryDao.create(categoryEntity));
+    return CategoryJson.fromEntity(
+        transaction(connection -> {
+              return new CategoryDaoJdbc(connection).create(categoryEntity);
+            },
+            CFG.spendJdbcUrl()
+        )
+    );
   }
 }
