@@ -4,8 +4,8 @@ import guru.qa.niffler.data.dao.CategoryDao;
 import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.dao.impl.SpendDaoJdbc;
-import guru.qa.niffler.data.entity.category.CategoryEntity;
-import guru.qa.niffler.data.entity.spend.SpendEntity;
+import guru.qa.niffler.data.entity.CategoryEntity;
+import guru.qa.niffler.data.entity.SpendEntity;
 import guru.qa.niffler.model.SpendJson;
 import java.util.List;
 import java.util.Optional;
@@ -29,11 +29,11 @@ public class SpendDbClient implements SpendClient {
     );
   }
 
-  public Optional<SpendEntity> findById(@Nonnull UUID id) {
+  public @Nonnull Optional<SpendEntity> findById(@Nonnull UUID id) {
     return spendDao.findById(id);
   }
 
-  public List<SpendEntity> findAllByUsername(@Nonnull String username) {
+  public @Nonnull List<SpendEntity> findAllByUsername(@Nonnull String username) {
     return spendDao.findAllByUsername(username);
   }
 

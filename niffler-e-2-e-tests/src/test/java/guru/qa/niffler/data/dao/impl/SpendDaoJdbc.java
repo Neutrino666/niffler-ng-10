@@ -3,8 +3,8 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.Databases;
 import guru.qa.niffler.data.dao.SpendDao;
-import guru.qa.niffler.data.entity.category.CategoryEntity;
-import guru.qa.niffler.data.entity.spend.SpendEntity;
+import guru.qa.niffler.data.entity.CategoryEntity;
+import guru.qa.niffler.data.entity.SpendEntity;
 import guru.qa.niffler.model.CurrencyValues;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +22,7 @@ public class SpendDaoJdbc implements SpendDao {
   private final Config CFG = Config.getInstance();
 
   @Override
-  public SpendEntity create(@Nonnull SpendEntity spend) {
+  public @Nonnull SpendEntity create(@Nonnull SpendEntity spend) {
     try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
       try (PreparedStatement ps = connection.prepareStatement(
           "INSERT INTO spend (username, spend_date, currency, amount, description, category_id)"
@@ -54,7 +54,7 @@ public class SpendDaoJdbc implements SpendDao {
   }
 
   @Override
-  public Optional<SpendEntity> findById(@Nonnull UUID id) {
+  public @Nonnull Optional<SpendEntity> findById(@Nonnull UUID id) {
     try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
       try (PreparedStatement ps = connection.prepareStatement(
           getSelectByWhereIs("id")
@@ -62,11 +62,9 @@ public class SpendDaoJdbc implements SpendDao {
         ps.setObject(1, id);
         ps.execute();
         try (ResultSet rs = ps.getResultSet()) {
-          if (rs.next()) {
-            return collectEntityFrom(rs);
-          } else {
-            return Optional.empty();
-          }
+          return rs.next()
+              ? collectEntityFrom(rs)
+              : Optional.empty();
         }
       }
     } catch (SQLException e) {
@@ -75,7 +73,7 @@ public class SpendDaoJdbc implements SpendDao {
   }
 
   @Override
-  public List<SpendEntity> findAllByUsername(@Nonnull String username) {
+  public @Nonnull List<SpendEntity> findAllByUsername(@Nonnull String username) {
     List<SpendEntity> spends = new ArrayList<>();
     try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
       try (PreparedStatement ps = connection.prepareStatement(
@@ -109,7 +107,8 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
-  private Optional<SpendEntity> collectEntityFrom(@Nonnull ResultSet rs) throws SQLException {
+  private @Nonnull Optional<SpendEntity> collectEntityFrom(@Nonnull ResultSet rs)
+      throws SQLException {
     Optional<CategoryEntity> category = Optional.empty();
     if (rs.getObject("c_id") != null) {
       CategoryEntity categoryEntity = new CategoryEntity();
@@ -130,7 +129,7 @@ public class SpendDaoJdbc implements SpendDao {
     return Optional.of(spend);
   }
 
-  private String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
     return "SELECT "
         + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
         + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "

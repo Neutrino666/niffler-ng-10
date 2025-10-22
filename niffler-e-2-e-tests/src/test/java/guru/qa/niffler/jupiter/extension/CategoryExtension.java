@@ -5,8 +5,8 @@ import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.provider.AnnotationProvider;
 import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.service.category.CategoryApiClient;
 import guru.qa.niffler.service.category.CategoryClient;
+import guru.qa.niffler.service.category.CategoryDbClient;
 import javax.annotation.Nonnull;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
@@ -22,7 +22,7 @@ public class CategoryExtension implements
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       CategoryExtension.class);
-  private final CategoryClient apiClient = new CategoryApiClient();
+  private final CategoryClient apiClient = new CategoryDbClient();
 
   @Override
   public void beforeTestExecution(@Nonnull ExtensionContext context) {

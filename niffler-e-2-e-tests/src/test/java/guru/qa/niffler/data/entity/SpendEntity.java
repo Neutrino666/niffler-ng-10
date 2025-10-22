@@ -1,6 +1,5 @@
-package guru.qa.niffler.data.entity.spend;
+package guru.qa.niffler.data.entity;
 
-import guru.qa.niffler.data.entity.category.CategoryEntity;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import java.io.Serializable;
@@ -20,7 +19,7 @@ public class SpendEntity implements Serializable {
   private String description;
   private CategoryEntity category;
 
-  public static SpendEntity fromJson(@Nonnull SpendJson json) {
+  public static @Nonnull SpendEntity fromJson(@Nonnull SpendJson json) {
     SpendEntity se = new SpendEntity();
     se.setId(json.id());
     se.setUsername(json.username());

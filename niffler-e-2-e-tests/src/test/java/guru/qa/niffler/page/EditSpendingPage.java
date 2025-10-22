@@ -11,7 +11,6 @@ public class EditSpendingPage {
 
   public EditSpendingPage setNewSpendingDescription(String description) {
     descriptionInput.val(description);
-    saveBtn.click();
     return this;
   }
 

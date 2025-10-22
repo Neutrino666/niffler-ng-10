@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 
@@ -14,7 +15,7 @@ public class Databases {
   private Databases() {
   }
 
-  private static DataSource dataSource(String jdbcUrl) {
+  private static @Nonnull DataSource dataSource(@Nonnull String jdbcUrl) {
     return dataSources.computeIfAbsent(
         jdbcUrl,
         key -> {
@@ -27,7 +28,7 @@ public class Databases {
     );
   }
 
-  public static Connection connection(String jdbcUrl) throws SQLException {
+  public static @Nonnull Connection connection(@Nonnull String jdbcUrl) throws SQLException {
     return dataSource(jdbcUrl).getConnection();
   }
 }

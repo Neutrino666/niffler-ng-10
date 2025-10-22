@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.entity.category;
+package guru.qa.niffler.data.entity;
 
 import guru.qa.niffler.model.CategoryJson;
 import java.io.Serializable;
@@ -14,7 +14,7 @@ public class CategoryEntity implements Serializable {
   private String username;
   private boolean archived;
 
-  public static CategoryEntity fromJson(@Nonnull CategoryJson json) {
+  public static @Nonnull CategoryEntity fromJson(@Nonnull CategoryJson json) {
     CategoryEntity ce = new CategoryEntity();
     ce.setId(json.id());
     ce.setName(json.name());
