@@ -63,7 +63,7 @@ public class SpendDaoJdbc implements SpendDao {
         ps.execute();
         try (ResultSet rs = ps.getResultSet()) {
           return rs.next()
-              ? collectEntityFrom(rs)
+              ? collectEntity(rs)
               : Optional.empty();
         }
       }
@@ -83,7 +83,7 @@ public class SpendDaoJdbc implements SpendDao {
         ps.execute();
         try (ResultSet rs = ps.getResultSet()) {
           while (rs.next()) {
-            spends.add(collectEntityFrom(rs).orElse(null));
+            spends.add(collectEntity(rs).orElse(null));
           }
         }
       }
@@ -107,21 +107,19 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
-  private @Nonnull Optional<SpendEntity> collectEntityFrom(@Nonnull ResultSet rs)
+  private @Nonnull Optional<SpendEntity> collectEntity(@Nonnull ResultSet rs)
       throws SQLException {
-    Optional<CategoryEntity> category = Optional.empty();
+    CategoryEntity categoryEntity = new CategoryEntity();
     if (rs.getObject("c_id") != null) {
-      CategoryEntity categoryEntity = new CategoryEntity();
       categoryEntity.setId(rs.getObject("c_id", UUID.class));
       categoryEntity.setName(rs.getString("c_name"));
       categoryEntity.setUsername(rs.getString("c_username"));
       categoryEntity.setArchived(rs.getBoolean("c_archived"));
-      category = Optional.of(categoryEntity);
     }
     SpendEntity spend = new SpendEntity();
     spend.setId(rs.getObject("id", UUID.class));
     spend.setSpendDate(rs.getDate("spend_date"));
-    spend.setCategory(category.orElse(null));
+    spend.setCategory(categoryEntity);
     spend.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
     spend.setAmount(rs.getDouble("amount"));
     spend.setDescription(rs.getString("description"));

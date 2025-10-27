@@ -36,7 +36,7 @@ public class UserDaoJdbc implements UserDao {
 
         try (ResultSet rs = ps.getResultSet()) {
           if (rs.next()) {
-            return collectEntityFrom(rs);
+            return collectEntity(rs);
           } else {
             throw new SQLException("Can't find id in ResultSet");
           }
@@ -57,7 +57,7 @@ public class UserDaoJdbc implements UserDao {
         ps.execute();
         try (ResultSet rs = ps.getResultSet()) {
           return rs.next()
-              ? Optional.of(collectEntityFrom(rs))
+              ? Optional.of(collectEntity(rs))
               : Optional.empty();
         }
       }
@@ -76,7 +76,7 @@ public class UserDaoJdbc implements UserDao {
         ps.execute();
         try (ResultSet rs = ps.getResultSet()) {
           return rs.next()
-              ? Optional.of(collectEntityFrom(rs))
+              ? Optional.of(collectEntity(rs))
               : Optional.empty();
         }
       }
@@ -99,7 +99,7 @@ public class UserDaoJdbc implements UserDao {
     }
   }
 
-  private @Nonnull UserEntity collectEntityFrom(@Nonnull ResultSet rs) throws SQLException {
+  private @Nonnull UserEntity collectEntity(@Nonnull ResultSet rs) throws SQLException {
     UserEntity ue = new UserEntity();
     ue.setId(rs.getObject("id", UUID.class));
     ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));

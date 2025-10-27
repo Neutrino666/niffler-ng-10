@@ -1,4 +1,4 @@
-package guru.qa.niffler.service.spand;
+package guru.qa.niffler.service.spend;
 
 import static org.apache.hc.core5.http.HttpStatus.SC_ACCEPTED;
 import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;

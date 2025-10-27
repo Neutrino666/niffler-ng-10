@@ -35,7 +35,7 @@ public class CategoryDaoJdbc implements CategoryDao {
 
         try (ResultSet rs = ps.getGeneratedKeys()) {
           if (rs.next()) {
-            return collectEntityFrom(rs);
+            return collectEntity(rs);
           } else {
             throw new SQLException("Can't find id in ResultSet");
           }
@@ -56,7 +56,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         ps.execute();
         try (ResultSet rs = ps.getResultSet()) {
           return rs.next()
-              ? Optional.of(collectEntityFrom(rs))
+              ? Optional.of(collectEntity(rs))
               : Optional.empty();
         }
       }
@@ -78,18 +78,9 @@ public class CategoryDaoJdbc implements CategoryDao {
         ps.execute();
 
         try (ResultSet rs = ps.getResultSet()) {
-          Optional<CategoryEntity> category = Optional.empty();
-          if (rs.next()) {
-            CategoryEntity ce = new CategoryEntity();
-            ce.setId(rs.getObject("id", UUID.class));
-            ce.setUsername(rs.getString("username"));
-            ce.setName(rs.getString("name"));
-            ce.setArchived(rs.getBoolean("archived"));
-            category = Optional.of(
-                ce
-            );
-          }
-          return category;
+          return rs.next()
+              ? Optional.of(collectEntity(rs))
+              : Optional.empty();
         }
       }
     } catch (SQLException e) {
@@ -109,7 +100,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         List<CategoryEntity> ceList = new ArrayList<>();
         try (ResultSet rs = ps.getResultSet()) {
           while (rs.next()) {
-            ceList.add(collectEntityFrom(rs));
+            ceList.add(collectEntity(rs));
           }
         }
         return ceList;
@@ -133,7 +124,7 @@ public class CategoryDaoJdbc implements CategoryDao {
     }
   }
 
-  private @Nonnull CategoryEntity collectEntityFrom(@Nonnull ResultSet rs) throws SQLException {
+  private @Nonnull CategoryEntity collectEntity(@Nonnull ResultSet rs) throws SQLException {
     CategoryEntity ce = new CategoryEntity();
     ce.setId(rs.getObject("id", UUID.class));
     ce.setUsername(rs.getString("username"));
