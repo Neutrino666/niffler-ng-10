@@ -52,8 +52,8 @@ public class SpendDbClient implements SpendClient {
 
   public void delete(@Nonnull SpendEntity spend) {
     transaction(connection -> {
-      new SpendDaoJdbc(connection).delete(spend);
-      },
+          new SpendDaoJdbc(connection).delete(spend);
+        },
         CFG.spendJdbcUrl()
     );
   }

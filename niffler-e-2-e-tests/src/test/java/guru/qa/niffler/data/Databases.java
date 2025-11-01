@@ -18,25 +18,35 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Databases {
 
+  private static final int DEFAULT_ISOLATION = Connection.TRANSACTION_READ_COMMITTED;
+
   private Databases() {
   }
 
   private static final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
   private static final Map<Long, Map<String, Connection>> threadConnections = new ConcurrentHashMap<>();
 
-  public record XaFunction<T>(Function<Connection, T> function, String jdbcUrl) {
+  public record XaFunction<T>(@Nonnull Function<Connection, T> function, @Nonnull String jdbcUrl) {
 
   }
 
-  public record XaConsumer(Consumer<Connection> function, String jdbcUrl) {
+  public record XaConsumer(@Nonnull Consumer<Connection> function, @Nonnull String jdbcUrl) {
 
   }
 
-  public static <T> T transaction(Function<Connection, T> function, String jdbcUrl) {
+  public static <T> T transaction(@Nonnull Function<Connection, T> function,
+      @Nonnull String jdbcUrl) {
+    return transaction(DEFAULT_ISOLATION, function, jdbcUrl);
+  }
+
+  @Nonnull
+  public static <T> T transaction(int isolation, @Nonnull Function<Connection, T> function,
+      @Nonnull String jdbcUrl) {
     Connection connection = null;
     try {
       connection = connection(jdbcUrl);
       connection.setAutoCommit(false);
+      connection.setTransactionIsolation(isolation);
       T result = function.apply(connection);
       connection.commit();
       connection.setAutoCommit(true);
@@ -54,13 +64,19 @@ public class Databases {
     }
   }
 
-  public static <T> T xaTransaction(XaFunction<T>... actions) {
+  @Nonnull
+  public static <T> T xaTransaction(@Nonnull XaFunction<T>... actions) {
+    return xaTransaction(DEFAULT_ISOLATION, actions);
+  }
+
+  @Nonnull
+  public static <T> T xaTransaction(int isolation, @Nonnull XaFunction<T>... actions) {
     UserTransaction ut = new UserTransactionImp();
     try {
       ut.begin();
       T result = null;
       for (XaFunction<T> action : actions) {
-        result = action.function.apply(connection(action.jdbcUrl));
+        result = action.function.apply(connection(isolation, action.jdbcUrl));
       }
       ut.commit();
       return result;
@@ -74,11 +90,17 @@ public class Databases {
     }
   }
 
-  public static void transaction(Consumer<Connection> consumer, String jdbcUrl) {
+  public static void transaction(@Nonnull Consumer<Connection> consumer, @Nonnull String jdbcUrl) {
+    transaction(DEFAULT_ISOLATION, consumer, jdbcUrl);
+  }
+
+  public static void transaction(int isolation, @Nonnull Consumer<Connection> consumer,
+      @Nonnull String jdbcUrl) {
     Connection connection = null;
     try {
       connection = connection(jdbcUrl);
       connection.setAutoCommit(false);
+      connection.setTransactionIsolation(isolation);
       consumer.accept(connection);
       connection.commit();
       connection.setAutoCommit(true);
@@ -95,12 +117,16 @@ public class Databases {
     }
   }
 
-  public static void xaTransaction(XaConsumer... actions) {
+  public static void xaTransaction(@Nonnull XaConsumer... actions) {
+    xaTransaction(DEFAULT_ISOLATION, actions);
+  }
+
+  public static void xaTransaction(int isolation, @Nonnull XaConsumer... actions) {
     UserTransaction ut = new UserTransactionImp();
     try {
       ut.begin();
       for (XaConsumer action : actions) {
-        action.function.accept(connection(action.jdbcUrl));
+        action.function.accept(connection(isolation, action.jdbcUrl));
       }
       ut.commit();
     } catch (Exception e) {
@@ -113,8 +139,27 @@ public class Databases {
     }
   }
 
+  public static void closeAllConnections() {
+    for (Map<String, Connection> connectionMap : threadConnections.values()) {
+      for (Connection connection : connectionMap.values()) {
+        try {
+          if (connection != null && !connection.isClosed()) {
+            connection.close();
+          }
+        } catch (SQLException e) {
+          // NOP
+        }
+      }
+    }
+  }
+
   private static @Nonnull Connection connection(@Nonnull String jdbcUrl) throws SQLException {
-    return threadConnections.computeIfAbsent(
+    return connection(DEFAULT_ISOLATION, jdbcUrl);
+  }
+
+  private static @Nonnull Connection connection(int isolation, @Nonnull String jdbcUrl)
+      throws SQLException {
+    Connection connection = threadConnections.computeIfAbsent(
         Thread.currentThread().threadId(),
         key -> {
           try {
@@ -136,20 +181,8 @@ public class Databases {
           }
         }
     );
-  }
-
-  public static void closeAllConnections() {
-    for (Map<String, Connection> connectionMap : threadConnections.values()) {
-      for (Connection connection : connectionMap.values()) {
-        try {
-          if (connection != null && !connection.isClosed()) {
-            connection.close();
-          }
-        } catch (SQLException e) {
-          // NOP
-        }
-      }
-    }
+    connection.setTransactionIsolation(isolation);
+    return connection;
   }
 
   private static @Nonnull DataSource dataSource(@Nonnull String jdbcUrl) {
