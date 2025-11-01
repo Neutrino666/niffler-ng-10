@@ -1,4 +1,4 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.auth;
 
 import guru.qa.niffler.api.AuthApi;
 import java.io.IOException;
