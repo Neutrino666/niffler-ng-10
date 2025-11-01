@@ -25,15 +25,6 @@ public class FriendsPage {
   private final ElementsCollection requests = $$("#requests tr");
   private final ElementsCollection all = $$("#all tr");
 
-  @Getter
-  @ToString
-  @RequiredArgsConstructor
-  public enum Tab {
-    FRIENDS("Friends"),
-    ALL_PEOPLE("All people");
-    private final String value;
-  }
-
   @Step("Открываем вкладку друзей '{tab}'")
   public void switchTab(@Nonnull final Tab tab) {
     SelenideElement el = tabs.find(text(tab.getValue())).as(tab.getValue());
@@ -64,5 +55,14 @@ public class FriendsPage {
     switchTab(Tab.ALL_PEOPLE);
     all.find(text(friend)).shouldBe(visible);
     return this;
+  }
+
+  @Getter
+  @ToString
+  @RequiredArgsConstructor
+  public enum Tab {
+    FRIENDS("Friends"),
+    ALL_PEOPLE("All people");
+    private final String value;
   }
 }

@@ -11,5 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Target(ElementType.METHOD)
 @ExtendWith({CategoryExtension.class})
 public @interface Category {
+
   boolean archived();
 }

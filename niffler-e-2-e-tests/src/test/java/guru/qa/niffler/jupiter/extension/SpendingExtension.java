@@ -5,8 +5,8 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.provider.AnnotationProvider;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
-import guru.qa.niffler.service.SpendApiClient;
-import guru.qa.niffler.service.SpendClient;
+import guru.qa.niffler.service.spend.SpendClient;
+import guru.qa.niffler.service.spend.SpendDbClient;
 import java.util.Date;
 import javax.annotation.Nonnull;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -19,7 +19,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       SpendingExtension.class);
-  private final SpendClient spendClient = new SpendApiClient();
+  private final SpendClient spendClient = new SpendDbClient();
 
   @Override
   public void beforeEach(@Nonnull ExtensionContext context) {
@@ -28,7 +28,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
             anno -> {
               if (anno.spendings().length > 0) {
                 Spending spending = anno.spendings()[0];
-                final SpendJson created = spendClient.createSpend(
+                final SpendJson created = spendClient.create(
                     new SpendJson(
                         null,
                         new Date(),
