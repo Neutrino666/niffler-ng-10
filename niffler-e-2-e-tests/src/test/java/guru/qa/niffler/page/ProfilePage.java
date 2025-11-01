@@ -15,6 +15,8 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import java.io.File;
 import javax.annotation.Nonnull;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.Keys;
 
 public class ProfilePage {
@@ -31,10 +33,6 @@ public class ProfilePage {
       ".MuiGrid-item:has(.MuiChip-filled.MuiChip-colorDefault)");
   private final SelenideElement archiveCheckbox = $("input[class*=PrivateSwitchBase-input]");
   private final SelenideElement editExistCategoryInput = $("form.MuiBox-root #category");
-
-  private String getCategoryBtn(@Nonnull final CategoryButton categoryBtn) {
-    return "button[aria-label='%s category']".formatted(categoryBtn);
-  }
 
   @Step("Upload avatar")
   public ProfilePage uploadAvatar(File file) {
@@ -104,7 +102,7 @@ public class ProfilePage {
   public ProfilePage editActiveCategory(@Nonnull final String fromCategory,
       @Nonnull final String toCategory) {
     activeCategories.findBy(text(fromCategory))
-        .find(getCategoryBtn(CategoryButton.Edit))
+        .find(getCategoryBtn(CategoryButton.EDIT))
         .click();
     editExistCategoryInput.val(toCategory)
         .sendKeys(Keys.ENTER);
@@ -116,7 +114,7 @@ public class ProfilePage {
   @Step("Click archive")
   public ProfilePage clickArchive(@Nonnull final String title) {
     activeCategories.findBy(text(title))
-        .find(getCategoryBtn(CategoryButton.Archive))
+        .find(getCategoryBtn(CategoryButton.ARCHIVE))
         .click();
     return this;
   }
@@ -125,7 +123,7 @@ public class ProfilePage {
   public ProfilePage clickUnarchive(@Nonnull final String title) {
     archiveCheckbox.shouldBe(selected);
     archiveCategories.findBy(text(title))
-        .find(getCategoryBtn(CategoryButton.Unarchive))
+        .find(getCategoryBtn(CategoryButton.UNARCHIVE))
         .click();
     return this;
   }
@@ -143,9 +141,17 @@ public class ProfilePage {
     return archiveCheckbox.shouldBe(interactable).isSelected();
   }
 
+  private String getCategoryBtn(@Nonnull final CategoryButton categoryBtn) {
+    return "button[aria-label='%s category']".formatted(categoryBtn.getValue());
+  }
+
+  @Getter
+  @RequiredArgsConstructor
   private enum CategoryButton {
-    Edit,
-    Archive,
-    Unarchive
+    EDIT("Edit"),
+    ARCHIVE("Archive"),
+    UNARCHIVE("Unarchive");
+
+    private final String value;
   }
 }

@@ -22,7 +22,7 @@ public class CategoryExtension implements
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       CategoryExtension.class);
-  private final CategoryClient apiClient = new CategoryDbClient();
+  private final CategoryClient categoryClient = new CategoryDbClient();
 
   @Override
   public void beforeTestExecution(@Nonnull ExtensionContext context) {
@@ -31,7 +31,7 @@ public class CategoryExtension implements
             anno -> {
               if (anno.categories().length > 0) {
                 Category category = anno.categories()[0];
-                final CategoryJson created = apiClient.create(
+                final CategoryJson created = categoryClient.create(
                     new CategoryJson(
                         null,
                         RandomDataUtils.getRandomName(),
@@ -48,7 +48,7 @@ public class CategoryExtension implements
                   );
                   context.getStore(NAMESPACE).put(
                       context.getUniqueId(),
-                      apiClient.update(update)
+                      categoryClient.update(update)
                   );
                 } else {
                   context.getStore(NAMESPACE).put(
@@ -74,7 +74,7 @@ public class CategoryExtension implements
                       category.username(),
                       true
                   );
-                  apiClient.update(update);
+                  categoryClient.update(update);
                 }
               }
             }
