@@ -90,6 +90,30 @@ public class SpendDaoJdbc implements SpendDao {
     return spends;
   }
 
+  @Nonnull
+  @Override
+  public List<SpendEntity> findAll() {
+    List<SpendEntity> spends = new ArrayList<>();
+    try (PreparedStatement ps = connection.prepareStatement(
+        "SELECT "
+            + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
+            + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "
+            + "FROM spend AS s "
+            + "JOIN category AS c "
+            + "ON s.category_id = c.id "
+    )) {
+      ps.execute();
+      try (ResultSet rs = ps.getResultSet()) {
+        while (rs.next()) {
+          spends.add(collectEntity(rs).orElse(null));
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return spends;
+  }
+
   @Override
   public void delete(@Nonnull SpendEntity spend) {
     try (PreparedStatement ps = connection.prepareStatement(
@@ -102,7 +126,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
-  private @Nonnull Optional<SpendEntity> collectEntity(@Nonnull ResultSet rs)
+  public static @Nonnull Optional<SpendEntity> collectEntity(@Nonnull ResultSet rs)
       throws SQLException {
     CategoryEntity categoryEntity = new CategoryEntity();
     if (rs.getObject("c_id") != null) {

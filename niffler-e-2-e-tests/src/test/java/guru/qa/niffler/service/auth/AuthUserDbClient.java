@@ -71,9 +71,10 @@ public class AuthUserDbClient {
                 new AuthAuthorityDaoJdbc(connection).delete(authority)),
             CFG.authJdbcUrl()
         ),
-        new XaConsumer(connection -> {
-          new AuthUserDaoJdbc(connection).delete(user);
-        }, CFG.authJdbcUrl())
+        new XaConsumer(
+            connection -> new AuthUserDaoJdbc(connection).delete(user),
+            CFG.authJdbcUrl()
+        )
     );
   }
 
