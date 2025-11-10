@@ -104,6 +104,25 @@ public class CategoryDaoJdbc implements CategoryDao {
     }
   }
 
+  @Nonnull
+  @Override
+  public List<CategoryEntity> findAll() {
+    try (PreparedStatement ps = connection.prepareStatement(
+        "SELECT * FROM category"
+    )){
+      ps.execute();
+      List<CategoryEntity> ceList = new ArrayList<>();
+      try (ResultSet rs = ps.getResultSet()) {
+        while (rs.next()) {
+          ceList.add(collectEntity(rs));
+        }
+        return ceList;
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Override
   public void delete(@Nonnull CategoryEntity category) {
     try (PreparedStatement ps = connection.prepareStatement(
@@ -116,7 +135,7 @@ public class CategoryDaoJdbc implements CategoryDao {
     }
   }
 
-  private @Nonnull CategoryEntity collectEntity(@Nonnull ResultSet rs) throws SQLException {
+  public static @Nonnull CategoryEntity collectEntity(@Nonnull ResultSet rs) throws SQLException {
     CategoryEntity ce = new CategoryEntity();
     ce.setId(rs.getObject("id", UUID.class));
     ce.setUsername(rs.getString("username"));

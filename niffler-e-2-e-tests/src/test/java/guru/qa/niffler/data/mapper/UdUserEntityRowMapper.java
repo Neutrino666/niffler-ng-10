@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UdUserEntityRowMapper implements RowMapper<UserEntity> {
 
-  public static final UdUserEntityRowMapper instance = new UdUserEntityRowMapper();
+  public static final UdUserEntityRowMapper INSTANCE = new UdUserEntityRowMapper();
 
   @Override
   public UserEntity mapRow(ResultSet rs, int rowNum) throws SQLException {

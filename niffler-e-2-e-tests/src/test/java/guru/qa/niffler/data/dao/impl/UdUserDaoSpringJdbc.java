@@ -54,7 +54,7 @@ public class UdUserDaoSpringJdbc implements UdUserDao {
     return Optional.ofNullable(
         jdbcTemplate.queryForObject(
             "SELECT * FROM \"user\" WHERE id = ?",
-            UdUserEntityRowMapper.instance,
+            UdUserEntityRowMapper.INSTANCE,
             id
         )
     );
