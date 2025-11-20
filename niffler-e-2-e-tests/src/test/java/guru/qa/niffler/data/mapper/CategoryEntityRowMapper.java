@@ -1,9 +1,9 @@
 package guru.qa.niffler.data.mapper;
 
-import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.entity.CategoryEntity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +15,11 @@ public class CategoryEntityRowMapper implements RowMapper<CategoryEntity> {
 
   @Override
   public CategoryEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
-    return CategoryDaoJdbc.collectEntity(rs);
+    CategoryEntity ce = new CategoryEntity();
+    ce.setId(rs.getObject("id", UUID.class));
+    ce.setUsername(rs.getString("username"));
+    ce.setName(rs.getString("name"));
+    ce.setArchived(rs.getBoolean("archived"));
+    return ce;
   }
 }

@@ -1,23 +1,23 @@
 package guru.qa.niffler.test;
 
-import guru.qa.niffler.data.entity.CategoryEntity;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.category.CategoryDbClient;
 import guru.qa.niffler.service.spend.SpendDbClient;
 import guru.qa.niffler.service.user.UserDbClient;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 public class JdbcTest {
 
   @Test
-  void createUserSpringJdbcTest() {
+  void createUserTest() {
     UserDbClient userDbClient = new UserDbClient();
-    UserJson user = userDbClient.createUserSpringJdbc(
+    UserJson user = userDbClient.create(
         new UserJson(
             null,
-            "valentin1",
+            "valentin100",
             null,
             null,
             null,
@@ -30,22 +30,17 @@ public class JdbcTest {
   }
 
   @Test
-  void createCategorySpringJdbcTest() {
+  void createCategoryTest() {
     CategoryDbClient categoryDbClient = new CategoryDbClient();
-    CategoryJson category = categoryDbClient.createWithSpringJdbc(new CategoryJson(
-        null,
-        "Tommy",
-        "Emmanuel",
-        false
-    ));
+    CategoryJson category = categoryDbClient.create(
+        new CategoryJson(
+            null,
+            "покупка",
+            "username",
+            false
+        )
+    );
     System.out.println(category);
-    categoryDbClient.deleteWithSpringJdbc(CategoryEntity.fromJson(category));
-  }
-
-  @Test
-  void findAllCategorySpringJdbcTest() {
-    CategoryDbClient categoryDbClient = new CategoryDbClient();
-    System.out.println(categoryDbClient.findAllWithSpringJdbc());
   }
 
   @Test
@@ -55,8 +50,14 @@ public class JdbcTest {
   }
 
   @Test
-  void findAllSpendWithSpringJdbcTest() {
+  void findAllSpendTest() {
     SpendDbClient spendDbClient = new SpendDbClient();
     System.out.println(spendDbClient.findAllWithSpringJdbc());
+  }
+
+  @Test
+  void findAllAuthority() {
+    UserDbClient user = new UserDbClient();
+    System.out.println(user.findAllAuthority(UUID.fromString("c9b8b756-f3cc-4186-853b-590bb1418c85")));
   }
 }

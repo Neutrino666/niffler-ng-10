@@ -1,32 +1,30 @@
 package guru.qa.niffler.data.dao.impl;
 
+import static guru.qa.niffler.data.tpl.Connections.holder;
+
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
+import guru.qa.niffler.data.tpl.DataSources;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
-  private final DataSource dataSource;
-
-  public AuthUserDaoSpringJdbc(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
+  private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
   public AuthUserEntity create(@Nonnull AuthUserEntity user) {
-    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
     KeyHolder kh = new GeneratedKeyHolder();
-    jdbcTemplate.update(con -> {
+    getJdbcTemplate().update(con -> {
       PreparedStatement ps = con.prepareStatement(
           "INSERT INTO \"user\" "
               + "(username, password, enabled, "
@@ -51,9 +49,8 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
-    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
     return Optional.ofNullable(
-        jdbcTemplate.queryForObject(
+        getJdbcTemplate().queryForObject(
             "SELECT * FROM \"user\" WHERE id = ?",
             AuthUserEntityRowMapper.instance,
             id
@@ -63,6 +60,17 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
   @Override
   public void delete(@Nonnull AuthUserEntity user) {
-    throw new RuntimeException("Not implemented");
+    getJdbcTemplate().update(con -> {
+      PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
+          "DELETE FROM authority WHERE id = ?"
+      );
+      ps.setObject(1, user.getId());
+      return ps;
+    });
+  }
+
+  @Nonnull
+  private JdbcTemplate getJdbcTemplate() {
+    return new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
   }
 }

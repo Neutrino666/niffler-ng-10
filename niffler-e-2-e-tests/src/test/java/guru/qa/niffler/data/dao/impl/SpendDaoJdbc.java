@@ -1,5 +1,8 @@
 package guru.qa.niffler.data.dao.impl;
 
+import static guru.qa.niffler.data.tpl.Connections.holder;
+
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.entity.CategoryEntity;
 import guru.qa.niffler.data.entity.SpendEntity;
@@ -17,15 +20,11 @@ import javax.annotation.Nonnull;
 
 public class SpendDaoJdbc implements SpendDao {
 
-  private final Connection connection;
-
-  public SpendDaoJdbc(Connection connection) {
-    this.connection = connection;
-  }
+  private final static Config CFG = Config.getInstance();
 
   @Override
   public @Nonnull SpendEntity create(@Nonnull SpendEntity spend) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         "INSERT INTO spend (username, spend_date, currency, amount, description, category_id)"
             + "VALUES(?, ?, ?, ?, ?, ?)",
         Statement.RETURN_GENERATED_KEYS
@@ -56,14 +55,14 @@ public class SpendDaoJdbc implements SpendDao {
 
   @Override
   public @Nonnull Optional<SpendEntity> findById(@Nonnull UUID id) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("id")
     )) {
       ps.setObject(1, id);
       ps.execute();
       try (ResultSet rs = ps.getResultSet()) {
         return rs.next()
-            ? collectEntity(rs)
+            ? Optional.of(collectEntity(rs))
             : Optional.empty();
       }
     } catch (SQLException e) {
@@ -74,14 +73,14 @@ public class SpendDaoJdbc implements SpendDao {
   @Override
   public @Nonnull List<SpendEntity> findAllByUsername(@Nonnull String username) {
     List<SpendEntity> spends = new ArrayList<>();
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("username")
     )) {
       ps.setString(1, username);
       ps.execute();
       try (ResultSet rs = ps.getResultSet()) {
         while (rs.next()) {
-          spends.add(collectEntity(rs).orElse(null));
+          spends.add(collectEntity(rs));
         }
       }
     } catch (SQLException e) {
@@ -94,7 +93,7 @@ public class SpendDaoJdbc implements SpendDao {
   @Override
   public List<SpendEntity> findAll() {
     List<SpendEntity> spends = new ArrayList<>();
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         "SELECT "
             + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
             + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "
@@ -105,7 +104,7 @@ public class SpendDaoJdbc implements SpendDao {
       ps.execute();
       try (ResultSet rs = ps.getResultSet()) {
         while (rs.next()) {
-          spends.add(collectEntity(rs).orElse(null));
+          spends.add(collectEntity(rs));
         }
       }
     } catch (SQLException e) {
@@ -116,7 +115,7 @@ public class SpendDaoJdbc implements SpendDao {
 
   @Override
   public void delete(@Nonnull SpendEntity spend) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM spend WHERE id = ?"
     )) {
       ps.setObject(1, spend.getId());
@@ -126,7 +125,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
-  public static @Nonnull Optional<SpendEntity> collectEntity(@Nonnull ResultSet rs)
+  private static @Nonnull SpendEntity collectEntity(@Nonnull ResultSet rs)
       throws SQLException {
     CategoryEntity categoryEntity = new CategoryEntity();
     if (rs.getObject("c_id") != null) {
@@ -143,7 +142,7 @@ public class SpendDaoJdbc implements SpendDao {
     spend.setAmount(rs.getDouble("amount"));
     spend.setDescription(rs.getString("description"));
     spend.setUsername(rs.getString("username"));
-    return Optional.of(spend);
+    return spend;
   }
 
   private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
@@ -154,5 +153,9 @@ public class SpendDaoJdbc implements SpendDao {
         + "JOIN category AS c "
         + "ON s.category_id = c.id "
         + "WHERE s.%s = ?".formatted(key);
+  }
+
+  private Connection getConnection() {
+    return holder(CFG.spendJdbcUrl()).connection();
   }
 }
