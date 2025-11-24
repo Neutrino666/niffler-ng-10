@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 public interface AuthAuthorityDao {
 
   @Nonnull
-  AuthAuthorityEntity create(@Nonnull AuthAuthorityEntity category);
+  AuthAuthorityEntity create(@Nonnull AuthAuthorityEntity authorities);
 
   @Nonnull
   List<AuthAuthorityEntity> findAllByUserId(@Nonnull UUID category);

@@ -24,14 +24,14 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
 
   @Nonnull
   @Override
-  public AuthAuthorityEntity create(@Nonnull AuthAuthorityEntity authAuthorityEntity) {
+  public AuthAuthorityEntity create(@Nonnull AuthAuthorityEntity authorities) {
     try (PreparedStatement ps = connection.prepareStatement(
         "INSERT INTO authority (user_id, authority)"
             + "VALUES(?, ?)",
         Statement.RETURN_GENERATED_KEYS
     )) {
-      ps.setObject(1, authAuthorityEntity.getUser().getId());
-      ps.setString(2, authAuthorityEntity.getAuthority().name());
+      ps.setObject(1, authorities.getUser().getId());
+      ps.setString(2, authorities.getAuthority().name());
 
       ps.executeUpdate();
 

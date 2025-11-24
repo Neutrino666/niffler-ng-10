@@ -22,5 +22,8 @@ public interface CategoryDao {
   @Nonnull
   List<CategoryEntity> findAllByUsername(@Nonnull String username);
 
+  @Nonnull
+  List<CategoryEntity> findAll();
+
   void delete(@Nonnull CategoryEntity category);
 }

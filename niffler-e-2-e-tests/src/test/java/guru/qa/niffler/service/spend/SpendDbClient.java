@@ -1,10 +1,12 @@
 package guru.qa.niffler.service.spend;
 
+import static guru.qa.niffler.data.Databases.dataSource;
 import static guru.qa.niffler.data.Databases.transaction;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.dao.impl.SpendDaoJdbc;
+import guru.qa.niffler.data.dao.impl.SpendingSpringDaoJdbc;
 import guru.qa.niffler.data.entity.CategoryEntity;
 import guru.qa.niffler.data.entity.SpendEntity;
 import guru.qa.niffler.model.SpendJson;
@@ -42,6 +44,17 @@ public class SpendDbClient implements SpendClient {
     );
   }
 
+  public List<SpendJson> findAll() {
+    return transaction(connection -> {
+          return new SpendDaoJdbc(connection).findAll()
+              .stream()
+              .map(SpendJson::fromEntity)
+              .toList();
+        },
+        CFG.spendJdbcUrl()
+    );
+  }
+
   public @Nonnull List<SpendEntity> findAllByUsername(@Nonnull String username) {
     return transaction(connection -> {
           return new SpendDaoJdbc(connection).findAllByUsername(username);
@@ -56,5 +69,16 @@ public class SpendDbClient implements SpendClient {
         },
         CFG.spendJdbcUrl()
     );
+  }
+
+  public List<SpendJson> findAllWithSpringJdbc() {
+    return getSpendSpringDaoJdbc().findAll()
+        .stream()
+        .map(SpendJson::fromEntity)
+        .toList();
+  }
+
+  private SpendingSpringDaoJdbc getSpendSpringDaoJdbc() {
+    return new SpendingSpringDaoJdbc(dataSource(CFG.spendJdbcUrl()));
   }
 }

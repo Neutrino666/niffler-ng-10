@@ -185,7 +185,7 @@ public class Databases {
     return connection;
   }
 
-  private static @Nonnull DataSource dataSource(@Nonnull String jdbcUrl) {
+  public static @Nonnull DataSource dataSource(@Nonnull String jdbcUrl) {
     return dataSources.computeIfAbsent(
         jdbcUrl,
         key -> {
