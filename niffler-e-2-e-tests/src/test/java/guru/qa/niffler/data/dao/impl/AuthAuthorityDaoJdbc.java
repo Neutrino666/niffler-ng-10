@@ -75,11 +75,11 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
   }
 
   @Override
-  public void delete(@Nonnull AuthAuthorityEntity authAuthorityEntity) {
+  public void delete(@Nonnull AuthAuthorityEntity authority) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM authority WHERE id = ?"
     )) {
-      ps.setObject(1, authAuthorityEntity.getId());
+      ps.setObject(1, authority.getId());
       ps.execute();
     } catch (SQLException e) {
       throw new RuntimeException(e);

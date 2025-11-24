@@ -21,12 +21,12 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
   @Override
   public void create(@Nonnull AuthAuthorityEntity... authorities) {
-    getJdbcTemplate().update(
-        "INSERT INTO authority (user_id, authority)"
+    getJdbcTemplate().batchUpdate(
+        "INSERT INTO authority (user_id, authority) "
             + "VALUES(?, ?)",
         new BatchPreparedStatementSetter() {
           @Override
-          public void setValues(PreparedStatement ps, int i) throws SQLException {
+          public void setValues(@Nonnull PreparedStatement ps, int i) throws SQLException {
             ps.setObject(1, authorities[i].getUser().getId());
             ps.setString(2, authorities[i].getAuthority().name());
           }
@@ -43,7 +43,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
   public List<AuthAuthorityEntity> findAllByUserId(@Nonnull UUID userId) {
     return getJdbcTemplate().query(
         getSelectByWhereIs("user_id"),
-        AuthAuthorityEntityRowMapper.instance,
+        AuthAuthorityEntityRowMapper.INSTANCE,
         userId
     );
   }

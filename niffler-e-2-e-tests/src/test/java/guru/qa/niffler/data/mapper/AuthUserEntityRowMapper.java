@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthUserEntityRowMapper implements RowMapper<AuthUserEntity> {
 
-  public static final AuthUserEntityRowMapper instance = new AuthUserEntityRowMapper();
+  public static final AuthUserEntityRowMapper INSTANCE = new AuthUserEntityRowMapper();
 
   @Override
   public AuthUserEntity mapRow(ResultSet rs, int rowNum) throws SQLException {

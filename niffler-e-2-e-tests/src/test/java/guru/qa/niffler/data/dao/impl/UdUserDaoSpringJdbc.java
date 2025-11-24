@@ -10,7 +10,6 @@ import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -56,19 +55,31 @@ public class UdUserDaoSpringJdbc implements UserDao {
     );
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public Optional<UserEntity> findByUsername(@NotNull String username) {
-    throw new UnsupportedOperationException("Not implemented :(");
+  public Optional<UserEntity> findByUsername(@Nonnull String username) {
+    return Optional.ofNullable(
+        getJdbcTemplate().queryForObject(
+            "SELECT * FROM \"user\" WHERE username = ?",
+            UdUserEntityRowMapper.INSTANCE,
+            username
+        )
+    );
+  }
+
+  @Override
+  public void delete(@Nonnull UserEntity user) {
+    getJdbcTemplate().update(con -> {
+      PreparedStatement ps = con.prepareStatement(
+          "DELETE FROM \"user\" WHERE id = ?"
+      );
+      ps.setObject(1, user.getId());
+      return ps;
+    });
   }
 
   @Nonnull
   private JdbcTemplate getJdbcTemplate() {
-    return new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
-  }
-
-  @Override
-  public void delete(@NotNull UserEntity user) {
-    throw new UnsupportedOperationException("Not implemented :(");
+    return new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
   }
 }

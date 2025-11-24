@@ -52,7 +52,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
             "SELECT * FROM \"user\" WHERE id = ?",
-            AuthUserEntityRowMapper.instance,
+            AuthUserEntityRowMapper.INSTANCE,
             id
         )
     );

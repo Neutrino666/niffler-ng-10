@@ -1,6 +1,7 @@
 package guru.qa.niffler.service.user;
 
 import guru.qa.niffler.data.entity.UserEntity;
+import guru.qa.niffler.model.UserJson;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -8,13 +9,13 @@ import javax.annotation.Nonnull;
 public interface UserClient {
 
   @Nonnull
-  UserEntity create(@Nonnull UserEntity user);
+  UserJson create(@Nonnull UserJson user);
 
   @Nonnull
-  Optional<UserEntity> findById(@Nonnull UUID id);
+  Optional<UserJson> findById(@Nonnull UUID id);
 
   @Nonnull
-  Optional<UserEntity> findByUsername(@Nonnull String username);
+  Optional<UserJson> findByUsername(@Nonnull String username);
 
-  void delete(@Nonnull UserEntity user);
+  void delete(@Nonnull UserJson user);
 }

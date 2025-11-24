@@ -60,4 +60,10 @@ public class JdbcTest {
     UserDbClient user = new UserDbClient();
     System.out.println(user.findAllAuthority(UUID.fromString("c9b8b756-f3cc-4186-853b-590bb1418c85")));
   }
+
+  @Test
+  void findByUsername() {
+    UserDbClient user = new UserDbClient();
+    System.out.println(user.findByUsername("admin"));
+  }
 }
