@@ -1,6 +1,6 @@
 package guru.qa.niffler.test.rest;
 
-import guru.qa.niffler.service.auth.AuthApiClient;
+import guru.qa.niffler.service.user.AuthApiClient;
 import java.io.IOException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;

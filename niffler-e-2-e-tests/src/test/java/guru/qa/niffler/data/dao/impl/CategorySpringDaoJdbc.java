@@ -1,33 +1,32 @@
 package guru.qa.niffler.data.dao.impl;
 
+import static guru.qa.niffler.data.tpl.Connections.holder;
+
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.CategoryDao;
 import guru.qa.niffler.data.entity.CategoryEntity;
 import guru.qa.niffler.data.mapper.CategoryEntityRowMapper;
+import guru.qa.niffler.data.tpl.DataSources;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 public class CategorySpringDaoJdbc implements CategoryDao {
 
-  private final DataSource dataSource;
-
-  public CategorySpringDaoJdbc(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
+  private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
   public CategoryEntity create(@Nonnull CategoryEntity category) {
     KeyHolder kh = new GeneratedKeyHolder();
     getJdbcTemplate().update(con -> {
-      PreparedStatement ps = con.prepareStatement(
+      PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
           "INSERT INTO category (username, name, archived)"
               + "VALUES(?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS
@@ -92,7 +91,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
   @Override
   public void delete(@Nonnull CategoryEntity category) {
     getJdbcTemplate().update(con -> {
-      PreparedStatement ps = con.prepareStatement(
+      PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
           "DELETE FROM category WHERE id = ?"
       );
       ps.setObject(1, category.getId());
@@ -102,7 +101,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
 
   @Nonnull
   private JdbcTemplate getJdbcTemplate() {
-    return new JdbcTemplate(dataSource);
+    return new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
   }
 
   @Nonnull

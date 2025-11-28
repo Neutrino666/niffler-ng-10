@@ -1,12 +1,10 @@
 package guru.qa.niffler.service.category;
 
-import static guru.qa.niffler.data.Databases.dataSource;
-import static guru.qa.niffler.data.Databases.transaction;
-
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.CategoryDao;
 import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
-import guru.qa.niffler.data.dao.impl.CategorySpringDaoJdbc;
 import guru.qa.niffler.data.entity.CategoryEntity;
+import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import java.util.List;
 import java.util.Optional;
@@ -16,41 +14,16 @@ public class CategoryDbClient implements CategoryClient {
 
   private final static Config CFG = Config.getInstance();
 
-  public @Nonnull Optional<CategoryEntity> findByUsernameAndName(
-      @Nonnull String username,
-      @Nonnull String categoryName
-  ) {
-    return transaction(connection -> {
-          return new CategoryDaoJdbc(connection).findByUsernameAndName(username, categoryName);
-        },
-        CFG.spendJdbcUrl()
-    );
-  }
+  private final CategoryDao categoryDao = new CategoryDaoJdbc();
 
-  public @Nonnull List<CategoryEntity> findAllByUsername(@Nonnull String username) {
-    return transaction(connection -> {
-          return new CategoryDaoJdbc(connection).findAllByUsername(username);
-        },
-        CFG.spendJdbcUrl()
-    );
-  }
+  private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(
+      CFG.spendJdbcUrl()
+  );
 
-  public @Nonnull List<CategoryJson> findAll() {
-    return transaction(connection -> {
-      return new CategoryDaoJdbc(connection).findAll()
-          .stream()
-          .map(CategoryJson::fromEntity)
-          .toList();
-    },
-        CFG.spendJdbcUrl()
-    );
-  }
-
-  public void delete(@Nonnull CategoryEntity category) {
-    transaction(connection -> {
-          new CategoryDaoJdbc(connection).delete(category);
-        },
-        CFG.spendJdbcUrl()
+  @Override
+  public CategoryJson create(CategoryJson category) {
+    return jdbcTxTemplate.execute(() ->
+        CategoryJson.fromEntity(categoryDao.create(CategoryEntity.fromJson(category)))
     );
   }
 
@@ -59,38 +32,29 @@ public class CategoryDbClient implements CategoryClient {
     throw new UnsupportedOperationException("Not implemented :(");
   }
 
-  @Override
-  public @Nonnull CategoryJson create(@Nonnull CategoryJson category) {
-    CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-    return CategoryJson.fromEntity(
-        transaction(connection -> {
-              return new CategoryDaoJdbc(connection).create(categoryEntity);
-            },
-            CFG.spendJdbcUrl()
-        )
+  public @Nonnull Optional<CategoryEntity> findByUsernameAndName(
+      @Nonnull String username,
+      @Nonnull String categoryName
+  ) {
+    return jdbcTxTemplate.execute(() ->
+        categoryDao.findByUsernameAndName(username, categoryName)
     );
   }
 
-  @Nonnull
-  public CategoryJson createWithSpringJdbc(@Nonnull CategoryJson category) {
-    return CategoryJson.fromEntity(
-        getCategorySpringDaoJdbc().create(CategoryEntity.fromJson(category))
+  public @Nonnull List<CategoryEntity> findAllByUsername(@Nonnull String username) {
+    return jdbcTxTemplate.execute(() -> categoryDao.findAllByUsername(username));
+  }
+
+  public @Nonnull List<CategoryJson> findAll() {
+    return jdbcTxTemplate.execute(() ->
+        categoryDao.findAll()
+            .stream()
+            .map(CategoryJson::fromEntity)
+            .toList()
     );
   }
 
-  @Nonnull
-  public List<CategoryJson> findAllWithSpringJdbc() {
-    return getCategorySpringDaoJdbc().findAll()
-        .stream()
-        .map(CategoryJson::fromEntity)
-        .toList();
-  }
-
-  public void deleteWithSpringJdbc(@Nonnull CategoryEntity category) {
-    getCategorySpringDaoJdbc().delete(category);
-  }
-
-  private CategorySpringDaoJdbc getCategorySpringDaoJdbc() {
-    return new CategorySpringDaoJdbc(dataSource(CFG.spendJdbcUrl()));
+  public void delete(@Nonnull CategoryEntity category) {
+    categoryDao.delete(category);
   }
 }

@@ -1,8 +1,10 @@
 package guru.qa.niffler.data.dao.impl;
 
+import static guru.qa.niffler.data.tpl.Connections.holder;
+
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,16 +17,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class AuthUserDaoJdbc implements AuthUserDao {
 
-  private final Connection connection;
-
-  public AuthUserDaoJdbc(Connection connection) {
-    this.connection = connection;
-  }
+  private final static Config CFG = Config.getInstance();
 
   @NotNull
   @Override
   public AuthUserEntity create(@NotNull AuthUserEntity user) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "INSERT INTO \"user\" "
             + "(username, password, enabled, "
             + "account_non_expired, account_non_locked, credentials_non_expired)"
@@ -55,7 +53,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   @NotNull
   @Override
   public Optional<AuthUserEntity> findById(@NotNull UUID id) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "SELECT * FROM \"user\" WHERE id = ?")
     ) {
       ps.setObject(1, id);
@@ -73,7 +71,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
   @Override
   public void delete(@NotNull AuthUserEntity user) {
-    try (PreparedStatement ps = connection.prepareStatement(
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?"
     )) {
       ps.setObject(1, user.getId());

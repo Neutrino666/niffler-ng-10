@@ -1,26 +1,23 @@
 package guru.qa.niffler.data.dao.impl;
 
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.SpendDao;
 import guru.qa.niffler.data.entity.SpendEntity;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
+import guru.qa.niffler.data.tpl.DataSources;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 public class SpendingSpringDaoJdbc implements SpendDao {
 
-  private final DataSource dataSource;
-
-  public SpendingSpringDaoJdbc(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
+  private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
@@ -98,7 +95,7 @@ public class SpendingSpringDaoJdbc implements SpendDao {
 
   @Nonnull
   private JdbcTemplate getJdbcTemplate() {
-    return new JdbcTemplate(dataSource);
+    return new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
   }
 
   private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
