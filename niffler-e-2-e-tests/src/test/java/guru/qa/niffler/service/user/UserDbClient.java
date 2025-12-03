@@ -7,10 +7,12 @@ import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.dao.impl.AuthAuthorityDaoSpringJdbc;
 import guru.qa.niffler.data.dao.impl.AuthUserDaoSpringJdbc;
 import guru.qa.niffler.data.dao.impl.UdUserDaoSpringJdbc;
-import guru.qa.niffler.data.entity.Authority;
-import guru.qa.niffler.data.entity.UserEntity;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.Authority;
+import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.repository.AuthUserRepository;
+import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
@@ -27,7 +29,7 @@ public class UserDbClient implements UserClient {
   private final static Config CFG = Config.getInstance();
   private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-  private final AuthUserDao authUserDao = new AuthUserDaoSpringJdbc();
+  private final AuthUserRepository authUserDao = new AuthUserRepositoryJdbc();
   private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoSpringJdbc();
   private final UserDao udUserDao = new UdUserDaoSpringJdbc();
 
@@ -52,18 +54,15 @@ public class UserDbClient implements UserClient {
       authUser.setAccountNonLocked(true);
       authUser.setCredentialsNonExpired(true);
 
-      AuthUserEntity createdAuthUser = authUserDao.create(authUser);
-
-      AuthAuthorityEntity[] authorityEntities = Stream.of(Authority.values()).map(
+      authUser.setAuthorities(Stream.of(Authority.values()).map(
           e -> {
             AuthAuthorityEntity ae = new AuthAuthorityEntity();
-            ae.setUser(createdAuthUser);
+            ae.setUser(authUser);
             ae.setAuthority(e);
             return ae;
           }
-      ).toArray(AuthAuthorityEntity[]::new);
-
-      authAuthorityDao.create(authorityEntities);
+      ).toList());
+      authUserDao.create(authUser);
       return UserJson.fromEntity(udUserDao.create(UserEntity.fromJson(user)));
     });
   }
@@ -84,7 +83,16 @@ public class UserDbClient implements UserClient {
 
   @Override
   public void delete(@Nonnull UserJson user) {
-    throw new RuntimeException("Not implemented (:");
+    xaTxTemplate.execute(() -> {
+          authUserDao.findByUsername(user.username())
+              .ifPresent(authUser -> {
+                authUser.getAuthorities().forEach(authAuthorityDao::delete);
+                authUserDao.delete(authUser);
+              });
+          udUserDao.delete(UserEntity.fromJson(user));
+          return null;
+        }
+    );
   }
 
   public List<AuthAuthorityEntity> findAllAuthority(UUID userUuid) {

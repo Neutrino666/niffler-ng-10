@@ -1,6 +1,8 @@
 package guru.qa.niffler.data.mapper;
 
+import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.Authority;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -23,6 +25,13 @@ public class AuthUserEntityRowMapper implements RowMapper<AuthUserEntity> {
     result.setAccountNonExpired(rs.getBoolean("account_non_expired"));
     result.setAccountNonLocked(rs.getBoolean("account_non_locked"));
     result.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+    if (rs.getObject("a_id") != null) {
+      AuthAuthorityEntity ae = new AuthAuthorityEntity();
+      ae.setUser(new AuthUserEntity());
+      ae.setId(rs.getObject("a_id", UUID.class));
+      ae.setAuthority(Authority.valueOf(rs.getString("authority")));
+      result.getAuthorities().add(ae);
+    }
     return result;
   }
 }

@@ -1,7 +1,5 @@
 package guru.qa.niffler.data.dao.impl;
 
-import static guru.qa.niffler.data.tpl.Connections.holder;
-
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
@@ -50,13 +48,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
   @Override
   public void delete(@Nonnull AuthAuthorityEntity authority) {
-    getJdbcTemplate().update(con -> {
-      PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
-              "DELETE FROM authority WHERE id = ?"
-          );
-      ps.setObject(1, authority.getId());
-      return ps;
-    });
+    getJdbcTemplate().update("DELETE FROM authority WHERE id = ?", authority.getId());
   }
 
   @Nonnull

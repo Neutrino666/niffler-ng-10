@@ -4,14 +4,13 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
-import guru.qa.niffler.data.entity.Authority;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.Authority;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,12 +22,11 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
 
   @Override
   public void create(@Nonnull AuthAuthorityEntity... authorities) {
-    for (AuthAuthorityEntity authority : authorities) {
-      try (PreparedStatement ps = getConnection().prepareStatement(
-          "INSERT INTO authority (user_id, authority)"
-              + "VALUES(?, ?)",
-          Statement.RETURN_GENERATED_KEYS
-      )) {
+    try (PreparedStatement ps = getConnection().prepareStatement(
+        "INSERT INTO authority (user_id, authority)"
+            + "VALUES(?, ?)"
+    )) {
+      for (AuthAuthorityEntity authority : authorities) {
         ps.setObject(1, authority.getUser().getId());
         ps.setString(2, authority.getAuthority().name());
 
@@ -46,9 +44,9 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
             throw new SQLException("Can't find id in ResultSet");
           }
         }
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
       }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
     }
   }
 

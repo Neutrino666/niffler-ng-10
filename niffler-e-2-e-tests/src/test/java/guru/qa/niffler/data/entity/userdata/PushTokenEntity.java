@@ -1,16 +1,14 @@
-package guru.qa.niffler.data.entity.auth;
+package guru.qa.niffler.data.entity.userdata;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.Getter;
@@ -20,20 +18,30 @@ import org.hibernate.proxy.HibernateProxy;
 @Getter
 @Setter
 @Entity
-@Table(name = "authority")
-public class AuthAuthorityEntity implements Serializable {
+@Table(name = "push_tokens")
+public class PushTokenEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, columnDefinition = "UUID default gen_random_uuid()")
   private UUID id;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private Authority authority;
-
   @ManyToOne
   @JoinColumn(name = "user_id")
-  private AuthUserEntity user;
+  private UserEntity user;
+
+  @Column(nullable = false, unique = true)
+  private String token;
+
+  private String userAgent;
+
+  @Column(nullable = false)
+  private boolean active = true;
+
+  @Column(name = "created_at", columnDefinition = "DATE", nullable = false)
+  private Date createdAt;
+
+  @Column(name = "last_seen_at", columnDefinition = "DATE", nullable = false)
+  private Date lastSeenAt;
 
   @Override
   public final boolean equals(Object o) {
@@ -42,7 +50,7 @@ public class AuthAuthorityEntity implements Serializable {
     Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
     Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
     if (thisEffectiveClass != oEffectiveClass) return false;
-    AuthAuthorityEntity that = (AuthAuthorityEntity) o;
+    PushTokenEntity that = (PushTokenEntity) o;
     return getId() != null && Objects.equals(getId(), that.getId());
   }
 

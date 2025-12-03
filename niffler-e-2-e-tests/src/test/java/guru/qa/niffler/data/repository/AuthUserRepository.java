@@ -1,11 +1,11 @@
-package guru.qa.niffler.data.dao;
+package guru.qa.niffler.data.repository;
 
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 
-public interface AuthUserDao {
+public interface AuthUserRepository {
 
   @Nonnull
   AuthUserEntity create(@Nonnull AuthUserEntity user);
@@ -17,5 +17,4 @@ public interface AuthUserDao {
   Optional<AuthUserEntity> findByUsername(@Nonnull String username);
 
   void delete(@Nonnull AuthUserEntity user);
-
 }

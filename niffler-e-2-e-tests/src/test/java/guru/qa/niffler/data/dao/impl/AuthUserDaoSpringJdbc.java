@@ -1,7 +1,5 @@
 package guru.qa.niffler.data.dao.impl;
 
-import static guru.qa.niffler.data.tpl.Connections.holder;
-
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
@@ -58,15 +56,27 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
     );
   }
 
+  @Nonnull
+  @Override
+  public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
+    return Optional.ofNullable(
+        getJdbcTemplate().queryForObject(
+            "SELECT "
+                + "u.*, "
+                + "a.id AS a_id, a.user_id, a.authority "
+                + "FROM \"user\" AS u "
+                + "JOIN authority AS a "
+                + "ON u.id = a.user_id "
+                + "WHERE username = ?",
+            AuthUserEntityRowMapper.INSTANCE,
+            username
+        )
+    );
+  }
+
   @Override
   public void delete(@Nonnull AuthUserEntity user) {
-    getJdbcTemplate().update(con -> {
-      PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
-          "DELETE FROM authority WHERE id = ?"
-      );
-      ps.setObject(1, user.getId());
-      return ps;
-    });
+    getJdbcTemplate().update("DELETE FROM \"user\" WHERE id = ?", user.getId());
   }
 
   @Nonnull
