@@ -1,6 +1,6 @@
 package guru.qa.niffler.data.dao;
 
-import guru.qa.niffler.data.entity.UserEntity;
+import guru.qa.niffler.data.entity.userdata.UserEntity;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -12,4 +12,9 @@ public interface UdUserDao {
 
   @Nonnull
   Optional<UserEntity> findById(@Nonnull UUID id);
+
+  @Nonnull
+  Optional<UserEntity> findByUsername(@Nonnull String username);
+
+  void delete(@Nonnull UserEntity user);
 }

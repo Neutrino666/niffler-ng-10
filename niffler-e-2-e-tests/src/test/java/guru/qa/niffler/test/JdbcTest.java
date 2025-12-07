@@ -1,7 +1,7 @@
 package guru.qa.niffler.test;
 
-import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.category.CategoryDbClient;
 import guru.qa.niffler.service.spend.SpendDbClient;
@@ -17,7 +17,7 @@ public class JdbcTest {
     UserJson user = userDbClient.create(
         new UserJson(
             null,
-            "valentin100",
+            "hibernateTest",
             null,
             null,
             null,
