@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +16,7 @@ public class AuthUserEntityRowMapper implements RowMapper<AuthUserEntity> {
 
   public static final AuthUserEntityRowMapper INSTANCE = new AuthUserEntityRowMapper();
 
+  @Nonnull
   @Override
   public AuthUserEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
     AuthUserEntity result = new AuthUserEntity();

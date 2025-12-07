@@ -5,7 +5,7 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.data.mapper.UdUserEntityRowMapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -94,17 +94,9 @@ public class UdUserDaoJdbc implements UserDao {
     }
   }
 
-  private @Nonnull UserEntity collectEntity(@Nonnull ResultSet rs) throws SQLException {
-    UserEntity ue = new UserEntity();
-    ue.setId(rs.getObject("id", UUID.class));
-    ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
-    ue.setFirstname(rs.getString("firstname"));
-    ue.setFullname(rs.getString("full_name"));
-    ue.setPhoto(rs.getBytes("photo"));
-    ue.setPhotoSmall(rs.getBytes("photo_small"));
-    ue.setSurname(rs.getString("surname"));
-    ue.setUsername(rs.getString("username"));
-    return ue;
+  @Nonnull
+  private UserEntity collectEntity(@Nonnull ResultSet rs) throws SQLException {
+    return UdUserEntityRowMapper.INSTANCE.mapRow(rs, 1);
   }
 
   private @Nonnull String getSelectByWhereIs(@Nonnull String key) {

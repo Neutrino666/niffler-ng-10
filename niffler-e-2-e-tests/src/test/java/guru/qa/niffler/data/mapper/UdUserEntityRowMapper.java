@@ -5,6 +5,7 @@ import guru.qa.niffler.model.CurrencyValues;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +15,7 @@ public class UdUserEntityRowMapper implements RowMapper<UserEntity> {
 
   public static final UdUserEntityRowMapper INSTANCE = new UdUserEntityRowMapper();
 
+  @Nonnull
   @Override
   public UserEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
     UserEntity result = new UserEntity();

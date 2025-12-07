@@ -12,4 +12,9 @@ public interface UdUserDao {
 
   @Nonnull
   Optional<UserEntity> findById(@Nonnull UUID id);
+
+  @Nonnull
+  Optional<UserEntity> findByUsername(@Nonnull String username);
+
+  void delete(@Nonnull UserEntity user);
 }

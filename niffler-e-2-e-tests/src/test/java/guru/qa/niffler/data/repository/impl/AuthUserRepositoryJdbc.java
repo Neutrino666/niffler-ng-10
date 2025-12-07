@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import org.jetbrains.annotations.NotNull;
 
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
@@ -69,7 +68,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
-    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+    try (PreparedStatement ps = getConnection() .prepareStatement(
         getSelectByWhereIs("id"))
     ) {
       ps.setObject(1, id);
@@ -103,7 +102,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
-    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+    try (PreparedStatement ps = getConnection() .prepareStatement(
         getSelectByWhereIs("username"))
     ) {
       ps.setObject(1, username);
@@ -135,9 +134,19 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   @Override
-  // TODO реализовать в HW 6.1
-  public void delete(@NotNull AuthUserEntity user) {
-    throw new RuntimeException("Not implemented");
+  public void delete(@Nonnull AuthUserEntity user) {
+    try (PreparedStatement authorityPs = getConnection().prepareStatement(
+        "DELETE FROM authority WHERE user_id = ?");
+        PreparedStatement userPs = getConnection().prepareStatement(
+            "DELETE FROM \"user\" WHERE id = ?"
+        )) {
+      authorityPs.setObject(1, user.getId());
+      authorityPs.execute();
+      userPs.setObject(1, user.getId());
+      userPs.execute();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private Connection getConnection() {

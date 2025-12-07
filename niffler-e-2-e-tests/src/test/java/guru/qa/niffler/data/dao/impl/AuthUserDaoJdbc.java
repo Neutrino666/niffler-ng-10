@@ -7,6 +7,8 @@ import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
+import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +25,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   @Nonnull
   @Override
   public AuthUserEntity create(@Nonnull AuthUserEntity user) {
-    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         "INSERT INTO \"user\" "
             + "(username, password, enabled, "
             + "account_non_expired, account_non_locked, credentials_non_expired)"
@@ -41,7 +43,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
       try (ResultSet rs = ps.getGeneratedKeys()) {
         if (rs.next()) {
-          return collectEntity(rs);
+          return AuthUserEntityRowMapper.INSTANCE.mapRow(rs, 1);
         } else {
           throw new SQLException("Can't find id in ResultSet");
         }
@@ -54,7 +56,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
-    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         "SELECT * FROM \"user\" WHERE id = ?")
     ) {
       ps.setObject(1, id);
@@ -73,7 +75,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
-    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         "SELECT "
             + "u.*, "
             + "a.id AS a_id, a.user_id, a.authority "
@@ -104,7 +106,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
   @Override
   public void delete(@Nonnull AuthUserEntity user) {
-    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?"
     )) {
       ps.setObject(1, user.getId());
@@ -133,5 +135,9 @@ public class AuthUserDaoJdbc implements AuthUserDao {
       user.getAuthorities().add(ae);
     }
     return user;
+  }
+
+  private Connection getConnection() {
+    return holder(CFG.authJdbcUrl()).connection();
   }
 }
