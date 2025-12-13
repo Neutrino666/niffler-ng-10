@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl;
+package guru.qa.niffler.data.repository.impl.jdbc;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
@@ -68,7 +68,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
-    try (PreparedStatement ps = getConnection() .prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("id"))
     ) {
       ps.setObject(1, id);
@@ -102,7 +102,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
-    try (PreparedStatement ps = getConnection() .prepareStatement(
+    try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("username"))
     ) {
       ps.setObject(1, username);

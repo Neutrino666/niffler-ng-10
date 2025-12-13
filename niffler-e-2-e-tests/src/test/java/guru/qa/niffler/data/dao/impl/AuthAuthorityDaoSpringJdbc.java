@@ -28,6 +28,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
             ps.setObject(1, authorities[i].getUser().getId());
             ps.setString(2, authorities[i].getAuthority().name());
           }
+
           @Override
           public int getBatchSize() {
             return authorities.length;

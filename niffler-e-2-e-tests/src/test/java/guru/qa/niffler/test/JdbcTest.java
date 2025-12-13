@@ -1,7 +1,7 @@
 package guru.qa.niffler.test;
 
-import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.category.CategoryDbClient;
 import guru.qa.niffler.service.spend.SpendDbClient;
@@ -17,7 +17,7 @@ public class JdbcTest {
     UserJson user = userDbClient.create(
         new UserJson(
             null,
-            "hibernateTest",
+            "valentin",
             null,
             null,
             null,
@@ -27,6 +27,35 @@ public class JdbcTest {
         )
     );
     System.out.println(user);
+  }
+
+  @Test
+  void findByUsername() {
+    UserDbClient user = new UserDbClient();
+    System.out.println(user.findByUsername("valentin"));
+  }
+
+  @Test
+  void findUserById() {
+    UserDbClient user = new UserDbClient();
+    System.out.println(user.findById(UUID.fromString("1fbc301c-a629-49ad-9e9f-d7aad0a8c828")));
+  }
+
+  @Test
+  void deleteUser() {
+    UserDbClient user = new UserDbClient();
+    user.delete(
+        new UserJson(
+            UUID.fromString("8a82a562-d83e-11f0-932a-56e62001cb1d"),
+            "valentin",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    );
   }
 
   @Test
@@ -53,17 +82,5 @@ public class JdbcTest {
   void findAllSpendTest() {
     SpendDbClient spendDbClient = new SpendDbClient();
     System.out.println(spendDbClient.findAllWithSpringJdbc());
-  }
-
-  @Test
-  void findAllAuthority() {
-    UserDbClient user = new UserDbClient();
-    System.out.println(user.findAllAuthority(UUID.fromString("c9b8b756-f3cc-4186-853b-590bb1418c85")));
-  }
-
-  @Test
-  void findByUsername() {
-    UserDbClient user = new UserDbClient();
-    System.out.println(user.findByUsername("admin"));
   }
 }

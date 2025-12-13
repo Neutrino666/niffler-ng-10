@@ -69,13 +69,7 @@ public class UdUserDaoSpringJdbc implements UserDao {
 
   @Override
   public void delete(@Nonnull UserEntity user) {
-    getJdbcTemplate().update(con -> {
-      PreparedStatement ps = con.prepareStatement(
-          "DELETE FROM \"user\" WHERE id = ?"
-      );
-      ps.setObject(1, user.getId());
-      return ps;
-    });
+    getJdbcTemplate().update("DELETE FROM \"user\" WHERE id = ?", user.getId());
   }
 
   @Nonnull

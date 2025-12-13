@@ -1,21 +1,19 @@
 package guru.qa.niffler.service.user;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.AuthAuthorityDao;
-import guru.qa.niffler.data.dao.UserDao;
-import guru.qa.niffler.data.dao.impl.AuthAuthorityDaoSpringJdbc;
-import guru.qa.niffler.data.dao.impl.UdUserDaoJdbc;
-import guru.qa.niffler.data.dao.impl.UdUserDaoSpringJdbc;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
-import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
+import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.jdbc.UdUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.spring.AuthUserRepositorySpringJdbc;
+import guru.qa.niffler.data.repository.impl.spring.UdUserRepositorySpringJdbc;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -28,9 +26,8 @@ public class UserDbClient implements UserClient {
   private final static Config CFG = Config.getInstance();
   private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-  private final AuthUserRepository authUserRepository = new AuthUserRepositoryJdbc();
-  private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoSpringJdbc();
-  private final UserDao udUserDao = new UdUserDaoJdbc();
+  private final AuthUserRepository authUserRepository = new AuthUserRepositorySpringJdbc();
+  private final UserdataUserRepository udUserRepository = new UdUserRepositorySpringJdbc();
 
   private final XaTransactionTemplate xaTxTemplate = new XaTransactionTemplate(
       CFG.authJdbcUrl(),
@@ -63,38 +60,59 @@ public class UserDbClient implements UserClient {
       ).toList());
 
       authUserRepository.create(authUser);
-      return UserJson.fromEntity(udUserDao.create(UserEntity.fromJson(user)));
+      return UserJson.fromEntity(udUserRepository.create(UserEntity.fromJson(user)));
     });
   }
 
   @Nonnull
   @Override
   public Optional<UserJson> findById(@Nonnull UUID id) {
-    Optional<UserEntity> user = jdbcTxTemplate.execute(() -> udUserDao.findById(id));
+    Optional<UserEntity> user = jdbcTxTemplate.execute(() -> udUserRepository.findById(id));
     return user.map(UserJson::fromEntity);
   }
 
   @Nonnull
   @Override
   public Optional<UserJson> findByUsername(@Nonnull String username) {
-    Optional<UserEntity> user = jdbcTxTemplate.execute(() -> udUserDao.findByUsername(username));
+    Optional<UserEntity> user = jdbcTxTemplate.execute(
+        () -> udUserRepository.findByUsername(username));
     return user.map(UserJson::fromEntity);
+  }
+
+  public void addIncomeInvitation(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addIncomeInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
+  }
+
+  public void addOutcomeInvitation(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addOutcomeInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
+  }
+
+  public void addFriend(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addFriend(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
   }
 
   @Override
   public void delete(@Nonnull UserJson user) {
     xaTxTemplate.execute(() -> {
       authUserRepository.findByUsername(user.username())
-          .ifPresent(authUser -> {
-            authUser.getAuthorities().forEach(authAuthorityDao::delete);
-            authUserRepository.delete(authUser);
-          });
-      udUserDao.delete(UserEntity.fromJson(user));
+          .ifPresent(authUserRepository::delete);
+      udUserRepository.delete(UserEntity.fromJson(user));
       return null;
     });
-  }
-
-  public List<AuthAuthorityEntity> findAllAuthority(UUID userUuid) {
-    return authAuthorityDao.findAllByUserId(userUuid);
   }
 }
