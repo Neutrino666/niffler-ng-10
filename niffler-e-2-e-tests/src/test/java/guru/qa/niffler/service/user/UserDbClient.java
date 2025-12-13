@@ -9,6 +9,8 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
 import guru.qa.niffler.data.repository.impl.jdbc.UdUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.spring.AuthUserRepositorySpringJdbc;
+import guru.qa.niffler.data.repository.impl.spring.UdUserRepositorySpringJdbc;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
@@ -24,8 +26,8 @@ public class UserDbClient implements UserClient {
   private final static Config CFG = Config.getInstance();
   private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-  private final AuthUserRepository authUserRepository = new AuthUserRepositoryJdbc();
-  private final UserdataUserRepository udUserRepository = new UdUserRepositoryJdbc();
+  private final AuthUserRepository authUserRepository = new AuthUserRepositorySpringJdbc();
+  private final UserdataUserRepository udUserRepository = new UdUserRepositorySpringJdbc();
 
   private final XaTransactionTemplate xaTxTemplate = new XaTransactionTemplate(
       CFG.authJdbcUrl(),
@@ -75,6 +77,33 @@ public class UserDbClient implements UserClient {
     Optional<UserEntity> user = jdbcTxTemplate.execute(
         () -> udUserRepository.findByUsername(username));
     return user.map(UserJson::fromEntity);
+  }
+
+  public void addIncomeInvitation(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addIncomeInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
+  }
+
+  public void addOutcomeInvitation(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addOutcomeInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
+  }
+
+  public void addFriend(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addFriend(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
   }
 
   @Override
