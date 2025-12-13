@@ -1,9 +1,10 @@
-package guru.qa.niffler.data.dao.impl;
+package guru.qa.niffler.data.repository.impl.spring;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.mapper.UdUserEntityRowMapper;
+import guru.qa.niffler.data.mapper.UserdataSetExtractor;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.tpl.DataSources;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -14,7 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-public class UdUserDaoSpringJdbc implements UserDao {
+public class UdUserRepositorySpringJdbc implements UserdataUserRepository {
 
   private final static Config CFG = Config.getInstance();
 
@@ -48,7 +49,7 @@ public class UdUserDaoSpringJdbc implements UserDao {
   public Optional<UserEntity> findById(@Nonnull UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
-            "SELECT * FROM \"user\" WHERE id = ?",
+            getSelectByWhereIs("id"),
             UdUserEntityRowMapper.INSTANCE,
             id
         )
@@ -59,9 +60,9 @@ public class UdUserDaoSpringJdbc implements UserDao {
   @Override
   public Optional<UserEntity> findByUsername(@Nonnull String username) {
     return Optional.ofNullable(
-        getJdbcTemplate().queryForObject(
-            "SELECT * FROM \"user\" WHERE username = ?",
-            UdUserEntityRowMapper.INSTANCE,
+        getJdbcTemplate().query(
+            getSelectByWhereIs("username"),
+            UserdataSetExtractor.INSTANCE,
             username
         )
     );
@@ -69,11 +70,33 @@ public class UdUserDaoSpringJdbc implements UserDao {
 
   @Override
   public void delete(@Nonnull UserEntity user) {
-    getJdbcTemplate().update("DELETE FROM \"user\" WHERE id = ?", user.getId());
+    getJdbcTemplate().update(con -> {
+      PreparedStatement friendshipPs = con.prepareStatement(
+          "DELETE FROM friendship "
+              + "WHERE addressee_id = ? "
+              + "OR requester_id = ?"
+      );
+      PreparedStatement userdataPs = con.prepareStatement(
+          "DELETE FROM \"user\" WHERE id = ?"
+      );
+      friendshipPs.setObject(1, user.getId());
+      friendshipPs.setObject(2, user.getId());
+      friendshipPs.executeUpdate();
+      userdataPs.setObject(1, user.getId());
+      return userdataPs;
+    });
   }
 
   @Nonnull
   private JdbcTemplate getJdbcTemplate() {
     return new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
+  }
+
+  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+    return "SELECT * FROM \"user\" AS u "
+        + "LEFT JOIN friendship AS f "
+        + "ON u.id = f.addressee_id "
+        + "OR u.id = f.requester_id "
+        + "WHERE %s = ?".formatted(key);
   }
 }
