@@ -7,6 +7,10 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
+import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.jdbc.UdUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.spring.AuthUserRepositorySpringJdbc;
+import guru.qa.niffler.data.repository.impl.spring.UdUserRepositorySpringJdbc;
 import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
@@ -60,6 +64,33 @@ public class UserDbClient implements UserClient {
     Optional<UserEntity> user = jdbcTxTemplate.execute(
         () -> udUserRepository.findByUsername(username));
     return user.map(UserJson::fromEntity);
+  }
+
+  public void addIncomeInvitation(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addIncomeInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
+  }
+
+  public void addOutcomeInvitation(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addOutcomeInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
+  }
+
+  public void addFriend(@Nonnull UserJson requester, UserJson addressee) {
+    jdbcTxTemplate.execute(
+        () -> {
+          udUserRepository.addFriend(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
+          return null;
+        }
+    );
   }
 
   @Override

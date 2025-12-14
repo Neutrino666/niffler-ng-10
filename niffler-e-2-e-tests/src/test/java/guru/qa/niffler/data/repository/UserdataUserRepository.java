@@ -16,5 +16,11 @@ public interface UserdataUserRepository {
   @Nonnull
   Optional<UserEntity> findByUsername(@Nonnull String username);
 
+  void addIncomeInvitation(@Nonnull UserEntity requester, UserEntity addressee);
+
+  void addOutcomeInvitation(@Nonnull UserEntity requester, UserEntity addressee);
+
+  void addFriend(@Nonnull UserEntity requester, UserEntity addressee);
+
   void delete(@Nonnull UserEntity user);
 }

@@ -10,15 +10,18 @@ import guru.qa.niffler.data.mapper.UdUserEntityRowMapper;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.model.CurrencyValues;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class UdUserRepositoryJdbc implements UserdataUserRepository {
 
@@ -84,6 +87,22 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public void addIncomeInvitation(@Nonnull UserEntity requester, UserEntity addressee) {
+    addFriendshipRow(requester, addressee, FriendshipStatus.PENDING);
+  }
+
+  @Override
+  public void addOutcomeInvitation(@NotNull UserEntity requester, UserEntity addressee) {
+    addFriendshipRow(addressee, requester, FriendshipStatus.PENDING);
+  }
+
+  @Override
+  public void addFriend(@Nonnull UserEntity requester, UserEntity addressee) {
+    addFriendshipRow(addressee, requester, FriendshipStatus.ACCEPTED);
+    addFriendshipRow(requester, addressee, FriendshipStatus.ACCEPTED);
   }
 
   @Override
@@ -157,6 +176,27 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
       }
     }
     return userMap.get(userId);
+  }
+
+  private void addFriendshipRow(
+      @Nonnull UserEntity requester,
+      @Nonnull UserEntity addressee,
+      @Nonnull FriendshipStatus status
+  ) {
+    String sql = "INSERT INTO friendship (requester_id, addressee_id, status, created_date) " +
+        "VALUES (?, ?, ?, ?) " +
+        "ON CONFLICT (requester_id, addressee_id) " +
+        "DO UPDATE SET status = ? ";
+    try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+      ps.setObject(1, requester.getId());
+      ps.setObject(2, addressee.getId());
+      ps.setString(3, status.name());
+      ps.setDate(4, Date.valueOf(LocalDate.now()));
+      ps.setString(5, status.name());
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
