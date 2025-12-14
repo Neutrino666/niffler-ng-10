@@ -12,35 +12,33 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class JdbcTest {
 
+  private static UserDbClient USER_DB_CLIENT = new UserDbClient();
+
   @ValueSource(strings = {
-      "valentin1",
-      "valentin2",
-      "valentin3"
+      "valentin6"
   })
   @ParameterizedTest
   void createUserTest(String username) {
-    UserDbClient userDbClient = new UserDbClient();
-    userDbClient.create(
+    UserJson user = USER_DB_CLIENT.create(
         username, "12345"
     );
+    USER_DB_CLIENT.addOutcomeInvitation(user, 1);
   }
 
   @Test
   void findByUsername() {
-    UserDbClient user = new UserDbClient();
-    System.out.println(user.findByUsername("admin"));
+    System.out.println(USER_DB_CLIENT.findByUsername("admin"));
   }
 
   @Test
   void findUserById() {
-    UserDbClient user = new UserDbClient();
-    System.out.println(user.findById(UUID.fromString("1fbc301c-a629-49ad-9e9f-d7aad0a8c828")));
+    System.out.println(
+        USER_DB_CLIENT.findById(UUID.fromString("1fbc301c-a629-49ad-9e9f-d7aad0a8c828")));
   }
 
   @Test
   void deleteUser() {
-    UserDbClient user = new UserDbClient();
-    user.delete(
+    USER_DB_CLIENT.delete(
         new UserJson(
             UUID.fromString("8a82a562-d83e-11f0-932a-56e62001cb1d"),
             "valentin",

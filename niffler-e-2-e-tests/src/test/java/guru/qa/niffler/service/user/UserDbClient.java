@@ -7,18 +7,16 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
-import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
-import guru.qa.niffler.data.repository.impl.jdbc.UdUserRepositoryJdbc;
-import guru.qa.niffler.data.repository.impl.spring.AuthUserRepositorySpringJdbc;
-import guru.qa.niffler.data.repository.impl.spring.UdUserRepositorySpringJdbc;
 import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
+import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -66,31 +64,53 @@ public class UserDbClient implements UserClient {
     return user.map(UserJson::fromEntity);
   }
 
-  public void addIncomeInvitation(@Nonnull UserJson requester, UserJson addressee) {
-    jdbcTxTemplate.execute(
-        () -> {
-          udUserRepository.addIncomeInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
-          return null;
-        }
-    );
+  public void addIncomeInvitation(@Nonnull UserJson targetUser, int count) {
+    if (count > 0) {
+      UserEntity targetEntity = udUserRepository.findById(targetUser.id())
+          .orElseThrow();
+      IntStream.range(0, count)
+          .forEach(i -> {
+                xaTxTemplate.execute(() -> {
+                  String username = RandomDataUtils.getRandomName();
+                  AuthUserEntity authUser = authUserEntity(username, "12345");
+                  authUserRepository.create(authUser);
+                  UserEntity addressee = udUserRepository.create(userEntity(username));
+                  udUserRepository.addIncomeInvitation(targetEntity, addressee);
+                  return null;
+                });
+              }
+          );
+    }
   }
 
-  public void addOutcomeInvitation(@Nonnull UserJson requester, UserJson addressee) {
-    jdbcTxTemplate.execute(
-        () -> {
-          udUserRepository.addOutcomeInvitation(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
-          return null;
-        }
-    );
+  public void addOutcomeInvitation(@Nonnull UserJson targetUser, int count) {
+    if (count > 0) {
+      UserEntity targetEntity = udUserRepository.findById(targetUser.id())
+          .orElseThrow();
+      IntStream.range(0, count)
+          .forEach(i -> {
+                xaTxTemplate.execute(() -> {
+                  String username = RandomDataUtils.getRandomName();
+                  AuthUserEntity authUser = authUserEntity(username, "12345");
+                  authUserRepository.create(authUser);
+                  UserEntity addressee = udUserRepository.create(userEntity(username));
+                  udUserRepository.addOutcomeInvitation(targetEntity, addressee);
+                  return null;
+                });
+              }
+          );
+    }
   }
 
-  public void addFriend(@Nonnull UserJson requester, UserJson addressee) {
-    jdbcTxTemplate.execute(
-        () -> {
-          udUserRepository.addFriend(UserEntity.fromJson(requester), UserEntity.fromJson(addressee));
-          return null;
-        }
-    );
+  public void addFriend(@Nonnull UserJson targetUser, int count) {
+    throw new RuntimeException("Not implemented :(");
+//    jdbcTxTemplate.execute(
+//        () -> {
+//          udUserRepository.addFriend(UserEntity.fromJson(requester),
+//              UserEntity.fromJson(addressee));
+//          return null;
+//        }
+//    );
   }
 
   @Override

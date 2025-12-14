@@ -22,16 +22,7 @@ public class FriendshipTest {
             null,
             null
         ),
-        new UserJson(
-            UUID.fromString("b0c8e0d3-53f3-464f-b37b-3f5352a4d54a"),
-            null,
-            null,
-            null,
-            null,
-            CurrencyValues.RUB,
-            null,
-            null
-        )
+        1
     );
   }
 
@@ -49,16 +40,7 @@ public class FriendshipTest {
             null,
             null
         ),
-        new UserJson(
-            UUID.fromString("b0c8e0d3-53f3-464f-b37b-3f5352a4d54a"),
-            null,
-            null,
-            null,
-            null,
-            CurrencyValues.RUB,
-            null,
-            null
-        )
+        1
     );
   }
 
@@ -76,16 +58,7 @@ public class FriendshipTest {
             null,
             null
         ),
-        new UserJson(
-            UUID.fromString("b0c8e0d3-53f3-464f-b37b-3f5352a4d54a"),
-            null,
-            null,
-            null,
-            null,
-            CurrencyValues.RUB,
-            null,
-            null
-        )
+        1
     );
   }
 }
