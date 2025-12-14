@@ -15,10 +15,15 @@ public class FriendShipId implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     FriendShipId friendsId = (FriendShipId) o;
-    return Objects.equals(requester, friendsId.requester) && Objects.equals(addressee, friendsId.addressee);
+    return Objects.equals(requester, friendsId.requester) && Objects.equals(addressee,
+        friendsId.addressee);
   }
 
   @Override

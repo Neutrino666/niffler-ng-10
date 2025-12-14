@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 public interface UserClient {
 
   @Nonnull
-  UserJson create(@Nonnull UserJson user);
+  UserJson create(@Nonnull String username, @Nonnull  String password);
 
   @Nonnull
   Optional<UserJson> findById(@Nonnull UUID id);

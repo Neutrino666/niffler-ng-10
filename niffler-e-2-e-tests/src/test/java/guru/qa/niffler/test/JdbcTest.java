@@ -1,6 +1,5 @@
 package guru.qa.niffler.test;
 
-import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.category.CategoryDbClient;
@@ -8,25 +7,49 @@ import guru.qa.niffler.service.spend.SpendDbClient;
 import guru.qa.niffler.service.user.UserDbClient;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class JdbcTest {
 
+  private static UserDbClient USER_DB_CLIENT = new UserDbClient();
+
+  @ValueSource(strings = {
+      "valentin6"
+  })
+  @ParameterizedTest
+  void createUserTest(String username) {
+    UserJson user = USER_DB_CLIENT.create(
+        username, "12345"
+    );
+    USER_DB_CLIENT.addOutcomeInvitation(user, 1);
+  }
+
   @Test
-  void createUserTest() {
-    UserDbClient userDbClient = new UserDbClient();
-    UserJson user = userDbClient.create(
+  void findByUsername() {
+    System.out.println(USER_DB_CLIENT.findByUsername("admin"));
+  }
+
+  @Test
+  void findUserById() {
+    System.out.println(
+        USER_DB_CLIENT.findById(UUID.fromString("1fbc301c-a629-49ad-9e9f-d7aad0a8c828")));
+  }
+
+  @Test
+  void deleteUser() {
+    USER_DB_CLIENT.delete(
         new UserJson(
+            UUID.fromString("8a82a562-d83e-11f0-932a-56e62001cb1d"),
+            "valentin",
             null,
-            "hibernateTest",
             null,
             null,
             null,
-            CurrencyValues.RUB,
             null,
             null
         )
     );
-    System.out.println(user);
   }
 
   @Test
@@ -53,17 +76,5 @@ public class JdbcTest {
   void findAllSpendTest() {
     SpendDbClient spendDbClient = new SpendDbClient();
     System.out.println(spendDbClient.findAllWithSpringJdbc());
-  }
-
-  @Test
-  void findAllAuthority() {
-    UserDbClient user = new UserDbClient();
-    System.out.println(user.findAllAuthority(UUID.fromString("c9b8b756-f3cc-4186-853b-590bb1418c85")));
-  }
-
-  @Test
-  void findByUsername() {
-    UserDbClient user = new UserDbClient();
-    System.out.println(user.findByUsername("admin"));
   }
 }
