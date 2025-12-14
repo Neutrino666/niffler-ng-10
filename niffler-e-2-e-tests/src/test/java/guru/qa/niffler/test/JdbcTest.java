@@ -1,38 +1,34 @@
 package guru.qa.niffler.test;
 
 import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.category.CategoryDbClient;
 import guru.qa.niffler.service.spend.SpendDbClient;
 import guru.qa.niffler.service.user.UserDbClient;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class JdbcTest {
 
-  @Test
-  void createUserTest() {
+  @ValueSource(strings = {
+      "valentin1",
+      "valentin2",
+      "valentin3"
+  })
+  @ParameterizedTest
+  void createUserTest(String username) {
     UserDbClient userDbClient = new UserDbClient();
-    UserJson user = userDbClient.create(
-        new UserJson(
-            null,
-            "valentin",
-            null,
-            null,
-            null,
-            CurrencyValues.RUB,
-            null,
-            null
-        )
+    userDbClient.create(
+        username, "12345"
     );
-    System.out.println(user);
   }
 
   @Test
   void findByUsername() {
     UserDbClient user = new UserDbClient();
-    System.out.println(user.findByUsername("valentin"));
+    System.out.println(user.findByUsername("admin"));
   }
 
   @Test

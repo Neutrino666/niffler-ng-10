@@ -7,10 +7,11 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
-import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
-import guru.qa.niffler.data.repository.impl.jdbc.UdUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
+import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,8 +25,8 @@ public class UserDbClient implements UserClient {
   private final static Config CFG = Config.getInstance();
   private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-  private final AuthUserRepository authUserRepository = new AuthUserRepositoryJdbc();
-  private final UserdataUserRepository udUserRepository = new UdUserRepositoryJdbc();
+  private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
+  private final UserdataUserRepository udUserRepository = new UserdataUserRepositoryHibernate();
 
   private final XaTransactionTemplate xaTxTemplate = new XaTransactionTemplate(
       CFG.authJdbcUrl(),
@@ -38,27 +39,11 @@ public class UserDbClient implements UserClient {
 
   @Nonnull
   @Override
-  public UserJson create(@Nonnull UserJson user) {
+  public UserJson create(@Nonnull String username, @Nonnull String password) {
     return xaTxTemplate.execute(() -> {
-      AuthUserEntity authUser = new AuthUserEntity();
-      authUser.setUsername(user.username());
-      authUser.setPassword(pe.encode("admin"));
-      authUser.setEnabled(true);
-      authUser.setAccountNonExpired(true);
-      authUser.setAccountNonLocked(true);
-      authUser.setCredentialsNonExpired(true);
-
-      authUser.setAuthorities(Stream.of(Authority.values()).map(
-          e -> {
-            AuthAuthorityEntity ae = new AuthAuthorityEntity();
-            ae.setUser(authUser);
-            ae.setAuthority(e);
-            return ae;
-          }
-      ).toList());
-
+      AuthUserEntity authUser = authUserEntity(username, password);
       authUserRepository.create(authUser);
-      return UserJson.fromEntity(udUserRepository.create(UserEntity.fromJson(user)));
+      return UserJson.fromEntity(udUserRepository.create(userEntity(username)));
     });
   }
 
@@ -85,5 +70,33 @@ public class UserDbClient implements UserClient {
       udUserRepository.delete(UserEntity.fromJson(user));
       return null;
     });
+  }
+
+  private @Nonnull UserEntity userEntity(@Nonnull String username) {
+    UserEntity ue = new UserEntity();
+    ue.setUsername(username);
+    ue.setCurrency(CurrencyValues.RUB);
+    return ue;
+  }
+
+  @Nonnull
+  private AuthUserEntity authUserEntity(@Nonnull String username, @Nonnull String password) {
+    AuthUserEntity authUser = new AuthUserEntity();
+    authUser.setUsername(username);
+    authUser.setPassword(pe.encode(password));
+    authUser.setEnabled(true);
+    authUser.setAccountNonExpired(true);
+    authUser.setAccountNonLocked(true);
+    authUser.setCredentialsNonExpired(true);
+
+    authUser.setAuthorities(Stream.of(Authority.values()).map(
+        e -> {
+          AuthAuthorityEntity ae = new AuthAuthorityEntity();
+          ae.setUser(authUser);
+          ae.setAuthority(e);
+          return ae;
+        }
+    ).toList());
+    return authUser;
   }
 }
