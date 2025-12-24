@@ -21,13 +21,14 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
   @Nonnull
   @Override
   public AuthUserEntity create(@Nonnull AuthUserEntity user) {
+    String sql = "INSERT INTO \"user\" "
+        + "(username, password, enabled, "
+        + "account_non_expired, account_non_locked, credentials_non_expired)"
+        + "VALUES(?, ?, ?, ?, ?, ?)";
     KeyHolder kh = new GeneratedKeyHolder();
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = con.prepareStatement(
-          "INSERT INTO \"user\" "
-              + "(username, password, enabled, "
-              + "account_non_expired, account_non_locked, credentials_non_expired)"
-              + "VALUES(?, ?, ?, ?, ?, ?)",
+          sql,
           Statement.RETURN_GENERATED_KEYS
       );
       ps.setString(1, user.getUsername());
@@ -59,19 +60,46 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
   @Nonnull
   @Override
   public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
+    String sql = "SELECT "
+        + "u.*, "
+        + "a.id AS a_id, a.user_id, a.authority "
+        + "FROM \"user\" AS u "
+        + "JOIN authority AS a "
+        + "ON u.id = a.user_id "
+        + "WHERE username = ?";
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
-            "SELECT "
-                + "u.*, "
-                + "a.id AS a_id, a.user_id, a.authority "
-                + "FROM \"user\" AS u "
-                + "JOIN authority AS a "
-                + "ON u.id = a.user_id "
-                + "WHERE username = ?",
+            sql,
             AuthUserEntityRowMapper.INSTANCE,
             username
         )
     );
+  }
+
+  @Nonnull
+  @Override
+  public AuthUserEntity update(@Nonnull AuthUserEntity user) {
+    String sql = """
+        UPDATE "user"
+        SET username = ?,
+            password = ?,
+            enabled = ?,
+            account_non_expired = ?,
+            account_non_locked = ?,
+            credentials_non_expired = ?
+        WHERE id = ?
+        """;
+    getJdbcTemplate().update(
+        sql,
+        user.getUsername(),
+        user.getPassword(),
+        user.getEnabled(),
+        user.getAccountNonExpired(),
+        user.getAccountNonLocked(),
+        user.getCredentialsNonExpired(),
+        user.getId()
+    );
+    return user;
   }
 
   @Override

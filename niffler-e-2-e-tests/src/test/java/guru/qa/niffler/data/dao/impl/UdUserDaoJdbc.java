@@ -35,7 +35,6 @@ public class UdUserDaoJdbc implements UserDao {
       ps.setString(7, user.getUsername());
 
       ps.executeUpdate();
-
       try (ResultSet rs = ps.getGeneratedKeys()) {
         if (rs.next()) {
           return collectEntity(rs);
@@ -77,6 +76,36 @@ public class UdUserDaoJdbc implements UserDao {
             ? Optional.of(collectEntity(rs))
             : Optional.empty();
       }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Nonnull
+  @Override
+  public UserEntity update(@Nonnull UserEntity user) {
+    String sql = """
+        UPDATE "user"
+        SET currency = ?,
+            firstname = ?,
+            full_name = ?,
+            photo = ?,
+            photo_small = ?,
+            surname = ?,
+            username = ?
+        WHERE id = ?
+        """;
+    try (PreparedStatement userPs = getConnection().prepareStatement(sql)) {
+      userPs.setString(1, user.getCurrency().name());
+      userPs.setString(2, user.getFirstname());
+      userPs.setString(3, user.getFullname());
+      userPs.setBytes(4, user.getPhoto());
+      userPs.setBytes(5, user.getPhotoSmall());
+      userPs.setString(6, user.getSurname());
+      userPs.setString(7, user.getUsername());
+      userPs.setObject(8, user.getId());
+      userPs.executeUpdate();
+      return user;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

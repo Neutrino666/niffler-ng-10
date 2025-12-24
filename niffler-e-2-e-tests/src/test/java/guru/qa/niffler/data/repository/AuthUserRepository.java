@@ -11,10 +11,13 @@ public interface AuthUserRepository {
   AuthUserEntity create(@Nonnull AuthUserEntity user);
 
   @Nonnull
+  AuthUserEntity update(@Nonnull AuthUserEntity user);
+
+  @Nonnull
   Optional<AuthUserEntity> findById(@Nonnull UUID id);
 
   @Nonnull
   Optional<AuthUserEntity> findByUsername(@Nonnull String username);
 
-  void delete(@Nonnull AuthUserEntity user);
+  void remove(@Nonnull AuthUserEntity user);
 }

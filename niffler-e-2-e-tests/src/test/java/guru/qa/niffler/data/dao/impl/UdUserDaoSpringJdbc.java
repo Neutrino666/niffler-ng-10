@@ -67,6 +67,29 @@ public class UdUserDaoSpringJdbc implements UserDao {
     );
   }
 
+  @Nonnull
+  @Override
+  public UserEntity update(@Nonnull UserEntity user) {
+    String sql = """
+        UPDATE "user"
+        SET currency = ?,
+            firstname = ?,
+            full_name = ?,
+            photo = ?,
+            photo_small = ?,
+            surname = ?,
+            username = ?
+        WHERE id = ?
+        """;
+    getJdbcTemplate().update(
+        sql,
+        user.getCurrency().name(), user.getFirstname(), user.getFullname(),
+        user.getPhoto(), user.getPhotoSmall(), user.getSurname(), user.getUsername(),
+        user.getId()
+    );
+    return user;
+  }
+
   @Override
   public void delete(@Nonnull UserEntity user) {
     getJdbcTemplate().update("DELETE FROM \"user\" WHERE id = ?", user.getId());

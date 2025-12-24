@@ -47,7 +47,34 @@ public class SpendDaoJdbc implements SpendDao {
       }
       spend.setId(generatedKey);
       return spend;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
+  @Nonnull
+  @Override
+  public SpendEntity update(@Nonnull SpendEntity spend) {
+    String sql = """
+        UPDATE spend
+        SET username = ?, spend_date =?, currency =?, amount =?, description =?, category_id =?
+        WHERE id = ?
+        """;
+    try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+      ps.setString(1, spend.getUsername());
+      ps.setDate(2, new java.sql.Date(spend.getSpendDate().getTime()));
+      ps.setString(3, spend.getCurrency().name());
+      ps.setDouble(4, spend.getAmount());
+      ps.setString(5, spend.getDescription());
+      ps.setObject(6,
+          spend.getCategory() != null && spend.getCategory().getId() != null
+              ? spend.getCategory().getId()
+              : null
+      );
+      ps.setObject(7, spend.getId());
+
+      ps.executeUpdate();
+      return spend;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -113,8 +140,34 @@ public class SpendDaoJdbc implements SpendDao {
     return spends;
   }
 
+  @Nonnull
   @Override
-  public void delete(@Nonnull SpendEntity spend) {
+  public Optional<SpendEntity> findByUsernameAndSpendDescription(@Nonnull String username,
+      @Nonnull String description) {
+    String sql = "SELECT "
+        + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
+        + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "
+        + "FROM spend AS s "
+        + "JOIN category AS c "
+        + "ON s.category_id = c.id "
+        + "WHERE s.username = ? "
+        + "AND s.description = ?";
+    try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+      ps.setString(1, username);
+      ps.setString(2, description);
+      ps.execute();
+      try (ResultSet rs = ps.getResultSet()) {
+        return rs.next()
+            ? Optional.of(collectEntity(rs))
+            : Optional.empty();
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void remove(@Nonnull SpendEntity spend) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM spend WHERE id = ?"
     )) {

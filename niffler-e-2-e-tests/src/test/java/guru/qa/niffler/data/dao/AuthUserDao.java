@@ -16,6 +16,9 @@ public interface AuthUserDao {
   @Nonnull
   Optional<AuthUserEntity> findByUsername(@Nonnull String username);
 
+  @Nonnull
+  AuthUserEntity update(@Nonnull AuthUserEntity user);
+
   void delete(@Nonnull AuthUserEntity user);
 
 }

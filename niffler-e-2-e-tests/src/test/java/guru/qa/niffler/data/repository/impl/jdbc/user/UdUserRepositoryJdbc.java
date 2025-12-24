@@ -1,8 +1,10 @@
-package guru.qa.niffler.data.repository.impl.jdbc;
+package guru.qa.niffler.data.repository.impl.jdbc.user;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.UserDao;
+import guru.qa.niffler.data.dao.impl.UdUserDaoJdbc;
 import guru.qa.niffler.data.entity.userdata.FriendshipEntity;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
@@ -21,11 +23,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
-import org.jetbrains.annotations.NotNull;
 
 public class UdUserRepositoryJdbc implements UserdataUserRepository {
 
   private final static Config CFG = Config.getInstance();
+  UserDao userDao = new UdUserDaoJdbc();
 
   @Override
   public @Nonnull UserEntity create(@Nonnull UserEntity user) {
@@ -89,14 +91,15 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
     }
   }
 
+  @Nonnull
   @Override
-  public void addIncomeInvitation(@Nonnull UserEntity requester, UserEntity addressee) {
-    addFriendshipRow(requester, addressee, FriendshipStatus.PENDING);
+  public UserEntity update(@Nonnull UserEntity user) {
+    return userDao.update(user);
   }
 
   @Override
-  public void addOutcomeInvitation(@NotNull UserEntity requester, UserEntity addressee) {
-    addFriendshipRow(addressee, requester, FriendshipStatus.PENDING);
+  public void sendInvitation(@Nonnull UserEntity requester, UserEntity addressee) {
+    addFriendshipRow(requester, addressee, FriendshipStatus.PENDING);
   }
 
   @Override
@@ -106,7 +109,7 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
   }
 
   @Override
-  public void delete(@Nonnull UserEntity user) {
+  public void remove(@Nonnull UserEntity user) {
     try (PreparedStatement userPs = getConnection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?"
     );
@@ -128,28 +131,13 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
   }
 
   @Nonnull
-  private UserEntity collectEntity(@Nonnull ResultSet rs) throws SQLException {
+  private UserEntity collectEntityWithFriends(@Nonnull ResultSet rs) throws SQLException {
     Map<UUID, UserEntity> userMap = new ConcurrentHashMap<>();
     UUID userId = null;
 
     while (rs.next()) {
       userId = rs.getObject("id", UUID.class);
-      UserEntity user = userMap.computeIfAbsent(userId, id -> {
-        UserEntity result = new UserEntity();
-        try {
-          result.setId(rs.getObject("id", UUID.class));
-          result.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
-          result.setFirstname(rs.getString("firstname"));
-          result.setFullname(rs.getString("full_name"));
-          result.setPhoto(rs.getBytes("photo"));
-          result.setPhotoSmall(rs.getBytes("photo_small"));
-          result.setSurname(rs.getString("surname"));
-          result.setUsername(rs.getString("username"));
-        } catch (SQLException e) {
-          throw new RuntimeException(e);
-        }
-        return result;
-      });
+      UserEntity user = userMap.computeIfAbsent(userId, id -> collectEntity(rs));
       FriendshipEntity friendship = new FriendshipEntity();
       UUID requesterId = rs.getObject("requester_id", UUID.class);
       UUID addresseeId = rs.getObject("addressee_id", UUID.class);
@@ -176,6 +164,23 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
       }
     }
     return userMap.get(userId);
+  }
+
+  private UserEntity collectEntity(@Nonnull ResultSet rs) {
+    UserEntity result = new UserEntity();
+    try {
+      result.setId(rs.getObject("id", UUID.class));
+      result.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+      result.setFirstname(rs.getString("firstname"));
+      result.setFullname(rs.getString("full_name"));
+      result.setPhoto(rs.getBytes("photo"));
+      result.setPhotoSmall(rs.getBytes("photo_small"));
+      result.setSurname(rs.getString("surname"));
+      result.setUsername(rs.getString("username"));
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return result;
   }
 
   private void addFriendshipRow(

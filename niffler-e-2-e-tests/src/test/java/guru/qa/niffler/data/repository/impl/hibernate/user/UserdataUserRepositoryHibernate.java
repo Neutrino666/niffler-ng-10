@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl.hibernate;
+package guru.qa.niffler.data.repository.impl.hibernate.user;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
@@ -36,7 +36,7 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
   public Optional<UserEntity> findByUsername(@Nonnull String username) {
     try {
       return Optional.of(entityManager.createQuery(
-              "SELECT u FROM UserEntity u  WHERE u.username =: username",
+              "SELECT u FROM UserEntity u  WHERE u.username = :username",
               UserEntity.class)
           .setParameter("username", username)
           .getSingleResult());
@@ -45,16 +45,17 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     }
   }
 
+  @Nonnull
   @Override
-  public void addIncomeInvitation(@Nonnull UserEntity requester, UserEntity addressee) {
+  public UserEntity update(@Nonnull UserEntity user) {
     entityManager.joinTransaction();
-    addressee.addFriends(FriendshipStatus.PENDING, requester);
+    return entityManager.merge(user);
   }
 
   @Override
-  public void addOutcomeInvitation(@Nonnull UserEntity requester, UserEntity addressee) {
+  public void sendInvitation(@Nonnull UserEntity requester, UserEntity addressee) {
     entityManager.joinTransaction();
-    requester.addFriends(FriendshipStatus.PENDING, addressee);
+    addressee.addFriends(FriendshipStatus.PENDING, requester);
   }
 
   @Override
@@ -65,7 +66,8 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
   }
 
   @Override
-  public void delete(@Nonnull UserEntity user) {
-
+  public void remove(@Nonnull UserEntity user) {
+    entityManager.joinTransaction();
+    entityManager.remove(user);
   }
 }
