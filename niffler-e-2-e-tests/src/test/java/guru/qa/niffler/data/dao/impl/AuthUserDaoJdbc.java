@@ -104,6 +104,34 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
   }
 
+  @Nonnull
+  @Override
+  public AuthUserEntity update(@Nonnull AuthUserEntity user) {
+    String sql = """
+        UPDATE "user"
+        SET username = ?,
+            password = ?,
+            enabled = ?,
+            account_non_expired = ?,
+            account_non_locked = ?,
+            credentials_non_expired = ?
+        WHERE id = ?
+        """;
+    try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+      ps.setString(1, user.getUsername());
+      ps.setString(2, user.getPassword());
+      ps.setBoolean(3, user.getEnabled());
+      ps.setBoolean(4, user.getAccountNonExpired());
+      ps.setBoolean(5, user.getAccountNonLocked());
+      ps.setBoolean(6, user.getCredentialsNonExpired());
+      ps.setObject(7, user.getId());
+      ps.executeUpdate();
+      return user;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Override
   public void delete(@Nonnull AuthUserEntity user) {
     try (PreparedStatement ps = getConnection().prepareStatement(

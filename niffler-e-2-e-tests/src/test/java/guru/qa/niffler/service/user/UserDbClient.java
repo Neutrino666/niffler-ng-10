@@ -7,8 +7,12 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
-import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
-import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.hibernate.user.AuthUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.hibernate.user.UserdataUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.jdbc.user.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.jdbc.user.UdUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.spring.user.AuthUserRepositorySpringJdbc;
+import guru.qa.niffler.data.repository.impl.spring.user.UdUserRepositorySpringJdbc;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.helpers.RandomDataUtils;
@@ -64,61 +68,77 @@ public class UserDbClient implements UserClient {
     return user.map(UserJson::fromEntity);
   }
 
-  public void addIncomeInvitation(@Nonnull UserJson targetUser, int count) {
+  @Nonnull
+  @Override
+  public UserJson update(@Nonnull UserJson user) {
+    return xaTxTemplate.execute(
+        () -> UserJson.fromEntity(
+            udUserRepository.update(UserEntity.fromJson(user)
+            )
+        )
+    );
+  }
+
+  @Override
+  public void createIncomeInvitation(@Nonnull UserJson targetUser, int count) {
     if (count > 0) {
       UserEntity targetEntity = udUserRepository.findById(targetUser.id())
           .orElseThrow();
       IntStream.range(0, count)
-          .forEach(i -> {
-                xaTxTemplate.execute(() -> {
-                  String username = RandomDataUtils.getRandomName();
-                  AuthUserEntity authUser = authUserEntity(username, "12345");
-                  authUserRepository.create(authUser);
-                  UserEntity addressee = udUserRepository.create(userEntity(username));
-                  udUserRepository.addIncomeInvitation(targetEntity, addressee);
-                  return null;
-                });
-              }
+          .forEach(i -> xaTxTemplate.execute(() -> {
+                String username = RandomDataUtils.getRandomName();
+                AuthUserEntity authUser = authUserEntity(username, "12345");
+                authUserRepository.create(authUser);
+                UserEntity addressee = udUserRepository.create(userEntity(username));
+                udUserRepository.sendInvitation(targetEntity, addressee);
+                return null;
+              })
           );
     }
   }
 
-  public void addOutcomeInvitation(@Nonnull UserJson targetUser, int count) {
+  @Override
+  public void createOutcomeInvitation(@Nonnull UserJson targetUser, int count) {
     if (count > 0) {
       UserEntity targetEntity = udUserRepository.findById(targetUser.id())
           .orElseThrow();
       IntStream.range(0, count)
-          .forEach(i -> {
-                xaTxTemplate.execute(() -> {
-                  String username = RandomDataUtils.getRandomName();
-                  AuthUserEntity authUser = authUserEntity(username, "12345");
-                  authUserRepository.create(authUser);
-                  UserEntity addressee = udUserRepository.create(userEntity(username));
-                  udUserRepository.addOutcomeInvitation(targetEntity, addressee);
-                  return null;
-                });
-              }
+          .forEach(i -> xaTxTemplate.execute(() -> {
+                String username = RandomDataUtils.getRandomName();
+                AuthUserEntity authUser = authUserEntity(username, "12345");
+                authUserRepository.create(authUser);
+                UserEntity addressee = udUserRepository.create(userEntity(username));
+                udUserRepository.sendInvitation(addressee, targetEntity);
+                return null;
+              })
           );
     }
   }
 
-  public void addFriend(@Nonnull UserJson targetUser, int count) {
-    throw new RuntimeException("Not implemented :(");
-//    jdbcTxTemplate.execute(
-//        () -> {
-//          udUserRepository.addFriend(UserEntity.fromJson(requester),
-//              UserEntity.fromJson(addressee));
-//          return null;
-//        }
-//    );
+  public void createFriends(@Nonnull UserJson targetUser, int count) {
+    if (count > 0) {
+      UserEntity targetEntity = udUserRepository.findById(targetUser.id())
+          .orElseThrow();
+      IntStream.range(0, count)
+          .forEach(i -> xaTxTemplate.execute(() -> {
+                String username = RandomDataUtils.getRandomName();
+                AuthUserEntity authUser = authUserEntity(username, "12345");
+                authUserRepository.create(authUser);
+                UserEntity addressee = udUserRepository.create(userEntity(username));
+                udUserRepository.addFriend(addressee, targetEntity);
+                return null;
+              })
+          );
+    }
   }
 
   @Override
   public void delete(@Nonnull UserJson user) {
     xaTxTemplate.execute(() -> {
       authUserRepository.findByUsername(user.username())
-          .ifPresent(authUserRepository::delete);
-      udUserRepository.delete(UserEntity.fromJson(user));
+          .ifPresent(authUserRepository::remove);
+      udUserRepository.findByUsername(user.username())
+          .ifPresent(udUserRepository::remove);
       return null;
     });
   }

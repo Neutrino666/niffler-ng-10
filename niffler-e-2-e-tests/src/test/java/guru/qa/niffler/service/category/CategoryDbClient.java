@@ -55,6 +55,6 @@ public class CategoryDbClient implements CategoryClient {
   }
 
   public void delete(@Nonnull CategoryEntity category) {
-    categoryDao.delete(category);
+    categoryDao.remove(category);
   }
 }

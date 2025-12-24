@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
@@ -35,12 +36,14 @@ public class CategoryEntity implements Serializable {
   @Column(nullable = false)
   private boolean archived;
 
-  public static @Nonnull CategoryEntity fromJson(@Nonnull CategoryJson json) {
+  public static @Nonnull CategoryEntity fromJson(@Nullable CategoryJson json) {
     CategoryEntity ce = new CategoryEntity();
-    ce.setId(json.id());
-    ce.setName(json.name());
-    ce.setUsername(json.username());
-    ce.setArchived(json.archived());
+    if (json != null) {
+      ce.setId(json.id());
+      ce.setName(json.name());
+      ce.setUsername(json.username());
+      ce.setArchived(json.archived());
+    }
     return ce;
   }
 

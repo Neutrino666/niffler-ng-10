@@ -89,7 +89,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
   }
 
   @Override
-  public void delete(@Nonnull CategoryEntity category) {
+  public void remove(@Nonnull CategoryEntity category) {
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
           "DELETE FROM category WHERE id = ?"

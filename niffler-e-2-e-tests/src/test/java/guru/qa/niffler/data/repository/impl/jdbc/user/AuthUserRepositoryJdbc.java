@@ -1,8 +1,10 @@
-package guru.qa.niffler.data.repository.impl.jdbc;
+package guru.qa.niffler.data.repository.impl.jdbc.user;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.AuthUserDao;
+import guru.qa.niffler.data.dao.impl.AuthUserDaoJdbc;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
@@ -21,6 +23,7 @@ import javax.annotation.Nonnull;
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   private final static Config CFG = Config.getInstance();
+  private final AuthUserDao authUserDao = new AuthUserDaoJdbc();
 
   @Nonnull
   @Override
@@ -63,6 +66,12 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Nonnull
+  @Override
+  public AuthUserEntity update(@Nonnull AuthUserEntity user) {
+    return authUserDao.update(user);
   }
 
   @Nonnull
@@ -134,7 +143,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   @Override
-  public void delete(@Nonnull AuthUserEntity user) {
+  public void remove(@Nonnull AuthUserEntity user) {
     try (PreparedStatement authorityPs = getConnection().prepareStatement(
         "DELETE FROM authority WHERE user_id = ?");
         PreparedStatement userPs = getConnection().prepareStatement(
