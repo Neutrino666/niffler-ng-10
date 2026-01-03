@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.repository.impl.spring;
+package guru.qa.niffler.data.repository.impl.spring.user;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
@@ -68,6 +68,34 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
   @Nonnull
   @Override
+  public AuthUserEntity update(@Nonnull AuthUserEntity u) {
+    String sql = """
+        UPDATE "user"
+        SET id = ?,
+            username = ?,
+            password = ?,
+            enabled = ?,
+            account_non_expired = ?,
+            account_non_locked = ?,
+            credentials_non_expired = ?
+        WHERE id = ?
+        """;
+    getJdbcTemplate().update(
+        sql,
+        u.getId(),
+        u.getUsername(),
+        u.getPassword(),
+        u.getEnabled(),
+        u.getAccountNonExpired(),
+        u.getAccountNonLocked(),
+        u.getCredentialsNonExpired(),
+        u.getId()
+    );
+    return u;
+  }
+
+  @Nonnull
+  @Override
   public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().query(
@@ -90,7 +118,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   }
 
   @Override
-  public void delete(@Nonnull AuthUserEntity user) {
+  public void remove(@Nonnull AuthUserEntity user) {
     getJdbcTemplate().update("DELETE FROM authority WHERE user_id = ?", user.getId());
     getJdbcTemplate().update("DELETE FROM \"user\" WHERE id = ?", user.getId());
   }

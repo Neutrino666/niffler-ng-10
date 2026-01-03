@@ -11,6 +11,7 @@ import guru.qa.niffler.model.SpendJson;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -64,6 +65,23 @@ public class SpendApiClient implements SpendClient {
 
     Assertions.assertThat(response.code()).isEqualTo(SC_CREATED);
     return response.body();
+  }
+
+  @Nonnull
+  @Override
+  public SpendJson update(@Nonnull SpendJson spend) {
+    throw new RuntimeException("Not implemented ):");
+  }
+
+  @Nonnull
+  @Override
+  public List<SpendJson> findAllByUsername(@Nonnull String username) {
+    throw new RuntimeException("Not implemented ):");
+  }
+
+  @Override
+  public void remove(@Nonnull SpendJson spend) {
+    throw new RuntimeException("Not implemented ):");
   }
 
   public SpendJson edit(SpendJson spend) {

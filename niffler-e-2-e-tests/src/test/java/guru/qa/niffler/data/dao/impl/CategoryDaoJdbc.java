@@ -123,12 +123,12 @@ public class CategoryDaoJdbc implements CategoryDao {
   }
 
   @Override
-  public void delete(@Nonnull CategoryEntity category) {
+  public void remove(@Nonnull CategoryEntity category) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM category WHERE id = ?"
     )) {
       ps.setObject(1, category.getId());
-      ps.execute();
+      ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
