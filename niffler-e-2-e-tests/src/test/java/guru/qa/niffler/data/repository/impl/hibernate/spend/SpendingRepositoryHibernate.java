@@ -41,7 +41,7 @@ public class SpendingRepositoryHibernate implements SpendRepository {
 
   @Nonnull
   @Override
-  public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(
+  public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(
       @Nonnull String username,
       @Nonnull String name) {
     CategoryEntity category = entityManager.createQuery(
@@ -121,6 +121,9 @@ public class SpendingRepositoryHibernate implements SpendRepository {
             () -> new RuntimeException("Not found category by id")
         );
     entityManager.joinTransaction();
+    if (!entityManager.contains(ce)) {
+      entityManager.merge(ce);
+    }
     entityManager.remove(ce);
   }
 }

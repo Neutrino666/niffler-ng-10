@@ -89,8 +89,8 @@ public class UserDbClient implements UserClient {
                 String username = RandomDataUtils.getRandomName();
                 AuthUserEntity authUser = authUserEntity(username, "12345");
                 authUserRepository.create(authUser);
-                UserEntity addressee = udUserRepository.create(userEntity(username));
-                udUserRepository.sendInvitation(targetEntity, addressee);
+                UserEntity requester = udUserRepository.create(userEntity(username));
+                udUserRepository.sendInvitation(requester, targetEntity);
                 return null;
               })
           );
@@ -108,7 +108,7 @@ public class UserDbClient implements UserClient {
                 AuthUserEntity authUser = authUserEntity(username, "12345");
                 authUserRepository.create(authUser);
                 UserEntity addressee = udUserRepository.create(userEntity(username));
-                udUserRepository.sendInvitation(addressee, targetEntity);
+                udUserRepository.sendInvitation(targetEntity, addressee);
                 return null;
               })
           );

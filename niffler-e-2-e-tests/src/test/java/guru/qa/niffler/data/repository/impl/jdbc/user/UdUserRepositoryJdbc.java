@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 public class UdUserRepositoryJdbc implements UserdataUserRepository {
 
   private final static Config CFG = Config.getInstance();
-  UserDao userDao = new UdUserDaoJdbc();
+  private final UserDao userDao = new UdUserDaoJdbc();
 
   @Override
   public @Nonnull UserEntity create(@Nonnull UserEntity user) {

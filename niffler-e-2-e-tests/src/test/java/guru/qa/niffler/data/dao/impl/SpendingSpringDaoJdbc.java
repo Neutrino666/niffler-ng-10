@@ -48,7 +48,7 @@ public class SpendingSpringDaoJdbc implements SpendDao {
   @Override
   public SpendEntity update(@Nonnull SpendEntity spend) {
     String sql = """
-        UPDATE "user"
+        UPDATE "spend"
         SET username = ?,
             spend_date = ?,
             currency = ?,

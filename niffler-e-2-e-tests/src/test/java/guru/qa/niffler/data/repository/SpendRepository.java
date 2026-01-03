@@ -19,7 +19,7 @@ public interface SpendRepository {
   Optional<CategoryEntity> findCategoryById(@Nonnull final UUID id);
 
   @Nonnull
-  Optional<CategoryEntity> findCategoryByUsernameAndSpendName(
+  Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(
       @Nonnull String username,
       @Nonnull String name
   );
