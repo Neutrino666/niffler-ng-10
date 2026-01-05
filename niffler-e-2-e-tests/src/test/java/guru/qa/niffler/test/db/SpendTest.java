@@ -50,6 +50,22 @@ public class SpendTest {
   }
 
   @Test
+  void updateCategoryTest() {
+    String id = "c69179d6-ae84-11f0-b2b4-1a4f9b3b16be";
+    CategoryJson category = SPEND_DB_CLIENT.findCategoryById(UUID.fromString(id))
+        .orElseThrow(() -> new RuntimeException("Not found spend by id: " + id));
+    System.out.println(SPEND_DB_CLIENT.updateCategory(
+            new CategoryJson(
+                category.id(),
+                RandomDataUtils.getRandomName(),
+                category.username(),
+                category.archived()
+            )
+        )
+    );
+  }
+
+  @Test
   void findByIdTest() {
     System.out.println(
         SPEND_DB_CLIENT.findById(UUID.fromString("c8e42ffc-4ebc-46c4-9762-41f9e522329e"))

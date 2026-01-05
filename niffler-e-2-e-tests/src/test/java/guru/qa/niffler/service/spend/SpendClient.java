@@ -16,6 +16,9 @@ public interface SpendClient {
   SpendJson update(@Nonnull SpendJson spend);
 
   @Nonnull
+  CategoryJson updateCategory(@Nonnull CategoryJson category);
+
+  @Nonnull
   CategoryJson createCategory(@Nonnull CategoryJson category);
 
   @Nonnull

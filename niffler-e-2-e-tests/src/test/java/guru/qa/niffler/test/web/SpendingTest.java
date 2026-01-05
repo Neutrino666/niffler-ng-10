@@ -2,15 +2,14 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.jupiter.annotation.DisabledByIssue;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
 import guru.qa.niffler.model.CurrencyValues;
-import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.auth.LoginPage;
+import javax.annotation.Nonnull;
 import org.junit.jupiter.api.Test;
-
 
 @WebTest
 public class SpendingTest {
@@ -18,7 +17,6 @@ public class SpendingTest {
   private static final Config CFG = Config.getInstance();
 
   @User(
-      username = "duck",
       spendings = @Spending(
           category = "Учеба",
           amount = 89900,
@@ -26,14 +24,14 @@ public class SpendingTest {
           description = "Обучение Niffler 2.0 юбилейный поток!"
       )
   )
-  @DisabledByIssue("2")
   @Test
-  void spendingDescriptionShouldBeEditedByTableAction(SpendJson spending) {
+  void spendingDescriptionShouldBeEditedByTableAction(@Nonnull final UserJson user) {
+    final String description = user.testData().spendings().getFirst().description();
     final String newDescription = "Обучение Niffler Next Generation";
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .login("duck", "12345")
-        .editSpending(spending.description())
+        .login(user.username(), user.testData().password())
+        .editSpending(description)
         .setNewSpendingDescription(newDescription)
         .save()
         .checkThatTableContains(newDescription);
