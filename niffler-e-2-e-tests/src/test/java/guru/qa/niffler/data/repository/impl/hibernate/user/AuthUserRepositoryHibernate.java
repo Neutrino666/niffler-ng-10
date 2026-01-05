@@ -54,7 +54,9 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
   @Override
   public void remove(@Nonnull AuthUserEntity user) {
     entityManager.joinTransaction();
-    entityManager.merge(user);
+    if (!entityManager.contains(user)) {
+      entityManager.merge(user);
+    }
     entityManager.remove(user);
   }
 }

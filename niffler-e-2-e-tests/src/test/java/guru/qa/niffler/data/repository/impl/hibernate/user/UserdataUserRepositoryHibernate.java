@@ -68,6 +68,9 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
   @Override
   public void remove(@Nonnull UserEntity user) {
     entityManager.joinTransaction();
+    if (!entityManager.contains(user)) {
+      entityManager.merge(user);
+    }
     entityManager.remove(user);
   }
 }

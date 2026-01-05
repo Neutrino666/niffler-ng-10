@@ -20,8 +20,10 @@ public class SpendingRepositorySpring implements SpendRepository {
   @Nonnull
   @Override
   public SpendEntity create(@Nonnull SpendEntity spend) {
-    if (spend.getCategory() != null) {
-      spend.setCategory(createCategory(spend.getCategory()));
+    if (spend.getCategory().getId() == null) {
+      spend.getCategory().setId(
+          createCategory(spend.getCategory()).getId()
+      );
     }
     return spendDao.create(spend);
   }
@@ -40,7 +42,7 @@ public class SpendingRepositorySpring implements SpendRepository {
 
   @Nonnull
   @Override
-  public Optional<CategoryEntity> findCategoryByUsernameAndSpendName(
+  public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(
       @Nonnull String username,
       @Nonnull String name) {
     return categoryDao.findByUsernameAndName(username, name);
