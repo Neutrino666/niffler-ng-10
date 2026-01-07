@@ -15,16 +15,19 @@ import retrofit2.http.Query;
 
 public interface SpendApi {
 
-  // Spend controller
   @GET("internal/spends/{id}")
-  Call<SpendJson> getSpendById(@Path("id") String id,
-      @Query("username") String username);
+  Call<SpendJson> getSpendById(
+      @Path("id") String id,
+      @Query("username") String username
+  );
 
   @GET("internal/spends/all")
-  Call<List<SpendJson>> getAllSpends(@Query("username") String username,
+  Call<List<SpendJson>> getAllSpends(
+      @Query("username") String username,
       @Query("filterCurrency") CurrencyValues currencyValue,
       @Query("from") Date from,
-      @Query("to") Date to);
+      @Query("to") Date to
+  );
 
   @POST("internal/spends/add")
   Call<SpendJson> createSpend(@Body SpendJson spend);
@@ -33,6 +36,8 @@ public interface SpendApi {
   Call<SpendJson> editSpend(@Body SpendJson spend);
 
   @DELETE("internal/spends/remove")
-  Call<Void> removeSpends(@Query("username") String username,
-      @Query("ids") List<String> ids);
+  Call<Void> removeSpends(
+      @Query("username") String username,
+      @Query("ids") List<String> ids
+  );
 }

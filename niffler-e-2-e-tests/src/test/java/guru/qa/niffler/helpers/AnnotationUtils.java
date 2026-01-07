@@ -1,4 +1,4 @@
-package guru.qa.niffler.jupiter.annotation.provider;
+package guru.qa.niffler.helpers;
 
 import static guru.qa.niffler.jupiter.extension.TestMethodContextExtension.context;
 
@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 
-public class AnnotationHelper {
+public class AnnotationUtils {
 
   public static <A extends Annotation> Optional<A> findTestMethodAnnotation(
       @Nonnull ExtensionContext context,
@@ -19,7 +19,7 @@ public class AnnotationHelper {
     );
   }
 
-  public static <T> T createdInstance(
+  public static <T> T createdStore(
       @Nonnull final ExtensionContext.Namespace NAMESPACE,
       @Nonnull final Class<T> clazz
   ) {

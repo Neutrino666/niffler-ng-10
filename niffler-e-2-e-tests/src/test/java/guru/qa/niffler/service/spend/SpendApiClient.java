@@ -53,8 +53,9 @@ public class SpendApiClient implements SpendClient {
     return response.body();
   }
 
+  @Nonnull
   @Override
-  public SpendJson create(SpendJson spend) {
+  public SpendJson create(@Nonnull SpendJson spend) {
     final Response<SpendJson> response;
     try {
       response = spendApi.createSpend(spend)
@@ -70,21 +71,6 @@ public class SpendApiClient implements SpendClient {
   @Nonnull
   @Override
   public SpendJson update(@Nonnull SpendJson spend) {
-    throw new RuntimeException("Not implemented ):");
-  }
-
-  @Nonnull
-  @Override
-  public List<SpendJson> findAllByUsername(@Nonnull String username) {
-    throw new RuntimeException("Not implemented ):");
-  }
-
-  @Override
-  public void remove(@Nonnull SpendJson spend) {
-    throw new RuntimeException("Not implemented ):");
-  }
-
-  public SpendJson edit(SpendJson spend) {
     final Response<SpendJson> response;
     try {
       response = spendApi.editSpend(spend)
@@ -94,6 +80,17 @@ public class SpendApiClient implements SpendClient {
     }
     Assertions.assertThat(response.code()).isEqualTo(SC_OK);
     return response.body();
+  }
+
+  @Nonnull
+  @Override
+  public List<SpendJson> findAllByUsername(@Nonnull String username) {
+    return getAll(username, null, null, null);
+  }
+
+  @Override
+  public void remove(@Nonnull SpendJson spend) {
+    remove(spend.username(), List.of(spend.id().toString()));
   }
 
   public void remove(String username, List<String> ids) {

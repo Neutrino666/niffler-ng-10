@@ -52,7 +52,6 @@ public class UserDbClient implements UserClient {
   }
 
   @Nonnull
-  @Override
   public Optional<UserJson> findById(@Nonnull UUID id) {
     Optional<UserEntity> user = jdbcTxTemplate.execute(() -> udUserRepository.findById(id));
     return user.map(UserJson::fromEntity);
@@ -67,7 +66,6 @@ public class UserDbClient implements UserClient {
   }
 
   @Nonnull
-  @Override
   public UserJson update(@Nonnull UserJson user) {
     return xaTxTemplate.execute(
         () -> UserJson.fromEntity(
@@ -139,7 +137,6 @@ public class UserDbClient implements UserClient {
     return result;
   }
 
-  @Override
   public void delete(@Nonnull UserJson user) {
     xaTxTemplate.execute(() -> {
       authUserRepository.findByUsername(user.username())

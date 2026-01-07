@@ -4,7 +4,7 @@ import static guru.qa.niffler.jupiter.extension.TestMethodContextExtension.conte
 
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.jupiter.annotation.provider.AnnotationHelper;
+import guru.qa.niffler.helpers.AnnotationUtils;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.user.UserClient;
@@ -28,7 +28,7 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
 
   @Override
   public void beforeEach(@Nonnull ExtensionContext context) {
-    AnnotationHelper.findTestMethodAnnotation(context, User.class)
+    AnnotationUtils.findTestMethodAnnotation(context, User.class)
         .ifPresent(
             userAnno -> {
               if (userAnno.username().isEmpty()) {
