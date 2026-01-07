@@ -6,7 +6,6 @@ import static guru.qa.niffler.helpers.AnnotationUtils.findTestMethodAnnotation;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.helpers.AnnotationUtils;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.spend.SpendDbClient;
