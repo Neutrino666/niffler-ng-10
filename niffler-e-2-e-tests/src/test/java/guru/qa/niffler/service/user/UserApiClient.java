@@ -1,5 +1,8 @@
 package guru.qa.niffler.service.user;
 
+import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
+
 import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserdataApi;
 import guru.qa.niffler.config.Config;
@@ -16,6 +19,8 @@ import javax.annotation.Nonnull;
 import lombok.SneakyThrows;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
+import org.assertj.core.api.Assertions;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -49,8 +54,9 @@ public class UserApiClient implements UserClient {
   @Override
   @SneakyThrows
   public UserJson create(@Nonnull String username, @Nonnull String password) {
+    final Response<Void> response;
     authApi.requestRegisterForm().execute();
-    authApi.register(
+    response = authApi.register(
         username,
         password,
         password,
@@ -61,6 +67,7 @@ public class UserApiClient implements UserClient {
             .orElseThrow()
             .getValue()
     ).execute();
+    Assertions.assertThat(response.code()).isEqualTo(SC_CREATED);
     return new UserJson(
         null,
         username,
@@ -79,13 +86,15 @@ public class UserApiClient implements UserClient {
   @Override
   @SneakyThrows
   public Optional<UserJson> findByUsername(@Nonnull String username) {
+    final Response<UserJson> response;
     if (username.isEmpty()) {
       throw new RuntimeException("Empty user");
     }
+    response = userdataApi.currentUser(username)
+        .execute();
+    Assertions.assertThat(response.code()).isEqualTo(SC_OK);
     return Optional.ofNullable(
-        userdataApi.currentUser(username)
-            .execute()
-            .body()
+        response.body()
     );
   }
 
@@ -97,12 +106,15 @@ public class UserApiClient implements UserClient {
       throw new RuntimeException("wrong count: " + count);
     }
     for (int i = 0; i < count; i++) {
+      final Response<UserJson> response;
       final UserJson user = create(
           RandomDataUtils.getRandomUserName(),
           UserExtension.DEFAULT_PASSWORD
       );
-      userdataApi.sendInvitation(user.username(), targetUser.username())
+      response = userdataApi.sendInvitation(user.username(), targetUser.username())
           .execute();
+      Assertions.assertThat(response.code()).isEqualTo(SC_OK);
+      result.add(user);
     }
     return result;
   }
@@ -115,12 +127,14 @@ public class UserApiClient implements UserClient {
       throw new RuntimeException("wrong count: " + count);
     }
     for (int i = 0; i < count; i++) {
+      final Response<UserJson> response;
       final UserJson user = create(
           RandomDataUtils.getRandomUserName(),
           UserExtension.DEFAULT_PASSWORD
       );
-      userdataApi.sendInvitation(targetUser.username(), user.username())
+      response = userdataApi.sendInvitation(targetUser.username(), user.username())
           .execute();
+      Assertions.assertThat(response.code()).isEqualTo(SC_OK);
       result.add(user);
     }
     return result;
@@ -134,12 +148,10 @@ public class UserApiClient implements UserClient {
       throw new RuntimeException("wrong count: " + count);
     }
     for (int i = 0; i < count; i++) {
-      final UserJson user = create(
-          RandomDataUtils.getRandomUserName(),
-          UserExtension.DEFAULT_PASSWORD
-      );
-      userdataApi.sendInvitation(user.username(), targetUser.username()).execute();
-      userdataApi.acceptInvitation(targetUser.username(), user.username()).execute();
+      final Response<UserJson> response;
+      final UserJson user = createIncomeInvitation(targetUser, 1).getFirst();
+      response = userdataApi.acceptInvitation(targetUser.username(), user.username()).execute();
+      Assertions.assertThat(response.code()).isEqualTo(SC_OK);
       result.add(user);
     }
     return result;

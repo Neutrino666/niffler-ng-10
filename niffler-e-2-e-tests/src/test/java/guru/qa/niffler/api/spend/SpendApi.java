@@ -33,7 +33,7 @@ public interface SpendApi {
   Call<SpendJson> createSpend(@Body SpendJson spend);
 
   @PATCH("internal/spends/edit")
-  Call<SpendJson> editSpend(@Body SpendJson spend);
+  Call<SpendJson> update(@Body SpendJson spend);
 
   @DELETE("internal/spends/remove")
   Call<Void> removeSpends(

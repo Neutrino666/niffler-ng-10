@@ -8,10 +8,12 @@ import guru.qa.niffler.api.spend.SpendApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
-import java.io.IOException;
+import io.qameta.allure.okhttp3.AllureOkHttp3;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Nonnull;
+import lombok.SneakyThrows;
+import okhttp3.OkHttpClient;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -24,60 +26,50 @@ public class SpendApiClient implements SpendClient {
   private final Retrofit retrofit = new Retrofit.Builder()
       .baseUrl(CFG.spendUrl())
       .addConverterFactory(JacksonConverterFactory.create())
+      .client(new OkHttpClient.Builder()
+          .addInterceptor(new AllureOkHttp3())
+          .build())
       .build();
 
   private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
+  @SneakyThrows
   public SpendJson getById(String id, String username) {
     final Response<SpendJson> response;
-    try {
-      response = spendApi.getSpendById(id, username)
-          .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
-    }
+    response = spendApi.getSpendById(id, username)
+        .execute();
     Assertions.assertThat(response.code()).isEqualTo(SC_OK);
     return response.body();
   }
 
+  @SneakyThrows
   public List<SpendJson> getAll(String username, CurrencyValues currencyValue, Date from,
       Date to) {
     final Response<List<SpendJson>> response;
-    try {
-      response = spendApi.getAllSpends(username, currencyValue, from, to)
-          .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
-    }
+    response = spendApi.getAllSpends(username, currencyValue, from, to)
+        .execute();
     Assertions.assertThat(response.code()).isEqualTo(SC_OK);
     return response.body();
   }
 
   @Nonnull
   @Override
+  @SneakyThrows
   public SpendJson create(@Nonnull SpendJson spend) {
     final Response<SpendJson> response;
-    try {
-      response = spendApi.createSpend(spend)
-          .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
-    }
-
+    response = spendApi.createSpend(spend)
+        .execute();
     Assertions.assertThat(response.code()).isEqualTo(SC_CREATED);
     return response.body();
   }
 
   @Nonnull
   @Override
+  @SneakyThrows
   public SpendJson update(@Nonnull SpendJson spend) {
     final Response<SpendJson> response;
-    try {
-      response = spendApi.editSpend(spend)
-          .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
-    }
+    response = spendApi.update(spend)
+        .execute();
     Assertions.assertThat(response.code()).isEqualTo(SC_OK);
     return response.body();
   }
@@ -93,14 +85,11 @@ public class SpendApiClient implements SpendClient {
     remove(spend.username(), List.of(spend.id().toString()));
   }
 
+  @SneakyThrows
   public void remove(String username, List<String> ids) {
     final Response<Void> response;
-    try {
-      response = spendApi.removeSpends(username, ids)
-          .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
-    }
+    response = spendApi.removeSpends(username, ids)
+        .execute();
     Assertions.assertThat(response.code()).isEqualTo(SC_ACCEPTED);
   }
 }
