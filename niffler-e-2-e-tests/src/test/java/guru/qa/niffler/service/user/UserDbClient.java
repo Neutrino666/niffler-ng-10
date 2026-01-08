@@ -87,7 +87,7 @@ public class UserDbClient implements UserClient {
                 AuthUserEntity authUser = authUserEntity(username, "12345");
                 authUserRepository.create(authUser);
                 UserEntity requester = udUserRepository.create(userEntity(username));
-                udUserRepository.sendInvitation(targetEntity, requester);
+                udUserRepository.sendInvitation(requester, targetEntity);
                 result.add(UserJson.fromEntity(requester));
                 return null;
               })
@@ -108,7 +108,7 @@ public class UserDbClient implements UserClient {
                 AuthUserEntity authUser = authUserEntity(username, "12345");
                 authUserRepository.create(authUser);
                 UserEntity addressee = udUserRepository.create(userEntity(username));
-                udUserRepository.sendInvitation(addressee, targetEntity);
+                udUserRepository.sendInvitation(targetEntity, addressee);
                 result.add(UserJson.fromEntity(addressee));
                 return null;
               })
@@ -137,6 +137,7 @@ public class UserDbClient implements UserClient {
     return result;
   }
 
+  @Override
   public void delete(@Nonnull UserJson user) {
     xaTxTemplate.execute(() -> {
       authUserRepository.findByUsername(user.username())
