@@ -40,20 +40,32 @@ public class FriendsPage {
 
   @Step("Проверяем наличие друга: '{friend}'")
   public FriendsPage checkFriendIsVisible(@Nonnull final String friend) {
-    friends.find(text(friend)).shouldBe(visible);
+    search(friend);
+    friends.find(text(friend))
+        .shouldBe(visible);
     return this;
   }
 
   @Step("Проверяем наличие входящего запроса в друзья от: '{friend}'")
   public FriendsPage checkIncomeInvitationIsVisible(@Nonnull final String friend) {
-    requests.find(text(friend)).shouldBe(visible);
+    search(friend);
+    requests.find(text(friend))
+        .shouldBe(visible);
     return this;
   }
 
   @Step("Проверяем наличие исходящего запроса в друзья к: '{friend}'")
   public FriendsPage checkOutcomeInvitationIsVisible(@Nonnull final String friend) {
     switchTab(Tab.ALL_PEOPLE);
-    all.find(text(friend)).shouldBe(visible);
+    search(friend);
+    all.find(text(friend))
+        .shouldBe(visible);
+    return this;
+  }
+
+  public FriendsPage search(@Nonnull final String string) {
+    searchInput.setValue(string)
+        .pressEnter();
     return this;
   }
 

@@ -1,10 +1,11 @@
 package guru.qa.niffler.jupiter.extension;
 
-import static guru.qa.niffler.jupiter.annotation.provider.AnnotationHelper.createdInstance;
+import static guru.qa.niffler.helpers.AnnotationUtils.createdStore;
+import static guru.qa.niffler.helpers.AnnotationUtils.findTestMethodAnnotation;
 
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.jupiter.annotation.provider.AnnotationHelper;
+import guru.qa.niffler.helpers.AnnotationUtils;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
@@ -29,7 +30,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
 
   @Override
   public void beforeEach(@Nonnull final ExtensionContext context) {
-    AnnotationHelper.findTestMethodAnnotation(context, User.class)
+    findTestMethodAnnotation(context, User.class)
         .ifPresent(
             anno -> {
               if (anno.spendings().length > 0) {
@@ -82,6 +83,6 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
   @Override
   public SpendJson[] resolveParameter(@Nonnull final ParameterContext parameterContext,
       @Nonnull final ExtensionContext extensionContext) throws ParameterResolutionException {
-    return createdInstance(NAMESPACE, SpendJson[].class);
+    return createdStore(NAMESPACE, SpendJson[].class);
   }
 }
