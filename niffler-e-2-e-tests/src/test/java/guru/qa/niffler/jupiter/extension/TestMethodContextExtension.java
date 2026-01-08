@@ -1,6 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -14,12 +14,12 @@ public class TestMethodContextExtension implements BeforeEachCallback, AfterEach
   }
 
   @Override
-  public void beforeEach(@NotNull ExtensionContext context) throws Exception {
+  public void beforeEach(@Nonnull ExtensionContext context) throws Exception {
     ctxStore.set(context);
   }
 
   @Override
-  public void afterEach(@NotNull ExtensionContext context) throws Exception {
+  public void afterEach(@Nonnull ExtensionContext context) throws Exception {
     ctxStore.remove();
   }
 }

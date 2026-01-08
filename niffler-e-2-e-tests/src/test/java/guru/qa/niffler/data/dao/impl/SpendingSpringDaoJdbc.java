@@ -46,6 +46,31 @@ public class SpendingSpringDaoJdbc implements SpendDao {
 
   @Nonnull
   @Override
+  public SpendEntity update(@Nonnull SpendEntity spend) {
+    String sql = """
+        UPDATE "spend"
+        SET username = ?,
+            spend_date = ?,
+            currency = ?,
+            amount = ?,
+            description = ?,
+            category_id = ?
+        WHERE id = ?
+        """;
+    getJdbcTemplate().update(
+        sql,
+        spend.getUsername(),
+        spend.getSpendDate(),
+        spend.getCurrency().name(),
+        spend.getDescription(),
+        spend.getCategory().getId(),
+        spend.getId()
+    );
+    return spend;
+  }
+
+  @Nonnull
+  @Override
   public Optional<SpendEntity> findById(@Nonnull UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
@@ -82,8 +107,30 @@ public class SpendingSpringDaoJdbc implements SpendDao {
         );
   }
 
+  @Nonnull
   @Override
-  public void delete(@Nonnull SpendEntity spend) {
+  public Optional<SpendEntity> findByUsernameAndSpendDescription(@Nonnull String username,
+      @Nonnull String description) {
+    String sql = "SELECT "
+        + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
+        + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "
+        + "FROM spend AS s "
+        + "JOIN category AS c "
+        + "ON s.category_id = c.id "
+        + "WHERE s.username = ? "
+        + "AND s.description = ?";
+    return Optional.ofNullable(
+        getJdbcTemplate().queryForObject(
+            sql,
+            SpendEntityRowMapper.INSTANCE,
+            username,
+            description
+        )
+    );
+  }
+
+  @Override
+  public void remove(@Nonnull SpendEntity spend) {
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = con.prepareStatement(
           "DELETE FROM spend WHERE id = ?"

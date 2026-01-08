@@ -16,5 +16,8 @@ public interface UserDao {
   @Nonnull
   Optional<UserEntity> findByUsername(@Nonnull String username);
 
+  @Nonnull
+  UserEntity update(@Nonnull UserEntity user);
+
   void delete(@Nonnull UserEntity user);
 }

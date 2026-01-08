@@ -25,5 +25,5 @@ public interface CategoryDao {
   @Nonnull
   List<CategoryEntity> findAll();
 
-  void delete(@Nonnull CategoryEntity category);
+  void remove(@Nonnull CategoryEntity category);
 }
