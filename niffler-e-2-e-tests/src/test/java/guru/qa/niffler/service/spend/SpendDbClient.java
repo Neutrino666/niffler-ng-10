@@ -57,7 +57,6 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Nonnull
-  @Override
   public CategoryJson createCategory(@Nonnull CategoryJson category) {
     return xaTxTemplate.execute(() -> CategoryJson.fromEntity(
             spendRepository.createCategory(CategoryEntity.fromJson(category))
@@ -66,30 +65,26 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Nonnull
-  @Override
   public Optional<CategoryJson> findCategoryById(@Nonnull UUID id) {
     return jdbcTxTemplate.execute(() -> spendRepository.findCategoryById(id))
         .map(CategoryJson::fromEntity);
   }
 
   @Nonnull
-  @Override
   public Optional<CategoryJson> findCategoryByUsernameAndSpendName(@Nonnull String username,
       @Nonnull String name) {
     return jdbcTxTemplate.execute(
-            () -> spendRepository.findCategoryByUsernameAndSpendName(username, name))
+            () -> spendRepository.findCategoryByUsernameAndCategoryName(username, name))
         .map(CategoryJson::fromEntity);
   }
 
   @Nonnull
-  @Override
   public Optional<SpendJson> findById(@Nonnull UUID id) {
     return jdbcTxTemplate.execute(() -> spendRepository.findById(id))
         .map(SpendJson::fromEntity);
   }
 
   @Nonnull
-  @Override
   public List<SpendJson> findAll() {
     return jdbcTxTemplate.execute(() ->
         spendRepository.findAll()
@@ -109,7 +104,6 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Nonnull
-  @Override
   public Optional<SpendJson> findByUsernameAndSpendDescription(@Nonnull String username,
       @Nonnull String description) {
     return jdbcTxTemplate.execute(
@@ -125,7 +119,6 @@ public class SpendDbClient implements SpendClient {
     });
   }
 
-  @Override
   public void removeCategory(@Nonnull CategoryJson category) {
     xaTxTemplate.execute(() -> {
           spendRepository.removeCategory(CategoryEntity.fromJson(category));

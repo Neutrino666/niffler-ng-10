@@ -4,7 +4,6 @@ import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
-import guru.qa.niffler.service.spend.SpendClient;
 import guru.qa.niffler.service.spend.SpendDbClient;
 import java.util.Date;
 import java.util.UUID;
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 public class SpendTest {
 
-  private static final SpendClient SPEND_DB_CLIENT = new SpendDbClient();
+  private static final SpendDbClient SPEND_DB_CLIENT = new SpendDbClient();
 
   @Test
   void createTest() {

@@ -9,6 +9,10 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.repository.impl.hibernate.user.AuthUserRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.hibernate.user.UserdataUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.jdbc.user.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.jdbc.user.UdUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.spring.user.AuthUserRepositorySpringJdbc;
+import guru.qa.niffler.data.repository.impl.spring.user.UdUserRepositorySpringJdbc;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.helpers.RandomDataUtils;
@@ -89,7 +93,7 @@ public class UserDbClient implements UserClient {
                 AuthUserEntity authUser = authUserEntity(username, "12345");
                 authUserRepository.create(authUser);
                 UserEntity requester = udUserRepository.create(userEntity(username));
-                udUserRepository.sendInvitation(targetEntity, requester);
+                udUserRepository.sendInvitation(requester, targetEntity);
                 result.add(UserJson.fromEntity(requester));
                 return null;
               })
@@ -110,7 +114,7 @@ public class UserDbClient implements UserClient {
                 AuthUserEntity authUser = authUserEntity(username, "12345");
                 authUserRepository.create(authUser);
                 UserEntity addressee = udUserRepository.create(userEntity(username));
-                udUserRepository.sendInvitation(addressee, targetEntity);
+                udUserRepository.sendInvitation(targetEntity, addressee);
                 result.add(UserJson.fromEntity(addressee));
                 return null;
               })
