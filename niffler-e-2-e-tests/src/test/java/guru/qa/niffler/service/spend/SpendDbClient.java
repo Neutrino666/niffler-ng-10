@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import org.jetbrains.annotations.NotNull;
 
 public class SpendDbClient implements SpendClient {
 
@@ -38,18 +37,17 @@ public class SpendDbClient implements SpendClient {
     );
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public SpendJson update(@NotNull SpendJson spend) {
+  public SpendJson update(@Nonnull SpendJson spend) {
     return xaTxTemplate.execute(() -> SpendJson.fromEntity(
             spendRepository.update(SpendEntity.fromJson(spend))
         )
     );
   }
 
-  @NotNull
-  @Override
-  public CategoryJson updateCategory(@NotNull CategoryJson category) {
+  @Nonnull
+  public CategoryJson updateCategory(@Nonnull CategoryJson category) {
     return xaTxTemplate.execute(() -> CategoryJson.fromEntity(
             spendRepository.updateCategory(CategoryEntity.fromJson(category))
         )
