@@ -8,7 +8,6 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.provider.AnnotationHelper;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.spend.SpendClient;
 import guru.qa.niffler.service.spend.SpendDbClient;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class CategoryExtension implements
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       CategoryExtension.class);
-  private final SpendClient categoryClient = new SpendDbClient();
+  private final SpendDbClient categoryClient = new SpendDbClient();
 
   @Override
   public void beforeEach(@Nonnull ExtensionContext context) {
