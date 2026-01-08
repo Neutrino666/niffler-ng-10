@@ -1,6 +1,7 @@
 package guru.qa.niffler.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -15,10 +16,13 @@ public record UserJson(
     String fullname,
     CurrencyValues currency,
     String photo,
-    String photoSmall
+    String photoSmall,
+    FriendshipStatus friendshipStatus,
+    @JsonProperty
+    TestData testData
 ) {
 
-  public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity) {
+  public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity, FriendshipStatus friendshipStatus) {
     return new UserJson(
         entity.getId(),
         entity.getUsername(),
@@ -31,7 +35,28 @@ public record UserJson(
             : null,
         entity.getPhotoSmall() != null && entity.getPhotoSmall().length > 0
             ? new String(entity.getPhotoSmall(), StandardCharsets.UTF_8)
-            : null
+            : null,
+        friendshipStatus,
+        null
+    );
+  }
+
+  public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity) {
+    return fromEntity(entity, null);
+  }
+
+  public @Nonnull UserJson addTestData(TestData testData) {
+    return new UserJson(
+        id,
+        username,
+        firstname,
+        surname,
+        fullname,
+        currency,
+        photo,
+        photoSmall,
+        friendshipStatus,
+        testData
     );
   }
 }

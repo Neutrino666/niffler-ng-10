@@ -1,6 +1,7 @@
 package guru.qa.niffler.service.user;
 
 import guru.qa.niffler.model.UserJson;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -19,9 +20,11 @@ public interface UserClient {
   @Nonnull
   UserJson update(@Nonnull UserJson user);
 
-  void createIncomeInvitation(@Nonnull UserJson targetUser, int count);
+  List<UserJson> createIncomeInvitation(@Nonnull UserJson targetUser, int count);
 
-  void createOutcomeInvitation(@Nonnull UserJson targetUser, int count);
+  List<UserJson> createOutcomeInvitation(@Nonnull UserJson targetUser, int count);
+
+  List<UserJson> createFriends(@Nonnull UserJson targetUser, int count);
 
   void delete(@Nonnull UserJson user);
 }

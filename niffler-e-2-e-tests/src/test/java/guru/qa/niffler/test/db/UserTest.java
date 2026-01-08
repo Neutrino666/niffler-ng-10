@@ -46,6 +46,8 @@ public class UserTest {
             null,
             null,
             null,
+            null,
+            null,
             null
         ) ,
         1
@@ -58,6 +60,8 @@ public class UserTest {
         new UserJson(
             UUID.fromString("e30a45b6-e052-11f0-92e3-36c6088cf3f6"),
             "valentin6",
+            null,
+            null,
             null,
             null,
             null,
@@ -82,7 +86,9 @@ public class UserTest {
                 user.fullname(),
                 user.currency(),
                 user.photo(),
-                user.photoSmall()
+                user.photoSmall(),
+                user.friendshipStatus(),
+                user.testData()
             )
         )
     );
@@ -94,6 +100,8 @@ public class UserTest {
         new UserJson(
             null,
             "valentin6",
+            null,
+            null,
             null,
             null,
             null,

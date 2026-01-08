@@ -28,6 +28,9 @@ public interface SpendRepository {
   SpendEntity update(@Nonnull SpendEntity spend);
 
   @Nonnull
+  CategoryEntity updateCategory(@Nonnull CategoryEntity category);
+
+  @Nonnull
   Optional<SpendEntity> findById(@Nonnull UUID id);
 
   @Nonnull

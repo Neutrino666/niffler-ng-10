@@ -47,6 +47,15 @@ public class SpendDbClient implements SpendClient {
     );
   }
 
+  @NotNull
+  @Override
+  public CategoryJson updateCategory(@NotNull CategoryJson category) {
+    return xaTxTemplate.execute(() -> CategoryJson.fromEntity(
+            spendRepository.updateCategory(CategoryEntity.fromJson(category))
+        )
+    );
+  }
+
   @Nonnull
   public CategoryJson createCategory(@Nonnull CategoryJson category) {
     return xaTxTemplate.execute(() -> CategoryJson.fromEntity(

@@ -18,6 +18,8 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -80,7 +82,8 @@ public class UserDbClient implements UserClient {
   }
 
   @Override
-  public void createIncomeInvitation(@Nonnull UserJson targetUser, int count) {
+  public List<UserJson> createIncomeInvitation(@Nonnull UserJson targetUser, int count) {
+    List<UserJson> result = new ArrayList<>();
     if (count > 0) {
       UserEntity targetEntity = udUserRepository.findById(targetUser.id())
           .orElseThrow();
@@ -91,14 +94,17 @@ public class UserDbClient implements UserClient {
                 authUserRepository.create(authUser);
                 UserEntity requester = udUserRepository.create(userEntity(username));
                 udUserRepository.sendInvitation(requester, targetEntity);
+                result.add(UserJson.fromEntity(requester));
                 return null;
               })
           );
     }
+    return result;
   }
 
   @Override
-  public void createOutcomeInvitation(@Nonnull UserJson targetUser, int count) {
+  public List<UserJson> createOutcomeInvitation(@Nonnull UserJson targetUser, int count) {
+    List<UserJson> result = new ArrayList<>();
     if (count > 0) {
       UserEntity targetEntity = udUserRepository.findById(targetUser.id())
           .orElseThrow();
@@ -109,13 +115,16 @@ public class UserDbClient implements UserClient {
                 authUserRepository.create(authUser);
                 UserEntity addressee = udUserRepository.create(userEntity(username));
                 udUserRepository.sendInvitation(targetEntity, addressee);
+                result.add(UserJson.fromEntity(addressee));
                 return null;
               })
           );
     }
+    return result;
   }
 
-  public void createFriends(@Nonnull UserJson targetUser, int count) {
+  public List<UserJson> createFriends(@Nonnull UserJson targetUser, int count) {
+    List<UserJson> result = new ArrayList<>();
     if (count > 0) {
       UserEntity targetEntity = udUserRepository.findById(targetUser.id())
           .orElseThrow();
@@ -124,12 +133,14 @@ public class UserDbClient implements UserClient {
                 String username = RandomDataUtils.getRandomName();
                 AuthUserEntity authUser = authUserEntity(username, "12345");
                 authUserRepository.create(authUser);
-                UserEntity addressee = udUserRepository.create(userEntity(username));
-                udUserRepository.addFriend(addressee, targetEntity);
+                UserEntity friend = udUserRepository.create(userEntity(username));
+                udUserRepository.addFriend(friend, targetEntity);
+                result.add(UserJson.fromEntity(friend));
                 return null;
               })
           );
     }
+    return result;
   }
 
   @Override
