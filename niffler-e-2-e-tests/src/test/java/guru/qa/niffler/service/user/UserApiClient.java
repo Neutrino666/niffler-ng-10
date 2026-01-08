@@ -3,20 +3,21 @@ package guru.qa.niffler.service.user;
 import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
-import guru.qa.niffler.api.AuthApi;
-import guru.qa.niffler.api.UserdataApi;
+import guru.qa.niffler.api.user.AuthApi;
+import guru.qa.niffler.api.user.UserdataApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.UserJson;
 import io.qameta.allure.okhttp3.AllureOkHttp3;
+import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import lombok.SneakyThrows;
+import javax.annotation.ParametersAreNonnullByDefault;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import org.assertj.core.api.Assertions;
@@ -24,6 +25,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+@ParametersAreNonnullByDefault
 public class UserApiClient implements UserClient {
 
   private static final Config CFG = Config.getInstance();
@@ -52,21 +54,25 @@ public class UserApiClient implements UserClient {
 
   @Nonnull
   @Override
-  @SneakyThrows
-  public UserJson create(@Nonnull String username, @Nonnull String password) {
+  public UserJson create(String username, String password) {
     final Response<Void> response;
-    authApi.requestRegisterForm().execute();
-    response = authApi.register(
-        username,
-        password,
-        password,
-        cm.getCookieStore().getCookies()
-            .stream()
-            .filter(c -> c.getName().equals("XSRF-TOKEN"))
-            .findFirst()
-            .orElseThrow()
-            .getValue()
-    ).execute();
+    try {
+      authApi.requestRegisterForm().execute();
+      response = authApi.register(
+          username,
+          password,
+          password,
+          cm.getCookieStore().getCookies()
+              .stream()
+              .filter(c -> c.getName().equals("XSRF-TOKEN"))
+              .findFirst()
+              .orElseThrow()
+              .getValue()
+      ).execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+
     Assertions.assertThat(response.code()).isEqualTo(SC_CREATED);
     return new UserJson(
         null,
@@ -84,14 +90,17 @@ public class UserApiClient implements UserClient {
 
   @Nonnull
   @Override
-  @SneakyThrows
-  public Optional<UserJson> findByUsername(@Nonnull String username) {
+  public Optional<UserJson> findByUsername(String username) {
     final Response<UserJson> response;
     if (username.isEmpty()) {
       throw new RuntimeException("Empty user");
     }
-    response = userdataApi.currentUser(username)
-        .execute();
+    try {
+      response = userdataApi.currentUser(username)
+          .execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
     Assertions.assertThat(response.code()).isEqualTo(SC_OK);
     return Optional.ofNullable(
         response.body()
@@ -99,8 +108,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
-  @SneakyThrows
-  public List<UserJson> createIncomeInvitation(@Nonnull UserJson targetUser, int count) {
+  public List<UserJson> createIncomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {
       throw new RuntimeException("wrong count: " + count);
@@ -111,8 +119,12 @@ public class UserApiClient implements UserClient {
           RandomDataUtils.getRandomUserName(),
           UserExtension.DEFAULT_PASSWORD
       );
-      response = userdataApi.sendInvitation(user.username(), targetUser.username())
-          .execute();
+      try {
+        response = userdataApi.sendInvitation(user.username(), targetUser.username())
+            .execute();
+      } catch (IOException e) {
+        throw new AssertionError(e);
+      }
       Assertions.assertThat(response.code()).isEqualTo(SC_OK);
       result.add(user);
     }
@@ -120,8 +132,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
-  @SneakyThrows
-  public List<UserJson> createOutcomeInvitation(@Nonnull UserJson targetUser, int count) {
+  public List<UserJson> createOutcomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {
       throw new RuntimeException("wrong count: " + count);
@@ -132,8 +143,12 @@ public class UserApiClient implements UserClient {
           RandomDataUtils.getRandomUserName(),
           UserExtension.DEFAULT_PASSWORD
       );
-      response = userdataApi.sendInvitation(targetUser.username(), user.username())
-          .execute();
+      try {
+        response = userdataApi.sendInvitation(targetUser.username(), user.username())
+            .execute();
+      } catch (IOException e) {
+        throw new AssertionError(e);
+      }
       Assertions.assertThat(response.code()).isEqualTo(SC_OK);
       result.add(user);
     }
@@ -141,8 +156,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
-  @SneakyThrows
-  public List<UserJson> createFriends(@Nonnull UserJson targetUser, int count) {
+  public List<UserJson> createFriends(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {
       throw new RuntimeException("wrong count: " + count);
@@ -150,7 +164,12 @@ public class UserApiClient implements UserClient {
     for (int i = 0; i < count; i++) {
       final Response<UserJson> response;
       final UserJson user = createIncomeInvitation(targetUser, 1).getFirst();
-      response = userdataApi.acceptInvitation(targetUser.username(), user.username()).execute();
+      try {
+        response = userdataApi.acceptInvitation(targetUser.username(), user.username())
+            .execute();
+      } catch (IOException e) {
+        throw new AssertionError(e);
+      }
       Assertions.assertThat(response.code()).isEqualTo(SC_OK);
       result.add(user);
     }
@@ -158,7 +177,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
-  public void delete(@Nonnull UserJson user) {
+  public void delete(UserJson user) {
     throw new RuntimeException("Not implemented :(");
   }
 }

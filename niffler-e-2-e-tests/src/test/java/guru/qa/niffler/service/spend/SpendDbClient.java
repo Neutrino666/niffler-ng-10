@@ -13,7 +13,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class SpendDbClient implements SpendClient {
 
   private final static Config CFG = Config.getInstance();
@@ -28,18 +31,18 @@ public class SpendDbClient implements SpendClient {
       CFG.spendJdbcUrl()
   );
 
-  @Nonnull
+  @Nullable
   @Override
-  public SpendJson create(@Nonnull SpendJson spend) {
+  public SpendJson create(SpendJson spend) {
     return xaTxTemplate.execute(() -> SpendJson.fromEntity(
             spendRepository.create(SpendEntity.fromJson(spend))
         )
     );
   }
 
-  @Nonnull
+  @Nullable
   @Override
-  public SpendJson update(@Nonnull SpendJson spend) {
+  public SpendJson update(SpendJson spend) {
     return xaTxTemplate.execute(() -> SpendJson.fromEntity(
             spendRepository.update(SpendEntity.fromJson(spend))
         )
@@ -47,15 +50,15 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Nonnull
-  public CategoryJson updateCategory(@Nonnull CategoryJson category) {
+  public CategoryJson updateCategory(CategoryJson category) {
     return xaTxTemplate.execute(() -> CategoryJson.fromEntity(
             spendRepository.updateCategory(CategoryEntity.fromJson(category))
         )
     );
   }
 
-  @Nonnull
-  public CategoryJson createCategory(@Nonnull CategoryJson category) {
+  @Nullable
+  public CategoryJson createCategory(CategoryJson category) {
     return xaTxTemplate.execute(() -> CategoryJson.fromEntity(
             spendRepository.createCategory(CategoryEntity.fromJson(category))
         )
@@ -63,21 +66,22 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Nonnull
-  public Optional<CategoryJson> findCategoryById(@Nonnull UUID id) {
+  public Optional<CategoryJson> findCategoryById(UUID id) {
     return jdbcTxTemplate.execute(() -> spendRepository.findCategoryById(id))
         .map(CategoryJson::fromEntity);
   }
 
   @Nonnull
-  public Optional<CategoryJson> findCategoryByUsernameAndSpendName(@Nonnull String username,
-      @Nonnull String name) {
+  public Optional<CategoryJson> findCategoryByUsernameAndSpendName(
+      String username,
+      String name) {
     return jdbcTxTemplate.execute(
             () -> spendRepository.findCategoryByUsernameAndCategoryName(username, name))
         .map(CategoryJson::fromEntity);
   }
 
   @Nonnull
-  public Optional<SpendJson> findById(@Nonnull UUID id) {
+  public Optional<SpendJson> findById(UUID id) {
     return jdbcTxTemplate.execute(() -> spendRepository.findById(id))
         .map(SpendJson::fromEntity);
   }
@@ -94,7 +98,7 @@ public class SpendDbClient implements SpendClient {
 
   @Nonnull
   @Override
-  public List<SpendJson> findAllByUsername(@Nonnull String username) {
+  public List<SpendJson> findAllByUsername(String username) {
     return jdbcTxTemplate.execute(() -> spendRepository.findAllByUsername(username))
         .stream()
         .map(SpendJson::fromEntity)
@@ -102,22 +106,23 @@ public class SpendDbClient implements SpendClient {
   }
 
   @Nonnull
-  public Optional<SpendJson> findByUsernameAndSpendDescription(@Nonnull String username,
-      @Nonnull String description) {
+  public Optional<SpendJson> findByUsernameAndSpendDescription(
+      String username,
+      String description) {
     return jdbcTxTemplate.execute(
             () -> spendRepository.findByUsernameAndSpendDescription(username, description))
         .map(SpendJson::fromEntity);
   }
 
   @Override
-  public void remove(@Nonnull SpendJson spend) {
+  public void remove(SpendJson spend) {
     jdbcTxTemplate.execute(() -> {
       spendRepository.remove(SpendEntity.fromJson(spend));
       return null;
     });
   }
 
-  public void removeCategory(@Nonnull CategoryJson category) {
+  public void removeCategory(CategoryJson category) {
     xaTxTemplate.execute(() -> {
           spendRepository.removeCategory(CategoryEntity.fromJson(category));
           return null;

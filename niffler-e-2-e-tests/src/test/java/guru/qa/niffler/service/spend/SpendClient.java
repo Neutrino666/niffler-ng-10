@@ -3,17 +3,20 @@ package guru.qa.niffler.service.spend;
 import guru.qa.niffler.model.SpendJson;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface SpendClient {
 
-  @Nonnull
-  SpendJson create(@Nonnull SpendJson spend);
+  @Nullable
+  SpendJson create(SpendJson spend);
+
+  @Nullable
+  SpendJson update(SpendJson spend);
 
   @Nonnull
-  SpendJson update(@Nonnull SpendJson spend);
+  List<SpendJson> findAllByUsername(String username);
 
-  @Nonnull
-  List<SpendJson> findAllByUsername(@Nonnull String username);
-
-  void remove(@Nonnull SpendJson spend);
+  void remove(SpendJson spend);
 }

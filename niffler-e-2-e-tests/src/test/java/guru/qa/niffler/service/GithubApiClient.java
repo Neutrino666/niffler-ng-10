@@ -5,9 +5,12 @@ import guru.qa.niffler.api.GithubApi;
 import guru.qa.niffler.config.Config;
 import java.io.IOException;
 import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+@ParametersAreNonnullByDefault
 public class GithubApiClient {
 
   private static final String GH_TOKEN_ENV = "GITHUB_TOKEN";
@@ -21,6 +24,7 @@ public class GithubApiClient {
 
   private final GithubApi githubApi = retrofit.create(GithubApi.class);
 
+  @Nonnull
   public String issueState(String issueNumber) {
     final JsonNode response;
     try {

@@ -1,6 +1,6 @@
 package guru.qa.niffler.service.user;
 
-import guru.qa.niffler.api.AuthApi;
+import guru.qa.niffler.api.user.AuthApi;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;

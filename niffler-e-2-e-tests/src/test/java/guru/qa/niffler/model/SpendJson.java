@@ -6,7 +6,9 @@ import guru.qa.niffler.data.entity.spend.SpendEntity;
 import java.util.Date;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public record SpendJson(
     @JsonProperty("id")
     UUID id,
@@ -23,7 +25,7 @@ public record SpendJson(
     @JsonProperty("username")
     String username) {
 
-  public static @Nonnull SpendJson fromEntity(@Nonnull SpendEntity entity) {
+  public static @Nonnull SpendJson fromEntity(SpendEntity entity) {
     final CategoryEntity category = entity.getCategory();
     final String username = entity.getUsername();
 
