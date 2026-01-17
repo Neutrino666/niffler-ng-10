@@ -9,10 +9,6 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.repository.impl.hibernate.user.AuthUserRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.hibernate.user.UserdataUserRepositoryHibernate;
-import guru.qa.niffler.data.repository.impl.jdbc.user.AuthUserRepositoryJdbc;
-import guru.qa.niffler.data.repository.impl.jdbc.user.UdUserRepositoryJdbc;
-import guru.qa.niffler.data.repository.impl.spring.user.AuthUserRepositorySpringJdbc;
-import guru.qa.niffler.data.repository.impl.spring.user.UdUserRepositorySpringJdbc;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.helpers.RandomDataUtils;
@@ -56,7 +52,6 @@ public class UserDbClient implements UserClient {
   }
 
   @Nonnull
-  @Override
   public Optional<UserJson> findById(@Nonnull UUID id) {
     Optional<UserEntity> user = jdbcTxTemplate.execute(() -> udUserRepository.findById(id));
     return user.map(UserJson::fromEntity);
@@ -71,7 +66,6 @@ public class UserDbClient implements UserClient {
   }
 
   @Nonnull
-  @Override
   public UserJson update(@Nonnull UserJson user) {
     return xaTxTemplate.execute(
         () -> UserJson.fromEntity(

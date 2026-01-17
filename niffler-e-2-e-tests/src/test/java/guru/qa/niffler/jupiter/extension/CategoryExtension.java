@@ -1,11 +1,11 @@
 package guru.qa.niffler.jupiter.extension;
 
-import static guru.qa.niffler.jupiter.annotation.provider.AnnotationHelper.createdInstance;
+import static guru.qa.niffler.helpers.AnnotationUtils.createdStore;
+import static guru.qa.niffler.helpers.AnnotationUtils.findTestMethodAnnotation;
 
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.jupiter.annotation.provider.AnnotationHelper;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.spend.SpendDbClient;
@@ -28,11 +28,11 @@ public class CategoryExtension implements
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       CategoryExtension.class);
-  private final SpendDbClient categoryClient = new SpendDbClient();
+    private final SpendDbClient categoryClient = new SpendDbClient();
 
   @Override
   public void beforeEach(@Nonnull ExtensionContext context) {
-    AnnotationHelper.findTestMethodAnnotation(context, User.class)
+    findTestMethodAnnotation(context, User.class)
         .ifPresent(
             anno -> {
               if (anno.categories().length > 0) {
@@ -81,7 +81,7 @@ public class CategoryExtension implements
 
   @Override
   public void afterTestExecution(@Nonnull ExtensionContext context) {
-    CategoryJson[] categories = createdInstance(NAMESPACE, CategoryJson[].class);
+    CategoryJson[] categories = createdStore(NAMESPACE, CategoryJson[].class);
     if (categories != null) {
       for (CategoryJson category : categories) {
         if (!category.archived()) {
@@ -107,6 +107,6 @@ public class CategoryExtension implements
   public CategoryJson[] resolveParameter(
       @Nonnull ParameterContext parameterContext,
       @Nonnull ExtensionContext extensionContext) throws ParameterResolutionException {
-    return createdInstance(NAMESPACE, CategoryJson[].class);
+    return createdStore(NAMESPACE, CategoryJson[].class);
   }
 }
