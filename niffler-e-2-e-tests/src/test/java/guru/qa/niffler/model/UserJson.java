@@ -6,23 +6,38 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public record UserJson(
     @JsonProperty("id")
+    @Nullable
     UUID id,
     String username,
+    @Nullable
     String firstname,
+    @Nullable
     String surname,
+    @Nullable
     String fullname,
+    @Nullable
     CurrencyValues currency,
+    @Nullable
     String photo,
+    @Nullable
     String photoSmall,
+    @Nullable
     FriendshipStatus friendshipStatus,
     @JsonIgnore
+    @Nullable
     TestData testData
 ) {
 
-  public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity, FriendshipStatus friendshipStatus) {
+  public static @Nonnull UserJson fromEntity(
+      UserEntity entity,
+      @Nullable FriendshipStatus friendshipStatus
+  ) {
     return new UserJson(
         entity.getId(),
         entity.getUsername(),
@@ -41,7 +56,7 @@ public record UserJson(
     );
   }
 
-  public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity) {
+  public static @Nonnull UserJson fromEntity(UserEntity entity) {
     return fromEntity(entity, null);
   }
 

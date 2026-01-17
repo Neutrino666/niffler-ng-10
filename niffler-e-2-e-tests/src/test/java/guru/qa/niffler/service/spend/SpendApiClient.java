@@ -9,16 +9,19 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import io.qameta.allure.okhttp3.AllureOkHttp3;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Nonnull;
-import lombok.SneakyThrows;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import okhttp3.OkHttpClient;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+@ParametersAreNonnullByDefault
 public class SpendApiClient implements SpendClient {
 
   private static final Config CFG = Config.getInstance();
@@ -33,63 +36,85 @@ public class SpendApiClient implements SpendClient {
 
   private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
-  @SneakyThrows
+  @Nullable
   public SpendJson getById(String id, String username) {
     final Response<SpendJson> response;
-    response = spendApi.getSpendById(id, username)
-        .execute();
-    Assertions.assertThat(response.code()).isEqualTo(SC_OK);
-    return response.body();
-  }
-
-  @SneakyThrows
-  public List<SpendJson> getAll(String username, CurrencyValues currencyValue, Date from,
-      Date to) {
-    final Response<List<SpendJson>> response;
-    response = spendApi.getAllSpends(username, currencyValue, from, to)
-        .execute();
+    try {
+      response = spendApi.getSpendById(id, username)
+          .execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
     Assertions.assertThat(response.code()).isEqualTo(SC_OK);
     return response.body();
   }
 
   @Nonnull
+  public List<SpendJson> getAll(
+      String username,
+      @Nullable CurrencyValues currencyValue,
+      @Nullable Date from,
+      @Nullable Date to) {
+    final Response<List<SpendJson>> response;
+    try {
+      response = spendApi.getAllSpends(username, currencyValue, from, to)
+          .execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+
+    Assertions.assertThat(response.code()).isEqualTo(SC_OK);
+    return response.body() != null ? response.body() : List.of();
+  }
+
+  @Nullable
   @Override
-  @SneakyThrows
-  public SpendJson create(@Nonnull SpendJson spend) {
+  public SpendJson create(SpendJson spend) {
     final Response<SpendJson> response;
-    response = spendApi.createSpend(spend)
-        .execute();
+    try {
+      response = spendApi.createSpend(spend)
+          .execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
     Assertions.assertThat(response.code()).isEqualTo(SC_CREATED);
     return response.body();
   }
 
-  @Nonnull
+  @Nullable
   @Override
-  @SneakyThrows
-  public SpendJson update(@Nonnull SpendJson spend) {
+  public SpendJson update(SpendJson spend) {
     final Response<SpendJson> response;
-    response = spendApi.update(spend)
-        .execute();
+    try {
+      response = spendApi.update(spend)
+          .execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
     Assertions.assertThat(response.code()).isEqualTo(SC_OK);
     return response.body();
   }
 
   @Nonnull
   @Override
-  public List<SpendJson> findAllByUsername(@Nonnull String username) {
+  public List<SpendJson> findAllByUsername(String username) {
     return getAll(username, null, null, null);
   }
 
   @Override
-  public void remove(@Nonnull SpendJson spend) {
+  public void remove(SpendJson spend) {
     remove(spend.username(), List.of(spend.id().toString()));
   }
 
-  @SneakyThrows
+
   public void remove(String username, List<String> ids) {
     final Response<Void> response;
-    response = spendApi.removeSpends(username, ids)
-        .execute();
+    try {
+      response = spendApi.removeSpends(username, ids)
+          .execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
     Assertions.assertThat(response.code()).isEqualTo(SC_ACCEPTED);
   }
 }

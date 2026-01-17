@@ -5,8 +5,10 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.sql.DataSource;
 
+@ParametersAreNonnullByDefault
 public class JdbcConnectionHolder implements AutoCloseable {
 
   private final DataSource dataSource;

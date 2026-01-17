@@ -2,7 +2,6 @@ package guru.qa.niffler.page.components;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
@@ -12,8 +11,9 @@ import io.qameta.allure.Step;
 
 public class HeaderToolbar {
 
-  private final SelenideElement menuBtn = $("button[aria-label='Menu']");
-  private final ElementsCollection menuItems = $$("ul[role='menu'] li");
+  private final SelenideElement root = $("#root header");
+  private final SelenideElement menuBtn = root.$("button[aria-label='Menu']");
+  private final ElementsCollection menuItems = root.$$("ul[role='menu'] li");
 
   @Step("Переходим в 'Профиль пользователя'")
   public ProfilePage goToProfilePage() {

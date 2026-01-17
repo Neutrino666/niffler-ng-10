@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class JdbcTransactionTemplate {
 
   private static final int DEFAULT_ISOLATION = Connection.TRANSACTION_READ_COMMITTED;
@@ -21,12 +23,13 @@ public class JdbcTransactionTemplate {
     return this;
   }
 
-  public <T> T execute(@Nonnull Supplier<T> action) {
+  @Nullable
+  public <T> T execute(Supplier<T> action) {
     return execute(DEFAULT_ISOLATION, action);
   }
 
-  @Nonnull
-  public <T> T execute(int isolation, @Nonnull Supplier<T> action) {
+  @Nullable
+  public <T> T execute(int isolation, Supplier<T> action) {
     Connection connection = null;
     try {
       connection = holder.connection();

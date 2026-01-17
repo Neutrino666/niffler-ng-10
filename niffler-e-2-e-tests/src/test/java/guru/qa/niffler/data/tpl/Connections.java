@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+@ParametersAreNonnullByDefault
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Connections {
 
