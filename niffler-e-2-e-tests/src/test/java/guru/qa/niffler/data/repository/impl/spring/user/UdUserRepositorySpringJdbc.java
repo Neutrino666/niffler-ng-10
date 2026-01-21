@@ -15,18 +15,20 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+@ParametersAreNonnullByDefault
 public class UdUserRepositorySpringJdbc implements UserdataUserRepository {
 
   private final static Config CFG = Config.getInstance();
-  UserDao userDao = new UdUserDaoSpringJdbc();
+  private final UserDao userDao = new UdUserDaoSpringJdbc();
 
   @Nonnull
   @Override
-  public UserEntity create(@Nonnull UserEntity user) {
+  public UserEntity create(UserEntity user) {
     KeyHolder kh = new GeneratedKeyHolder();
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = con.prepareStatement(
@@ -51,7 +53,7 @@ public class UdUserRepositorySpringJdbc implements UserdataUserRepository {
 
   @Nonnull
   @Override
-  public Optional<UserEntity> findById(@Nonnull UUID id) {
+  public Optional<UserEntity> findById(UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().query(
             getSelectByWhereIs("id"),
@@ -63,7 +65,7 @@ public class UdUserRepositorySpringJdbc implements UserdataUserRepository {
 
   @Nonnull
   @Override
-  public Optional<UserEntity> findByUsername(@Nonnull String username) {
+  public Optional<UserEntity> findByUsername(String username) {
     return Optional.ofNullable(
         getJdbcTemplate().query(
             getSelectByWhereIs("username"),
@@ -75,23 +77,23 @@ public class UdUserRepositorySpringJdbc implements UserdataUserRepository {
 
   @Nonnull
   @Override
-  public UserEntity update(@Nonnull UserEntity user) {
+  public UserEntity update(UserEntity user) {
     return userDao.update(user);
   }
 
   @Override
-  public void sendInvitation(@Nonnull UserEntity requester, UserEntity addressee) {
+  public void sendInvitation(UserEntity requester, UserEntity addressee) {
     addFriendshipRow(requester, addressee, FriendshipStatus.PENDING);
   }
 
   @Override
-  public void addFriend(@Nonnull UserEntity requester, UserEntity addressee) {
+  public void addFriend(UserEntity requester, UserEntity addressee) {
     addFriendshipRow(addressee, requester, FriendshipStatus.ACCEPTED);
     addFriendshipRow(requester, addressee, FriendshipStatus.ACCEPTED);
   }
 
   @Override
-  public void remove(@Nonnull UserEntity user) {
+  public void remove(UserEntity user) {
     getJdbcTemplate().update(con -> {
       PreparedStatement friendshipPs = con.prepareStatement(
           "DELETE FROM friendship "
@@ -110,11 +112,8 @@ public class UdUserRepositorySpringJdbc implements UserdataUserRepository {
   }
 
 
-  private void addFriendshipRow(
-      @Nonnull UserEntity requester,
-      @Nonnull UserEntity addressee,
-      @Nonnull FriendshipStatus status
-  ) {
+  private void addFriendshipRow(UserEntity requester, UserEntity addressee,
+      FriendshipStatus status) {
     String sql = "INSERT INTO friendship (requester_id, addressee_id, status, created_date) " +
         "VALUES (?, ?, ?, ?) " +
         "ON CONFLICT (requester_id, addressee_id) " +
@@ -135,7 +134,7 @@ public class UdUserRepositorySpringJdbc implements UserdataUserRepository {
     return new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT * FROM \"user\" AS u "
         + "LEFT JOIN friendship AS f "
         + "ON u.id = f.addressee_id "

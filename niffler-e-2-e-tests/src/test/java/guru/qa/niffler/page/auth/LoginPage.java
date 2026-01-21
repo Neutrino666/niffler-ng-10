@@ -8,7 +8,9 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.MainPage;
 import io.qameta.allure.Step;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class LoginPage {
 
   private final SelenideElement usernameInput = $("#username");
@@ -17,40 +19,40 @@ public class LoginPage {
   private final SelenideElement registerBtn = $("#register-button");
   private final SelenideElement formError = $(".form__error");
 
-  @Step("Login username: '{username}' password: '{password}'")
-  public MainPage login(String username, String password) {
+  @Step("Авторизация username: '{username}' password: '{password}'")
+  public @Nonnull MainPage login(String username, String password) {
     setUsername(username);
     setPassword(password);
     submit();
     return new MainPage();
   }
 
-  @Step("Open registration page")
-  public RegistrationPage openRegistrationPage() {
+  @Step("Открытие страницы регистрации")
+  public @Nonnull RegistrationPage openRegistrationPage() {
     registerBtn.click();
     return new RegistrationPage();
   }
 
-  @Step("Set username: '{username}'")
-  public LoginPage setUsername(@Nonnull final String username) {
+  @Step("Ввод username: '{username}'")
+  public @Nonnull LoginPage setUsername(final String username) {
     usernameInput.val(username);
     return this;
   }
 
-  @Step("Set password: '{password}'")
-  public LoginPage setPassword(@Nonnull final String password) {
+  @Step("Ввод password: '{password}'")
+  public @Nonnull LoginPage setPassword(final String password) {
     passwordInput.val(password);
     return this;
   }
 
-  @Step("Click submit")
-  public LoginPage submit() {
+  @Step("Клик submit")
+  public @Nonnull LoginPage submit() {
     submitBtn.click();
     return this;
   }
 
-  @Step("Check error message: '{message}'")
-  public LoginPage checkError(@Nonnull final String message) {
+  @Step("Проверка текста ошибки: '{message}'")
+  public @Nonnull LoginPage checkError(final String message) {
     formError.shouldHave(text(message), visible);
     return this;
   }

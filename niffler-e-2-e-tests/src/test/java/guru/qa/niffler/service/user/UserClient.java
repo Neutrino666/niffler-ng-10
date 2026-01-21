@@ -4,20 +4,25 @@ import guru.qa.niffler.model.UserJson;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface UserClient {
 
   @Nonnull
-  UserJson create(@Nonnull String username, @Nonnull String password);
+  UserJson create(String username, String password);
 
   @Nonnull
-  Optional<UserJson> findByUsername(@Nonnull String username);
+  Optional<UserJson> findByUsername(String username);
 
-  List<UserJson> createIncomeInvitation(@Nonnull UserJson targetUser, int count);
+  @Nonnull
+  List<UserJson> createIncomeInvitation(UserJson targetUser, int count);
 
-  List<UserJson> createOutcomeInvitation(@Nonnull UserJson targetUser, int count);
+  @Nonnull
+  List<UserJson> createOutcomeInvitation(UserJson targetUser, int count);
 
-  List<UserJson> createFriends(@Nonnull UserJson targetUser, int count);
+  @Nonnull
+  List<UserJson> createFriends(UserJson targetUser, int count);
 
-  void delete(@Nonnull UserJson user);
+  void delete(UserJson user);
 }

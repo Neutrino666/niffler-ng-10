@@ -11,9 +11,11 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.spend.SpendDbClient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -21,6 +23,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+@ParametersAreNonnullByDefault
 public class CategoryExtension implements
     BeforeEachCallback,
     AfterTestExecutionCallback,
@@ -28,16 +31,17 @@ public class CategoryExtension implements
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       CategoryExtension.class);
-    private final SpendDbClient categoryClient = new SpendDbClient();
+  private final SpendDbClient categoryClient = new SpendDbClient();
 
   @Override
-  public void beforeEach(@Nonnull ExtensionContext context) {
+  public void beforeEach(ExtensionContext context) {
     findTestMethodAnnotation(context, User.class)
         .ifPresent(
             anno -> {
               if (anno.categories().length > 0) {
 
                 @Nullable Optional<UserJson> testUser = UserExtension.createdUser();
+                createdStore(UserExtension.NAMESPACE, UserJson.class);
                 final String username = testUser.isPresent()
                     ? testUser.get().username()
                     : anno.username();
@@ -56,6 +60,9 @@ public class CategoryExtension implements
                       )
                   );
                   if (category.archived()) {
+                    if (created == null) {
+                      throw new RuntimeException("Не удалось создать категорию");
+                    }
                     CategoryJson update = new CategoryJson(
                         created.id(),
                         created.name(),
@@ -67,7 +74,9 @@ public class CategoryExtension implements
                   results.add(created);
                 }
                 if (testUser.isPresent()) {
-                  testUser.get().testData().categories().addAll(results);
+                  Objects.requireNonNull(
+                      testUser.get().testData()
+                  ).categories().addAll(results);
                 } else {
                   context.getStore(NAMESPACE).put(
                       context.getUniqueId(),
@@ -80,7 +89,7 @@ public class CategoryExtension implements
   }
 
   @Override
-  public void afterTestExecution(@Nonnull ExtensionContext context) {
+  public void afterTestExecution(ExtensionContext context) {
     CategoryJson[] categories = createdStore(NAMESPACE, CategoryJson[].class);
     if (categories != null) {
       for (CategoryJson category : categories) {
@@ -98,15 +107,17 @@ public class CategoryExtension implements
   }
 
   @Override
-  public boolean supportsParameter(ParameterContext parameterContext,
-      @Nonnull ExtensionContext extensionContext) throws ParameterResolutionException {
+  public boolean supportsParameter(
+      ParameterContext parameterContext,
+      ExtensionContext extensionContext) throws ParameterResolutionException {
     return parameterContext.getParameter().getType().isAssignableFrom(CategoryJson[].class);
   }
 
   @Override
+  @Nonnull
   public CategoryJson[] resolveParameter(
-      @Nonnull ParameterContext parameterContext,
-      @Nonnull ExtensionContext extensionContext) throws ParameterResolutionException {
+      ParameterContext parameterContext,
+      ExtensionContext extensionContext) throws ParameterResolutionException {
     return createdStore(NAMESPACE, CategoryJson[].class);
   }
 }

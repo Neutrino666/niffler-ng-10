@@ -9,7 +9,10 @@ import guru.qa.niffler.model.CategoryJson;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class CategoryDbClient implements CategoryClient {
 
   private final static Config CFG = Config.getInstance();
@@ -28,24 +31,24 @@ public class CategoryDbClient implements CategoryClient {
   }
 
   @Override
-  public @Nonnull CategoryJson update(@Nonnull CategoryJson category) {
+  public @Nonnull CategoryJson update(CategoryJson category) {
     throw new UnsupportedOperationException("Not implemented :(");
   }
 
-  public @Nonnull Optional<CategoryEntity> findByUsernameAndName(
-      @Nonnull String username,
-      @Nonnull String categoryName
+  public @Nullable Optional<CategoryEntity> findByUsernameAndName(
+      String username,
+      String categoryName
   ) {
     return jdbcTxTemplate.execute(() ->
         categoryDao.findByUsernameAndName(username, categoryName)
     );
   }
 
-  public @Nonnull List<CategoryEntity> findAllByUsername(@Nonnull String username) {
+  public @Nullable List<CategoryEntity> findAllByUsername(String username) {
     return jdbcTxTemplate.execute(() -> categoryDao.findAllByUsername(username));
   }
 
-  public @Nonnull List<CategoryJson> findAll() {
+  public @Nullable List<CategoryJson> findAll() {
     return jdbcTxTemplate.execute(() ->
         categoryDao.findAll()
             .stream()

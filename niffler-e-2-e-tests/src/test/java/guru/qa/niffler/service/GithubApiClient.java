@@ -25,7 +25,7 @@ public class GithubApiClient {
   private final GithubApi githubApi = retrofit.create(GithubApi.class);
 
   @Nonnull
-  public String issueState(String issueNumber) {
+  public String issueState(final String issueNumber) {
     final JsonNode response;
     try {
       response = githubApi.issue("Bearer " + System.getenv(GH_TOKEN_ENV), issueNumber)

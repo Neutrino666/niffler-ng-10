@@ -7,11 +7,15 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import java.io.IOException;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+@ParametersAreNonnullByDefault
 public class CategoryApiClient implements CategoryClient {
 
   private static final Config CFG = Config.getInstance();
@@ -23,7 +27,7 @@ public class CategoryApiClient implements CategoryClient {
 
   private final CategoryApi categoryApi = retrofit.create(CategoryApi.class);
 
-
+  @Nonnull
   public List<CategoryJson> getAllByUsername(String username, boolean excludeArchived) {
     final Response<List<CategoryJson>> response;
     try {
@@ -32,11 +36,13 @@ public class CategoryApiClient implements CategoryClient {
     } catch (IOException e) {
       throw new AssertionError(e);
     }
-    Assertions.assertThat(response.code()).isEqualTo(SC_OK);
-    return response.body();
+    Assertions.assertThat(response.code())
+        .isEqualTo(SC_OK);
+    return response.body() != null ? response.body() : List.of();
   }
 
   @Override
+  @Nullable
   public CategoryJson create(CategoryJson category) {
     final Response<CategoryJson> response;
     try {
@@ -45,10 +51,12 @@ public class CategoryApiClient implements CategoryClient {
     } catch (IOException e) {
       throw new AssertionError(e);
     }
-    Assertions.assertThat(response.code()).isEqualTo(SC_OK);
+    Assertions.assertThat(response.code())
+        .isEqualTo(SC_OK);
     return response.body();
   }
 
+  @Nullable
   public CategoryJson update(CategoryJson category) {
     final Response<CategoryJson> response;
     try {
@@ -57,7 +65,8 @@ public class CategoryApiClient implements CategoryClient {
     } catch (IOException e) {
       throw new AssertionError(e);
     }
-    Assertions.assertThat(response.code()).isEqualTo(SC_OK);
+    Assertions.assertThat(response.code())
+        .isEqualTo(SC_OK);
     return response.body();
   }
 }

@@ -13,18 +13,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+@ParametersAreNonnullByDefault
 public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
   private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
-  public AuthUserEntity create(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity create(AuthUserEntity user) {
     KeyHolder kh = new GeneratedKeyHolder();
     getJdbcTemplate().update(con -> {
       PreparedStatement userPs = con.prepareStatement(
@@ -52,7 +54,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
             + "VALUES(?, ?)",
         new BatchPreparedStatementSetter() {
           @Override
-          public void setValues(@Nonnull PreparedStatement ps, int i) throws SQLException {
+          public void setValues(PreparedStatement ps, int i) throws SQLException {
             ps.setObject(1, authorities.get(i).getUser().getId());
             ps.setString(2, authorities.get(i).getAuthority().name());
           }
@@ -68,7 +70,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
   @Nonnull
   @Override
-  public AuthUserEntity update(@Nonnull AuthUserEntity u) {
+  public AuthUserEntity update(AuthUserEntity u) {
     String sql = """
         UPDATE "user"
         SET id = ?,
@@ -96,7 +98,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
+  public Optional<AuthUserEntity> findById(UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().query(
             getSelectByWhereIs("id"),
@@ -107,7 +109,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
+  public Optional<AuthUserEntity> findByUsername(String username) {
     return Optional.ofNullable(
         getJdbcTemplate().query(
             getSelectByWhereIs("username"),
@@ -118,7 +120,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   }
 
   @Override
-  public void remove(@Nonnull AuthUserEntity user) {
+  public void remove(AuthUserEntity user) {
     getJdbcTemplate().update("DELETE FROM authority WHERE user_id = ?", user.getId());
     getJdbcTemplate().update("DELETE FROM \"user\" WHERE id = ?", user.getId());
   }
@@ -128,7 +130,7 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     return new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT "
         + "u.*, "
         + "a.id AS a_id, a.user_id, a.authority "

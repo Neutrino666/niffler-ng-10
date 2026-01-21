@@ -6,46 +6,44 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface SpendRepository {
 
   @Nonnull
-  SpendEntity create(@Nonnull SpendEntity spend);
+  SpendEntity create(SpendEntity spend);
 
   @Nonnull
-  CategoryEntity createCategory(@Nonnull CategoryEntity category);
+  CategoryEntity createCategory(CategoryEntity category);
 
   @Nonnull
-  Optional<CategoryEntity> findCategoryById(@Nonnull final UUID id);
+  Optional<CategoryEntity> findCategoryById(final UUID id);
 
   @Nonnull
-  Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(
-      @Nonnull String username,
-      @Nonnull String name
+  Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name
   );
 
   @Nonnull
-  SpendEntity update(@Nonnull SpendEntity spend);
+  SpendEntity update(SpendEntity spend);
 
   @Nonnull
-  CategoryEntity updateCategory(@Nonnull CategoryEntity category);
+  CategoryEntity updateCategory(CategoryEntity category);
 
   @Nonnull
-  Optional<SpendEntity> findById(@Nonnull UUID id);
+  Optional<SpendEntity> findById(UUID id);
 
   @Nonnull
-  List<SpendEntity> findAllByUsername(@Nonnull String username);
+  List<SpendEntity> findAllByUsername(String username);
 
   @Nonnull
-  Optional<SpendEntity> findByUsernameAndSpendDescription(
-      @Nonnull String username,
-      @Nonnull String description
+  Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description
   );
 
   @Nonnull
   List<SpendEntity> findAll();
 
-  void remove(@Nonnull SpendEntity spend);
+  void remove(SpendEntity spend);
 
-  void removeCategory(@Nonnull CategoryEntity category);
+  void removeCategory(CategoryEntity category);
 }

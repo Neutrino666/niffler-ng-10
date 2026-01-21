@@ -108,6 +108,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
+  @Nonnull
   public List<UserJson> createIncomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {
@@ -132,6 +133,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
+  @Nonnull
   public List<UserJson> createOutcomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {
@@ -156,6 +158,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
+  @Nonnull
   public List<UserJson> createFriends(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {

@@ -10,17 +10,19 @@ import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+@ParametersAreNonnullByDefault
 public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
-  public AuthUserEntity create(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity create(AuthUserEntity user) {
     String sql = "INSERT INTO \"user\" "
         + "(username, password, enabled, "
         + "account_non_expired, account_non_locked, credentials_non_expired)"
@@ -47,7 +49,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
+  public Optional<AuthUserEntity> findById(UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
             "SELECT * FROM \"user\" WHERE id = ?",
@@ -59,7 +61,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
+  public Optional<AuthUserEntity> findByUsername(String username) {
     String sql = "SELECT "
         + "u.*, "
         + "a.id AS a_id, a.user_id, a.authority "
@@ -78,7 +80,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
   @Nonnull
   @Override
-  public AuthUserEntity update(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity update(AuthUserEntity user) {
     String sql = """
         UPDATE "user"
         SET username = ?,
@@ -103,7 +105,7 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
   }
 
   @Override
-  public void delete(@Nonnull AuthUserEntity user) {
+  public void delete(AuthUserEntity user) {
     getJdbcTemplate().update("DELETE FROM \"user\" WHERE id = ?", user.getId());
   }
 

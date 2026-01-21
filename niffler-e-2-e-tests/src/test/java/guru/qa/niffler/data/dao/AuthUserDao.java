@@ -4,21 +4,23 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface AuthUserDao {
 
   @Nonnull
-  AuthUserEntity create(@Nonnull AuthUserEntity user);
+  AuthUserEntity create(AuthUserEntity user);
 
   @Nonnull
-  Optional<AuthUserEntity> findById(@Nonnull UUID id);
+  Optional<AuthUserEntity> findById(UUID id);
 
   @Nonnull
-  Optional<AuthUserEntity> findByUsername(@Nonnull String username);
+  Optional<AuthUserEntity> findByUsername(String username);
 
   @Nonnull
-  AuthUserEntity update(@Nonnull AuthUserEntity user);
+  AuthUserEntity update(AuthUserEntity user);
 
-  void delete(@Nonnull AuthUserEntity user);
+  void delete(AuthUserEntity user);
 
 }

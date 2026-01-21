@@ -14,13 +14,15 @@ import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class UdUserDaoJdbc implements UserDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Override
-  public @Nonnull UserEntity create(@Nonnull UserEntity user) {
+  public @Nonnull UserEntity create(UserEntity user) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "INSERT INTO \"user\" (currency, firstname, full_name, photo, photo_small, surname, username)"
             + "VALUES(?, ?, ?, ?, ?, ?, ?)",
@@ -48,7 +50,7 @@ public class UdUserDaoJdbc implements UserDao {
   }
 
   @Override
-  public @Nonnull Optional<UserEntity> findById(@Nonnull UUID id) {
+  public @Nonnull Optional<UserEntity> findById(UUID id) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("id")
     )) {
@@ -65,7 +67,7 @@ public class UdUserDaoJdbc implements UserDao {
   }
 
   @Override
-  public @Nonnull Optional<UserEntity> findByUsername(@Nonnull String username) {
+  public @Nonnull Optional<UserEntity> findByUsername(String username) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("username")
     )) {
@@ -83,7 +85,7 @@ public class UdUserDaoJdbc implements UserDao {
 
   @Nonnull
   @Override
-  public UserEntity update(@Nonnull UserEntity user) {
+  public UserEntity update(UserEntity user) {
     String sql = """
         UPDATE "user"
         SET currency = ?,
@@ -112,7 +114,7 @@ public class UdUserDaoJdbc implements UserDao {
   }
 
   @Override
-  public void delete(@Nonnull UserEntity user) {
+  public void delete(UserEntity user) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?"
     )) {
@@ -124,11 +126,11 @@ public class UdUserDaoJdbc implements UserDao {
   }
 
   @Nonnull
-  private UserEntity collectEntity(@Nonnull ResultSet rs) throws SQLException {
+  private UserEntity collectEntity(ResultSet rs) throws SQLException {
     return UdUserEntityRowMapper.INSTANCE.mapRow(rs, 1);
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT * FROM \"user\" WHERE %s = ?".formatted(key);
   }
 

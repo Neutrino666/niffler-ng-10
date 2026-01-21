@@ -2,17 +2,21 @@ package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.jupiter.annotation.DisabledByIssue;
 import guru.qa.niffler.service.GithubApiClient;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.SearchOption;
 
+@ParametersAreNonnullByDefault
 public class IssueExtension implements ExecutionCondition {
 
   private final GithubApiClient ghApiClient = new GithubApiClient();
 
   @Override
+  @Nonnull
   public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
     return AnnotationSupport.findAnnotation(
         context.getRequiredTestMethod(),

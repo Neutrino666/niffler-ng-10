@@ -15,13 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Override
-  public void create(@Nonnull AuthAuthorityEntity... authorities) {
+  public void create(AuthAuthorityEntity... authorities) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "INSERT INTO authority (user_id, authority)"
             + "VALUES(?, ?)"
@@ -52,7 +54,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
 
   @Nonnull
   @Override
-  public List<AuthAuthorityEntity> findAllByUserId(@Nonnull UUID userId) {
+  public List<AuthAuthorityEntity> findAllByUserId(UUID userId) {
     List<AuthAuthorityEntity> authorities = new ArrayList<>();
 
     try (PreparedStatement ps = getConnection().prepareStatement(
@@ -73,7 +75,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
   }
 
   @Override
-  public void delete(@Nonnull AuthAuthorityEntity authority) {
+  public void delete(AuthAuthorityEntity authority) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM authority WHERE id = ?"
     )) {
@@ -84,7 +86,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
   }
 
-  private @Nonnull AuthAuthorityEntity collectEntity(@Nonnull ResultSet rs)
+  private @Nonnull AuthAuthorityEntity collectEntity(ResultSet rs)
       throws SQLException {
     AuthUserEntity user = new AuthUserEntity();
     if (rs.getObject("id") != null) {
@@ -104,7 +106,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     return ae;
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT "
         + "a.id AS a_id, a.user_id AS a_id, a.authority AS a_authority, "
         + "u.id, u.username, u.password, u.enabled, "
@@ -115,6 +117,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         + "WHERE a.%s = ?".formatted(key);
   }
 
+  @Nonnull
   private Connection getConnection() {
     return holder(CFG.authJdbcUrl()).connection();
   }

@@ -10,6 +10,7 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -51,8 +52,10 @@ public class SpendDbClient implements SpendClient {
 
   @Nonnull
   public CategoryJson updateCategory(CategoryJson category) {
-    return xaTxTemplate.execute(() -> CategoryJson.fromEntity(
-            spendRepository.updateCategory(CategoryEntity.fromJson(category))
+    return Objects.requireNonNull(
+        xaTxTemplate.execute(() -> CategoryJson.fromEntity(
+                spendRepository.updateCategory(CategoryEntity.fromJson(category))
+            )
         )
     );
   }
@@ -67,7 +70,9 @@ public class SpendDbClient implements SpendClient {
 
   @Nonnull
   public Optional<CategoryJson> findCategoryById(UUID id) {
-    return jdbcTxTemplate.execute(() -> spendRepository.findCategoryById(id))
+    return Objects.requireNonNull(
+            jdbcTxTemplate.execute(() -> spendRepository.findCategoryById(id))
+        )
         .map(CategoryJson::fromEntity);
   }
 
@@ -75,31 +80,39 @@ public class SpendDbClient implements SpendClient {
   public Optional<CategoryJson> findCategoryByUsernameAndSpendName(
       String username,
       String name) {
-    return jdbcTxTemplate.execute(
-            () -> spendRepository.findCategoryByUsernameAndCategoryName(username, name))
+    return Objects.requireNonNull(
+            jdbcTxTemplate.execute(
+                () -> spendRepository.findCategoryByUsernameAndCategoryName(username, name)
+            )
+        )
         .map(CategoryJson::fromEntity);
   }
 
   @Nonnull
   public Optional<SpendJson> findById(UUID id) {
-    return jdbcTxTemplate.execute(() -> spendRepository.findById(id))
+    return Objects.requireNonNull(
+            jdbcTxTemplate.execute(() -> spendRepository.findById(id))
+        )
         .map(SpendJson::fromEntity);
   }
 
   @Nonnull
   public List<SpendJson> findAll() {
-    return jdbcTxTemplate.execute(() ->
-        spendRepository.findAll()
-            .stream()
-            .map(SpendJson::fromEntity)
-            .toList()
-    );
+    return Objects.requireNonNull(
+        jdbcTxTemplate.execute(() ->
+            spendRepository.findAll()
+                .stream()
+                .map(SpendJson::fromEntity)
+                .toList()
+        ));
   }
 
   @Nonnull
   @Override
   public List<SpendJson> findAllByUsername(String username) {
-    return jdbcTxTemplate.execute(() -> spendRepository.findAllByUsername(username))
+    return Objects.requireNonNull(
+            jdbcTxTemplate.execute(() -> spendRepository.findAllByUsername(username))
+        )
         .stream()
         .map(SpendJson::fromEntity)
         .toList();
@@ -109,8 +122,11 @@ public class SpendDbClient implements SpendClient {
   public Optional<SpendJson> findByUsernameAndSpendDescription(
       String username,
       String description) {
-    return jdbcTxTemplate.execute(
-            () -> spendRepository.findByUsernameAndSpendDescription(username, description))
+    return Objects.requireNonNull(
+            jdbcTxTemplate.execute(
+                () -> spendRepository.findByUsernameAndSpendDescription(username, description)
+            )
+        )
         .map(SpendJson::fromEntity);
   }
 

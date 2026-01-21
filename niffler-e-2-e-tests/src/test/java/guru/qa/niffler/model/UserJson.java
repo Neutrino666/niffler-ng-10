@@ -35,8 +35,8 @@ public record UserJson(
 ) {
 
   public static @Nonnull UserJson fromEntity(
-      UserEntity entity,
-      @Nullable FriendshipStatus friendshipStatus
+      final UserEntity entity,
+      @Nullable final FriendshipStatus friendshipStatus
   ) {
     return new UserJson(
         entity.getId(),
@@ -56,11 +56,11 @@ public record UserJson(
     );
   }
 
-  public static @Nonnull UserJson fromEntity(UserEntity entity) {
+  public static @Nonnull UserJson fromEntity(final UserEntity entity) {
     return fromEntity(entity, null);
   }
 
-  public @Nonnull UserJson addTestData(TestData testData) {
+  public @Nonnull UserJson addTestData(final TestData testData) {
     return new UserJson(
         id,
         username,

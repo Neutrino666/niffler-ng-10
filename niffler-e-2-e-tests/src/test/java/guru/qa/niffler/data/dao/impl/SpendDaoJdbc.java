@@ -17,13 +17,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class SpendDaoJdbc implements SpendDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Override
-  public @Nonnull SpendEntity create(@Nonnull SpendEntity spend) {
+  public @Nonnull SpendEntity create(SpendEntity spend) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "INSERT INTO spend (username, spend_date, currency, amount, description, category_id)"
             + "VALUES(?, ?, ?, ?, ?, ?)",
@@ -54,7 +56,7 @@ public class SpendDaoJdbc implements SpendDao {
 
   @Nonnull
   @Override
-  public SpendEntity update(@Nonnull SpendEntity spend) {
+  public SpendEntity update(SpendEntity spend) {
     String sql = """
         UPDATE spend
         SET username = ?, spend_date =?, currency =?, amount =?, description =?, category_id =?
@@ -81,7 +83,7 @@ public class SpendDaoJdbc implements SpendDao {
   }
 
   @Override
-  public @Nonnull Optional<SpendEntity> findById(@Nonnull UUID id) {
+  public @Nonnull Optional<SpendEntity> findById(UUID id) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("id")
     )) {
@@ -98,7 +100,7 @@ public class SpendDaoJdbc implements SpendDao {
   }
 
   @Override
-  public @Nonnull List<SpendEntity> findAllByUsername(@Nonnull String username) {
+  public @Nonnull List<SpendEntity> findAllByUsername(String username) {
     List<SpendEntity> spends = new ArrayList<>();
     try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("username")
@@ -142,8 +144,8 @@ public class SpendDaoJdbc implements SpendDao {
 
   @Nonnull
   @Override
-  public Optional<SpendEntity> findByUsernameAndSpendDescription(@Nonnull String username,
-      @Nonnull String description) {
+  public Optional<SpendEntity> findByUsernameAndSpendDescription(String username,
+      String description) {
     String sql = "SELECT "
         + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
         + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "
@@ -167,7 +169,7 @@ public class SpendDaoJdbc implements SpendDao {
   }
 
   @Override
-  public void remove(@Nonnull SpendEntity spend) {
+  public void remove(SpendEntity spend) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM spend WHERE id = ?"
     )) {
@@ -178,7 +180,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
-  private static @Nonnull SpendEntity collectEntity(@Nonnull ResultSet rs)
+  private static @Nonnull SpendEntity collectEntity(ResultSet rs)
       throws SQLException {
     CategoryEntity categoryEntity = new CategoryEntity();
     if (rs.getObject("c_id") != null) {
@@ -198,7 +200,7 @@ public class SpendDaoJdbc implements SpendDao {
     return spend;
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT "
         + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
         + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "
@@ -208,6 +210,7 @@ public class SpendDaoJdbc implements SpendDao {
         + "WHERE s.%s = ?".formatted(key);
   }
 
+  @Nonnull
   private Connection getConnection() {
     return holder(CFG.spendJdbcUrl()).connection();
   }

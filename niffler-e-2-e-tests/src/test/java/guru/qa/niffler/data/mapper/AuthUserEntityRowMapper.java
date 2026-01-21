@@ -7,11 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@ParametersAreNonnullByDefault
 public class AuthUserEntityRowMapper implements RowMapper<AuthUserEntity> {
 
   public static final AuthUserEntityRowMapper INSTANCE = new AuthUserEntityRowMapper();

@@ -5,7 +5,6 @@ import static guru.qa.niffler.helpers.AnnotationUtils.findTestMethodAnnotation;
 
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.helpers.AnnotationUtils;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
@@ -16,12 +15,14 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+@ParametersAreNonnullByDefault
 public class SpendingExtension implements BeforeEachCallback, ParameterResolver {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
@@ -81,6 +82,7 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
   }
 
   @Override
+  @Nonnull
   public SpendJson[] resolveParameter(@Nonnull final ParameterContext parameterContext,
       @Nonnull final ExtensionContext extensionContext) throws ParameterResolutionException {
     return createdStore(NAMESPACE, SpendJson[].class);

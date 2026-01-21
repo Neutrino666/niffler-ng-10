@@ -4,17 +4,19 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface UdUserDao {
 
   @Nonnull
-  UserEntity create(@Nonnull UserEntity user);
+  UserEntity create(UserEntity user);
 
   @Nonnull
-  Optional<UserEntity> findById(@Nonnull UUID id);
+  Optional<UserEntity> findById(UUID id);
 
   @Nonnull
-  Optional<UserEntity> findByUsername(@Nonnull String username);
+  Optional<UserEntity> findByUsername(String username);
 
-  void delete(@Nonnull UserEntity user);
+  void delete(UserEntity user);
 }

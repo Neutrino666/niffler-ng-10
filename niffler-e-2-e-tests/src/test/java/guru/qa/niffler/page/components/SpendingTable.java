@@ -1,0 +1,99 @@
+package guru.qa.niffler.page.components;
+
+import static com.codeborne.selenide.CollectionCondition.size;
+import static com.codeborne.selenide.Condition.not;
+import static com.codeborne.selenide.Condition.selected;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
+
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.EditSpendingPage;
+import io.qameta.allure.Step;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+import lombok.Getter;
+
+@ParametersAreNonnullByDefault
+public class SpendingTable {
+
+  private final SelenideElement root = $("#spendings");
+  private final SelenideElement periodDropdown = root.$("#period");
+  private final SelenideElement deleteBtn = root.$("#delete");
+  private final ElementsCollection spendings = root.$$("tbody tr");
+
+  private final ElementsCollection menuPeriod = $$("#menu-period li");
+
+  @Getter
+  private final SearchField searchField = new SearchField();
+
+  public @Nonnull SpendingTable checkThatPageLoaded() {
+    root.should(visible);
+    return this;
+  }
+
+  @Step("Выбор периода")
+  public @Nonnull SpendingTable selectPeriod(final DataFilterValues period) {
+    periodDropdown.click();
+    menuPeriod.find(text(period.getValue())).click();
+    periodDropdown.shouldHave(text(period.getValue()));
+    return this;
+  }
+
+  @Step("Переход в редактирование траты: '{description}'")
+  public @Nonnull EditSpendingPage editSpending(String description) {
+    spendings.find(text(description))
+        .$$("td")
+        .get(5)
+        .click();
+    return new EditSpendingPage();
+  }
+
+  @Step("Удаление траты: '{description}'")
+  public @Nonnull SpendingTable deleteSpending(final String description) {
+    setStateChxSpendingContains(true, description);
+    deleteBtn.click();
+    new ConfirmDialog().checkThatPageLoaded()
+        .delete();
+    return this;
+  }
+
+  @Step("Поиск траты: '{description}'")
+  public SpendingTable searchSpendingByDescription(final String description) {
+    searchField.search(description);
+    return this;
+  }
+
+  @Step("Проверка наличия трат: '{descriptions}'")
+  public @Nonnull SpendingTable checkThatTableContains(final String... descriptions) {
+    for (String description : descriptions) {
+      searchField.search(description);
+      spendings.find(text(description))
+          .should(visible);
+    }
+    return this;
+  }
+
+  @Step("Проверка размера таблицы ожидается: '{expectedSize}'")
+  public SpendingTable checkTableSize(final int expectedSize) {
+    spendings.shouldHave(size(expectedSize));
+    return this;
+  }
+
+  private @Nonnull SpendingTable setStateChxSpendingContains(final boolean state,
+      final String... strings) {
+    for (String s : strings) {
+      searchField.search(s);
+      SelenideElement chx = spendings.find(text(s))
+          .$("input");
+      if (chx.isSelected() != state) {
+        chx.click();
+        chx.shouldBe(state ? selected : not(selected));
+      }
+    }
+    searchField.clearIfNotEmpty();
+    return this;
+  }
+}

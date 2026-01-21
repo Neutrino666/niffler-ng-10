@@ -5,8 +5,10 @@ import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
-import lombok.NonNull;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class RegistrationPage {
 
   private final SelenideElement usernameInput = $("#username");
@@ -17,8 +19,8 @@ public class RegistrationPage {
   private final SelenideElement formError = $(".form__error");
 
   @Step("Регистрация пользователя")
-  public LoginPage registrationUser(@NonNull final String username,
-      @NonNull final String password) {
+  public @Nonnull LoginPage registrationUser(final String username,
+      final String password) {
     setUsername(username);
     setPassword(password);
     setPasswordSubmit(password);
@@ -28,32 +30,38 @@ public class RegistrationPage {
     return new LoginPage();
   }
 
-  public RegistrationPage setUsername(@NonNull final String username) {
+  @Step("Ввод username: '{username}'")
+  public @Nonnull RegistrationPage setUsername(final String username) {
     usernameInput.val(username);
     return this;
   }
 
-  public RegistrationPage setPassword(@NonNull final String password) {
+  @Step("Ввод password: '{password}'")
+  public @Nonnull RegistrationPage setPassword(final String password) {
     passwordInput.val(password);
     return this;
   }
 
-  public RegistrationPage setPasswordSubmit(@NonNull final String password) {
+  @Step("Ввод подтверждения password: '{password}'")
+  public @Nonnull RegistrationPage setPasswordSubmit(final String password) {
     passwordSubmitInput.val(password);
     return this;
   }
 
-  public RegistrationPage submitRegistration() {
+  @Step("Клик подтверждения регистрации")
+  public @Nonnull RegistrationPage submitRegistration() {
     submitRegistrationBtn.click();
     return this;
   }
 
-  public RegistrationPage signIn() {
+  @Step("Клик signIn")
+  public @Nonnull RegistrationPage signIn() {
     signInBtn.click();
     return this;
   }
 
-  public RegistrationPage checkError(@NonNull final String message) {
+  @Step("Проверка текста ошибки: '{message}'")
+  public @Nonnull RegistrationPage checkError(final String message) {
     formError.shouldHave(text(message));
     return this;
   }

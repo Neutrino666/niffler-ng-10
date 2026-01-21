@@ -23,14 +23,16 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class UdUserRepositoryJdbc implements UserdataUserRepository {
 
   private final static Config CFG = Config.getInstance();
   private final UserDao userDao = new UdUserDaoJdbc();
 
   @Override
-  public @Nonnull UserEntity create(@Nonnull UserEntity user) {
+  public @Nonnull UserEntity create(UserEntity user) {
     try (PreparedStatement userPs = getConnection().prepareStatement(
         "INSERT INTO \"user\" (currency, firstname, full_name, photo, photo_small, surname, username)"
             + "VALUES(?, ?, ?, ?, ?, ?, ?)",
@@ -58,7 +60,7 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
   }
 
   @Override
-  public @Nonnull Optional<UserEntity> findById(@Nonnull UUID id) {
+  public @Nonnull Optional<UserEntity> findById(UUID id) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("id")
     )) {
@@ -75,7 +77,7 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
   }
 
   @Override
-  public @Nonnull Optional<UserEntity> findByUsername(@Nonnull String username) {
+  public @Nonnull Optional<UserEntity> findByUsername(String username) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("username")
     )) {
@@ -93,23 +95,23 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
 
   @Nonnull
   @Override
-  public UserEntity update(@Nonnull UserEntity user) {
+  public UserEntity update(UserEntity user) {
     return userDao.update(user);
   }
 
   @Override
-  public void sendInvitation(@Nonnull UserEntity requester, UserEntity addressee) {
+  public void sendInvitation(UserEntity requester, UserEntity addressee) {
     addFriendshipRow(requester, addressee, FriendshipStatus.PENDING);
   }
 
   @Override
-  public void addFriend(@Nonnull UserEntity requester, UserEntity addressee) {
+  public void addFriend(UserEntity requester, UserEntity addressee) {
     addFriendshipRow(addressee, requester, FriendshipStatus.ACCEPTED);
     addFriendshipRow(requester, addressee, FriendshipStatus.ACCEPTED);
   }
 
   @Override
-  public void remove(@Nonnull UserEntity user) {
+  public void remove(UserEntity user) {
     try (PreparedStatement userPs = getConnection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?"
     );
@@ -131,7 +133,7 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
   }
 
   @Nonnull
-  private UserEntity collectEntityWithFriends(@Nonnull ResultSet rs) throws SQLException {
+  private UserEntity collectEntityWithFriends(ResultSet rs) throws SQLException {
     Map<UUID, UserEntity> userMap = new ConcurrentHashMap<>();
     UUID userId = null;
 
@@ -166,7 +168,8 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
     return userMap.get(userId);
   }
 
-  private UserEntity collectEntity(@Nonnull ResultSet rs) {
+  @Nonnull
+  private UserEntity collectEntity(ResultSet rs) {
     UserEntity result = new UserEntity();
     try {
       result.setId(rs.getObject("id", UUID.class));
@@ -183,10 +186,7 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
     return result;
   }
 
-  private void addFriendshipRow(
-      @Nonnull UserEntity requester,
-      @Nonnull UserEntity addressee,
-      @Nonnull FriendshipStatus status
+  private void addFriendshipRow(UserEntity requester, UserEntity addressee, FriendshipStatus status
   ) {
     String sql = "INSERT INTO friendship (requester_id, addressee_id, status, created_date) " +
         "VALUES (?, ?, ?, ?) " +
@@ -204,7 +204,7 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
     }
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT * FROM \"user\" AS u "
         + "LEFT JOIN friendship AS f "
         + "ON u.id = f.addressee_id "
@@ -212,7 +212,7 @@ public class UdUserRepositoryJdbc implements UserdataUserRepository {
         + "WHERE %s = ?".formatted(key);
   }
 
-  private Connection getConnection() {
+  private @Nonnull Connection getConnection() {
     return holder(CFG.userdataJdbcUrl()).connection();
   }
 }

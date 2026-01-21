@@ -5,20 +5,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface SpendDao {
 
   @Nonnull
-  SpendEntity create(@Nonnull SpendEntity spend);
+  SpendEntity create(SpendEntity spend);
 
   @Nonnull
-  SpendEntity update(@Nonnull SpendEntity spend);
+  SpendEntity update(SpendEntity spend);
 
   @Nonnull
-  Optional<SpendEntity> findById(@Nonnull UUID id);
+  Optional<SpendEntity> findById(UUID id);
 
   @Nonnull
-  List<SpendEntity> findAllByUsername(@Nonnull String username);
+  List<SpendEntity> findAllByUsername(String username);
 
   @Nonnull
   List<SpendEntity> findAll();
@@ -29,5 +31,5 @@ public interface SpendDao {
       @Nonnull String description
   );
 
-  void remove(@Nonnull SpendEntity spend);
+  void remove(SpendEntity spend);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ public class Connections {
 
   private static final Map<String, JdbcConnectionHolder> holders = new ConcurrentHashMap<>();
 
+  @Nonnull
   public static JdbcConnectionHolder holder(String jdbcUrl) {
     return holders.computeIfAbsent(
         jdbcUrl,
@@ -23,6 +25,7 @@ public class Connections {
     );
   }
 
+  @Nonnull
   public static JdbcConnectionHolders holders(String... jdbcUrl) {
     List<JdbcConnectionHolder> result = Stream.of(jdbcUrl)
         .map(Connections::holder)

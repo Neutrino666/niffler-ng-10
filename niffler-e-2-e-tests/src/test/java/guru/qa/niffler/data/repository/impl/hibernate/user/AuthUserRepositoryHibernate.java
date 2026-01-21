@@ -9,7 +9,9 @@ import jakarta.persistence.NoResultException;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class AuthUserRepositoryHibernate implements AuthUserRepository {
 
   private final static Config CFG = Config.getInstance();
@@ -18,7 +20,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
 
   @Nonnull
   @Override
-  public AuthUserEntity create(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity create(AuthUserEntity user) {
     entityManager.joinTransaction();
     entityManager.persist(user);
     return user;
@@ -26,20 +28,20 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
 
   @Nonnull
   @Override
-  public AuthUserEntity update(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity update(AuthUserEntity user) {
     entityManager.joinTransaction();
     return entityManager.merge(user);
   }
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
+  public Optional<AuthUserEntity> findById(UUID id) {
     return Optional.ofNullable(entityManager.find(AuthUserEntity.class, id));
   }
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
+  public Optional<AuthUserEntity> findByUsername(String username) {
     try {
       return Optional.of(entityManager.createQuery(
               "SELECT u FROM AuthUserEntity u WHERE u.username = :username",
@@ -52,7 +54,7 @@ public class AuthUserRepositoryHibernate implements AuthUserRepository {
   }
 
   @Override
-  public void remove(@Nonnull AuthUserEntity user) {
+  public void remove(AuthUserEntity user) {
     entityManager.joinTransaction();
     if (!entityManager.contains(user)) {
       entityManager.merge(user);

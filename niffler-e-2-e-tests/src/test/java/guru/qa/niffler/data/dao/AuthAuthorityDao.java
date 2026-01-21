@@ -4,13 +4,15 @@ import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface AuthAuthorityDao {
 
-  void create(@Nonnull AuthAuthorityEntity... authorities);
+  void create(AuthAuthorityEntity... authorities);
 
   @Nonnull
-  List<AuthAuthorityEntity> findAllByUserId(@Nonnull UUID userId);
+  List<AuthAuthorityEntity> findAllByUserId(UUID userId);
 
-  void delete(@Nonnull AuthAuthorityEntity authority);
+  void delete(AuthAuthorityEntity authority);
 }
