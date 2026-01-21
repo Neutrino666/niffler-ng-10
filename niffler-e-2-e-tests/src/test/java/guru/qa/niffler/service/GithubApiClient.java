@@ -3,6 +3,7 @@ package guru.qa.niffler.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.GithubApi;
 import guru.qa.niffler.config.Config;
+import io.qameta.allure.Step;
 import java.io.IOException;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -25,6 +26,7 @@ public class GithubApiClient {
   private final GithubApi githubApi = retrofit.create(GithubApi.class);
 
   @Nonnull
+  @Step("REST API Получение информации о статусе дефекта")
   public String issueState(final String issueNumber) {
     final JsonNode response;
     try {

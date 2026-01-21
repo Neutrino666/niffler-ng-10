@@ -120,8 +120,8 @@ public class SpendTest {
     SPEND_DB_CLIENT.removeCategory(
         new CategoryJson(
             UUID.fromString("459e90d0-b798-424c-bad9-014a04131166"),
-            null,
-            null,
+            "test",
+            "username",
             false
         )
     );
