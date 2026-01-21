@@ -5,6 +5,7 @@ import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 import guru.qa.niffler.api.spend.CategoryApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
+import io.qameta.allure.Step;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -28,6 +29,7 @@ public class CategoryApiClient implements CategoryClient {
   private final CategoryApi categoryApi = retrofit.create(CategoryApi.class);
 
   @Nonnull
+  @Step("REST API Получение категорий пользователя с фильтрацией по признаку в архиве")
   public List<CategoryJson> getAllByUsername(String username, boolean excludeArchived) {
     final Response<List<CategoryJson>> response;
     try {
@@ -43,6 +45,7 @@ public class CategoryApiClient implements CategoryClient {
 
   @Override
   @Nullable
+  @Step("REST API Создание категории")
   public CategoryJson create(CategoryJson category) {
     final Response<CategoryJson> response;
     try {
@@ -57,6 +60,7 @@ public class CategoryApiClient implements CategoryClient {
   }
 
   @Nullable
+  @Step("REST API Обновление категории")
   public CategoryJson update(CategoryJson category) {
     final Response<CategoryJson> response;
     try {

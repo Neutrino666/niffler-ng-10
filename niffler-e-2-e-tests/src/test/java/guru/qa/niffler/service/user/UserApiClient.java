@@ -9,6 +9,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.UserJson;
+import io.qameta.allure.Step;
 import io.qameta.allure.okhttp3.AllureOkHttp3;
 import java.io.IOException;
 import java.net.CookieManager;
@@ -54,6 +55,7 @@ public class UserApiClient implements UserClient {
 
   @Nonnull
   @Override
+  @Step("REST API Регистрация нового пользователя")
   public UserJson create(String username, String password) {
     final Response<Void> response;
     try {
@@ -90,6 +92,7 @@ public class UserApiClient implements UserClient {
 
   @Nonnull
   @Override
+  @Step("REST API Поиск пользователя по username")
   public Optional<UserJson> findByUsername(String username) {
     final Response<UserJson> response;
     if (username.isEmpty()) {
@@ -109,6 +112,7 @@ public class UserApiClient implements UserClient {
 
   @Override
   @Nonnull
+  @Step("REST API Создание входящих запросов дружбы")
   public List<UserJson> createIncomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {
@@ -134,6 +138,7 @@ public class UserApiClient implements UserClient {
 
   @Override
   @Nonnull
+  @Step("REST API Создание исходящих запросов дружбы")
   public List<UserJson> createOutcomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {
@@ -159,6 +164,7 @@ public class UserApiClient implements UserClient {
 
   @Override
   @Nonnull
+  @Step("REST API Создание друзей пользователю")
   public List<UserJson> createFriends(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count < 0) {
@@ -180,6 +186,7 @@ public class UserApiClient implements UserClient {
   }
 
   @Override
+  @Step("REST API Удаление пользователя")
   public void delete(UserJson user) {
     throw new RuntimeException("Not implemented :(");
   }

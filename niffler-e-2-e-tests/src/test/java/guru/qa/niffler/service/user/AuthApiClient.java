@@ -1,6 +1,7 @@
 package guru.qa.niffler.service.user;
 
 import guru.qa.niffler.api.user.AuthApi;
+import io.qameta.allure.Step;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -32,6 +33,7 @@ public class AuthApiClient {
   private final AuthApi authApi = retrofit.create(AuthApi.class);
 
   @Nonnull
+  @Step("REST API Регистрация нового пользователя")
   public Response<Void> register(String username, String password) throws IOException {
     authApi.requestRegisterForm().execute();
     return authApi.register(

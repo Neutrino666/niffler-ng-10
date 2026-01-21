@@ -15,6 +15,7 @@ import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
+import io.qameta.allure.Step;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +48,7 @@ public class UserDbClient implements UserClient {
 
   @Nonnull
   @Override
+  @Step("SQL Создание пользователя")
   public UserJson create(String username, String password) {
     return Objects.requireNonNull(xaTxTemplate.execute(() -> {
       AuthUserEntity authUser = authUserEntity(username, password);
@@ -56,6 +58,7 @@ public class UserDbClient implements UserClient {
   }
 
   @Nonnull
+  @Step("SQL Поиск пользователя по id")
   public Optional<UserJson> findById(UUID id) {
     Optional<UserEntity> user = jdbcTxTemplate.execute(() -> udUserRepository.findById(id));
     return user != null && user.isPresent()
@@ -65,6 +68,7 @@ public class UserDbClient implements UserClient {
 
   @Nonnull
   @Override
+  @Step("SQL Поиск пользователя по username")
   public Optional<UserJson> findByUsername(String username) {
     Optional<UserEntity> user = jdbcTxTemplate.execute(
         () -> udUserRepository.findByUsername(username));
@@ -74,6 +78,7 @@ public class UserDbClient implements UserClient {
   }
 
   @Nonnull
+  @Step("SQL Обновления данных пользователя")
   public UserJson update(UserJson user) {
     return Objects.requireNonNull(xaTxTemplate.execute(
         () -> UserJson.fromEntity(
@@ -85,6 +90,7 @@ public class UserDbClient implements UserClient {
 
   @Nonnull
   @Override
+  @Step("SQL Создание входящей заявки добавления в друзья")
   public List<UserJson> createIncomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count > 0) {
@@ -107,6 +113,7 @@ public class UserDbClient implements UserClient {
 
   @Nonnull
   @Override
+  @Step("SQL Создание исходящей заявки добавления в друзья")
   public List<UserJson> createOutcomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count > 0) {
@@ -128,6 +135,7 @@ public class UserDbClient implements UserClient {
   }
 
   @Nonnull
+  @Step("SQL Создание друзей")
   public List<UserJson> createFriends(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count > 0) {
@@ -149,6 +157,7 @@ public class UserDbClient implements UserClient {
   }
 
   @Override
+  @Step("SQL Удаление пользователя")
   public void delete(UserJson user) {
     xaTxTemplate.execute(() -> {
       authUserRepository.findByUsername(user.username())
