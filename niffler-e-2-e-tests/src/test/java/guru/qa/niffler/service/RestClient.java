@@ -28,14 +28,14 @@ public abstract class RestClient {
     this(baseUrl,
         JacksonConverterFactory.create(),
         true,
-        (Interceptor) null);
+        null);
   }
 
   public RestClient(String baseUrl, boolean followRedirect) {
     this(baseUrl,
         JacksonConverterFactory.create(),
         followRedirect,
-        (Interceptor) null);
+        null);
   }
 
   public RestClient(

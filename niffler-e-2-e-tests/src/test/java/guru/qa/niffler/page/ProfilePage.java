@@ -14,7 +14,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.page.components.Header;
+import guru.qa.niffler.page.components.ConfirmDialog;
 import io.qameta.allure.Step;
 import java.io.File;
 import javax.annotation.Nonnull;
@@ -39,8 +39,7 @@ public class ProfilePage extends BasePage<ProfilePage> {
   private final SelenideElement archiveCheckbox = $("input[class*=PrivateSwitchBase-input]");
   private final SelenideElement editExistCategoryInput = $("form.MuiBox-root #category");
 
-  @Getter
-  private final Header header = new Header();
+  private final ConfirmDialog confirmDialog = new ConfirmDialog();
 
   @Step("Загрузка аватара")
   public @Nonnull ProfilePage uploadAvatar(final File file) {
@@ -81,6 +80,7 @@ public class ProfilePage extends BasePage<ProfilePage> {
   @Step("Добавление категории: '{category}'")
   public @Nonnull ProfilePage addNewCategory(final String category) {
     categoryInput.val(category);
+    categoryInput.sendKeys(Keys.ENTER);
     return this;
   }
 
@@ -125,11 +125,25 @@ public class ProfilePage extends BasePage<ProfilePage> {
     return this;
   }
 
-  @Step("Клик на активной категории")
+  @Step("Клик на кнопке архивирования категории")
   public @Nonnull ProfilePage clickArchive(final String title) {
     activeCategories.findBy(text(title))
         .find(getCategoryBtn(CategoryButton.ARCHIVE))
         .click();
+    return this;
+  }
+
+  @Step("Подтверждаем архивирование категории")
+  public @Nonnull ProfilePage acceptToArchive() {
+    confirmDialog.checkThatPageLoaded()
+        .clickButtonByText("Archive");
+    return this;
+  }
+
+  @Step("Подтверждаем архивирование категории")
+  public @Nonnull ProfilePage acceptToUnarchive() {
+    confirmDialog.checkThatPageLoaded()
+        .clickButtonByText("Unarchive");
     return this;
   }
 

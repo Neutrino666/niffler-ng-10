@@ -10,34 +10,23 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class ConfirmDialog {
+public final class ConfirmDialog extends BaseComponent<ConfirmDialog> {
 
-  private final SelenideElement root = $("*[ role = 'dialog' ]");
-  private final SelenideElement title = root.$(".MuiDialogTitle-root");
-  private final ElementsCollection buttons = root.$$("button");
+  private final SelenideElement title = self.$(".MuiDialogTitle-root");
+  private final ElementsCollection buttons = self.$$("button");
+
+  public ConfirmDialog() {
+    super($("*[ role = 'dialog' ]"));
+  }
 
   public @Nonnull ConfirmDialog checkThatPageLoaded() {
-    root.should(visible);
+    self.should(visible);
     return this;
   }
 
-  public void delete() {
-    buttons.find(text("Delete")).click();
-    root.shouldNotBe(visible);
-  }
-
-  public void cancel() {
-    buttons.find(text("Cancel")).click();
-    root.shouldNotBe(visible);
-  }
-
-  public void decline() {
-    buttons.find(text("Decline")).click();
-    root.shouldNotBe(visible);
-  }
-
-  public void close() {
-    buttons.find(text("Close")).click();
-    root.shouldNotBe(visible);
+  public void clickButtonByText(String text) {
+    buttons.find(text(text))
+        .click();
+    self.shouldNotBe(visible);
   }
 }

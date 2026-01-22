@@ -16,10 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @ParametersAreNonnullByDefault
-public class UsersHeader {
+public class UsersHeader extends BaseComponent<UsersHeader> {
 
-  private final SelenideElement headerRoot = $("div[ role = 'navigation' ]");
-  private final ElementsCollection tabs = headerRoot.$$(".MuiTab-textColorInherit");
+  private final ElementsCollection tabs = self.$$(".MuiTab-textColorInherit");
+
+  public UsersHeader() {
+    super($("div[ role = 'navigation' ]"));
+  }
 
   public @Nonnull PeoplePage toAllPeoplePage() {
     switchTab(Tab.ALL_PEOPLE);

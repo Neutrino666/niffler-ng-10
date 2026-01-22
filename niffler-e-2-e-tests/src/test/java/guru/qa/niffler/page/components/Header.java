@@ -17,14 +17,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class Header {
+public class Header extends BaseComponent<Header> {
 
-  private final SelenideElement root = $("#root header");
-  private final SelenideElement menuBtn = root.$("button[aria-label='Menu']");
-  private final SelenideElement addSpendingBtn = root.$(".MuiButton-contained");
-  private final SelenideElement mainPageLink = root.$(".link");
+  private final SelenideElement menuBtn = self.$("button[aria-label='Menu']");
+  private final SelenideElement addSpendingBtn = self.$(".MuiButton-contained");
+  private final SelenideElement mainPageLink = self.$(".link");
 
   private final ElementsCollection menuItems = $$("ul[ role = 'menu' ] li");
+
+  public Header() {
+    super($("#root header"));
+  }
 
   @Step("Переход на страницу 'Friends'")
   public @Nonnull FriendsPage toFriendsPage() {

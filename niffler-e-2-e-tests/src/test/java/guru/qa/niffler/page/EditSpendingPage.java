@@ -7,7 +7,6 @@ import static com.codeborne.selenide.Selenide.$$;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.components.Calendar;
-import guru.qa.niffler.page.components.Header;
 import io.qameta.allure.Step;
 import java.util.Date;
 import javax.annotation.Nonnull;
@@ -24,8 +23,6 @@ public class EditSpendingPage extends BasePage<EditSpendingPage> {
   private final SelenideElement saveBtn = $("#save");
   private final ElementsCollection categories = $$(".MuiList-padding li");
 
-  @Getter
-  private final Header header = new Header();
   @Getter
   private final Calendar calendar = new Calendar();
 

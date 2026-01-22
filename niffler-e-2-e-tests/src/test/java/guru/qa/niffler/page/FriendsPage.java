@@ -9,7 +9,6 @@ import static com.codeborne.selenide.Selenide.$;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.components.ConfirmDialog;
-import guru.qa.niffler.page.components.Header;
 import guru.qa.niffler.page.components.SearchField;
 import guru.qa.niffler.page.components.UsersHeader;
 import io.qameta.allure.Step;
@@ -24,9 +23,6 @@ public class FriendsPage extends BasePage<FriendsPage> {
   private final ElementsCollection users = tableRoot.$$("tbody tr");
   private final ElementsCollection friends = tableRoot.$$("#friends tr");
   private final ElementsCollection requests = tableRoot.$$("#requests tr");
-
-  @Getter
-  private final Header header = new Header();
 
   @Getter
   private final SearchField searchField = new SearchField();
@@ -76,7 +72,7 @@ public class FriendsPage extends BasePage<FriendsPage> {
       SelenideElement declineBtn = declineBtnByRequestRow(user);
       declineBtn.click();
       new ConfirmDialog().checkThatPageLoaded()
-          .decline();
+          .clickButtonByText("Decline");
       declineBtn.shouldNotBe(exist);
     }
     return this;

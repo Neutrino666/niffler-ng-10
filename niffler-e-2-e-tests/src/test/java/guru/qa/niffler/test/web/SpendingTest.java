@@ -69,4 +69,42 @@ public class SpendingTest {
         .getSpendingTable()
         .checkThatTableContains(description);
   }
+
+  @User
+  @Test
+  @DisplayName("Уведомление добавления нового спендинга")
+  void addNewSpendingSnackbar(final UserJson user) {
+    final String description = RandomDataUtils.getRandomName();
+    login(user)
+        .getHeader()
+        .addSpendingPge()
+        .setAmount(1)
+        .setNewCategory(RandomDataUtils.getRandomCategoryName())
+        .setSpendingDate(Date.from(Instant.now()))
+        .setNewSpendingDescription(description)
+        .save()
+        .checkSnackbarText("New spending is successfully created");
+  }
+
+  @User(
+      spendings = @Spending(
+          category = "Учеба",
+          amount = 89900,
+          currency = CurrencyValues.RUB,
+          description = "Обучение Niffler 2.0 юбилейный поток!"
+      )
+  )
+  @Test
+  @DisplayName("Редактирование траты")
+  void editedSpendingSnackbar(final UserJson user) {
+    final String description = user.testData().spendings().getFirst().description();
+    final String newDescription = "Обучение Niffler Next Generation";
+
+    login(user)
+        .getSpendingTable()
+        .editSpending(description)
+        .setNewSpendingDescription(newDescription)
+        .save()
+        .checkSnackbarText("Spending is edited successfully");
+  }
 }

@@ -90,4 +90,30 @@ public class FriendsTest {
         .declineFriends(incomeUsername)
         .checkFriendsNotExist();
   }
+
+  @User(
+      incomeInvitations = 1
+  )
+  @Test
+  @DisplayName("Уведомление приема заявки в друзья")
+  void acceptIncomeInvitationInFriendsTableSnackbar(final UserJson user) {
+    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    goToFriendsPage(user)
+        .acceptFriends(incomeUsername)
+        .checkFriendIsVisible(incomeUsername)
+        .checkSnackbarText("Invitation of %s accepted".formatted(incomeUsername));
+  }
+
+  @User(
+      incomeInvitations = 1
+  )
+  @Test
+  @DisplayName("Уведомление отклонение заявки в друзья")
+  void declineIncomeInvitationInFriendsTableSnackbar(final UserJson user) {
+    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    goToFriendsPage(user)
+        .declineFriends(incomeUsername)
+        .checkFriendsNotExist()
+        .checkSnackbarText("Invitation of %s is declined".formatted(incomeUsername));
+  }
 }

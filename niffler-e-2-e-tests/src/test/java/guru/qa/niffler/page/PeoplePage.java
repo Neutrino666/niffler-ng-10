@@ -6,7 +6,6 @@ import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.page.components.Header;
 import guru.qa.niffler.page.components.SearchField;
 import guru.qa.niffler.page.components.UsersHeader;
 import io.qameta.allure.Step;
@@ -19,9 +18,6 @@ public class PeoplePage extends BasePage<PeoplePage> {
 
   private final SelenideElement tableRoot = $("#simple-tabpanel-all");
   private final ElementsCollection users = tableRoot.$$("tbody tr");
-
-  @Getter
-  private final Header header = new Header();
 
   @Getter
   private final SearchField searchField = new SearchField();

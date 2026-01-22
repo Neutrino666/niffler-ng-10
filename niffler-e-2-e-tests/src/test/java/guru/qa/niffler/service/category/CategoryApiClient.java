@@ -3,8 +3,8 @@ package guru.qa.niffler.service.category;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
 import guru.qa.niffler.api.spend.CategoryApi;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
 import java.io.IOException;
 import java.util.List;
@@ -13,20 +13,16 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @ParametersAreNonnullByDefault
-public class CategoryApiClient implements CategoryClient {
+public class CategoryApiClient extends RestClient implements CategoryClient {
 
-  private static final Config CFG = Config.getInstance();
+  private final CategoryApi categoryApi;
 
-  private final Retrofit retrofit = new Retrofit.Builder()
-      .baseUrl(CFG.spendUrl())
-      .addConverterFactory(JacksonConverterFactory.create())
-      .build();
-
-  private final CategoryApi categoryApi = retrofit.create(CategoryApi.class);
+  public CategoryApiClient() {
+    super(CFG.spendUrl());
+    categoryApi = create(CategoryApi.class);
+  }
 
   @Nonnull
   @Step("REST API Получение категорий пользователя с фильтрацией по признаку в архиве")

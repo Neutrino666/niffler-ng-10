@@ -5,31 +5,12 @@ import guru.qa.niffler.api.user.AuthApi;
 import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
 import java.io.IOException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import okhttp3.JavaNetCookieJar;
-import okhttp3.OkHttpClient;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @ParametersAreNonnullByDefault
 public class AuthApiClient extends RestClient {
-
-  private static final CookieManager cm = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
-
-  @Nonnull
-  private final Retrofit retrofit = new Retrofit.Builder()
-      .baseUrl("https://auth.niffler-stage.qa.guru/")
-      .addConverterFactory(JacksonConverterFactory.create())
-      .client(new OkHttpClient.Builder()
-          .cookieJar(new JavaNetCookieJar(
-              cm
-          ))
-          .build())
-      .build();
 
   @Nonnull
   private final AuthApi authApi;

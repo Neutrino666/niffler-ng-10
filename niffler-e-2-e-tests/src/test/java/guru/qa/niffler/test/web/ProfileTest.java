@@ -107,4 +107,69 @@ public class ProfileTest {
         .clickSaveChanges()
         .checkSnackbarText("Profile successfully updated");
   }
+
+  @Test
+  @User
+  @DisplayName("Снекбар успешного создания категории")
+  void addNewCategory(final UserJson user) {
+    String name = RandomDataUtils.getRandomCategoryName();
+    goToProfilePage(user)
+        .addNewCategory(name)
+        .checkSnackbarText("You've added new category: %s".formatted(name));
+  }
+
+  @Test
+  @User(
+      categories = @Category(
+          archived = false
+      )
+  )
+  @DisplayName("Снекбар отправки категории в архив")
+  void addCategoryToArchiveSnackbar(final UserJson user) {
+    String name = user.testData()
+        .categories()
+        .getFirst()
+        .name();
+    goToProfilePage(user)
+        .clickArchive(name)
+        .acceptToArchive()
+        .checkSnackbarText("Category %s is archived".formatted(name));
+  }
+
+  @Test
+  @User(
+      categories = @Category(
+          archived = true
+      )
+  )
+  @DisplayName("Снекбар восстановления категории из архива")
+  void addCategoryToUnarchiveSnackbar(final UserJson user) {
+    String name = user.testData()
+        .categories()
+        .getFirst()
+        .name();
+    goToProfilePage(user)
+        .showArchive(true)
+        .clickUnarchive(name)
+        .acceptToUnarchive()
+        .checkSnackbarText("Category %s is unarchived".formatted(name));
+  }
+
+  @Test
+  @User(
+      categories = @Category(
+          archived = false
+      )
+  )
+  @DisplayName("Снекбар редактирования категории")
+  void changeCategorySnackbar(final UserJson user) {
+    String name = user.testData()
+        .categories()
+        .getFirst()
+        .name();
+    String newName = RandomDataUtils.getRandomCategoryName();
+    goToProfilePage(user)
+        .editActiveCategory(name, newName)
+        .checkSnackbarText("Category name is changed");
+  }
 }

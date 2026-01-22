@@ -3,12 +3,13 @@ package guru.qa.niffler.service.user;
 import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
+import com.google.common.base.Stopwatch;
 import guru.qa.niffler.api.user.AuthApi;
 import guru.qa.niffler.api.user.UserdataApi;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
 import io.qameta.allure.okhttp3.AllureOkHttp3;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import okhttp3.JavaNetCookieJar;
@@ -27,9 +29,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @ParametersAreNonnullByDefault
-public class UserApiClient implements UserClient {
+public class UserApiClient extends RestClient implements UserClient {
 
-  private static final Config CFG = Config.getInstance();
   private static final CookieManager cm = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
 
   private final Retrofit authRetrofit = new Retrofit.Builder()
@@ -42,16 +43,14 @@ public class UserApiClient implements UserClient {
           ))
           .build())
       .build();
-  private final Retrofit userdataRetrofit = new Retrofit.Builder()
-      .baseUrl(CFG.userdataUrl())
-      .addConverterFactory(JacksonConverterFactory.create())
-      .client(new OkHttpClient.Builder()
-          .addInterceptor(new AllureOkHttp3())
-          .build())
-      .build();
 
   private final AuthApi authApi = authRetrofit.create(AuthApi.class);
-  private final UserdataApi userdataApi = userdataRetrofit.create(UserdataApi.class);
+  private final UserdataApi userdataApi;
+
+  public UserApiClient() {
+    super(CFG.userdataUrl());
+    userdataApi = create(UserdataApi.class);
+  }
 
   @Nonnull
   @Override
@@ -71,8 +70,22 @@ public class UserApiClient implements UserClient {
               .orElseThrow()
               .getValue()
       ).execute();
+      Stopwatch sw = Stopwatch.createStarted();
+      int waitTime = 10;
+      while (sw.elapsed(TimeUnit.SECONDS) < waitTime) {
+        UserJson userJson = userdataApi.currentUser(username)
+            .execute()
+            .body();
+        if (userJson != null && userJson.id() != null) {
+          return userJson;
+        } else {
+          Thread.sleep(100);
+        }
+      }
     } catch (IOException e) {
       throw new AssertionError(e);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
 
     Assertions.assertThat(response.code()).isEqualTo(SC_CREATED);

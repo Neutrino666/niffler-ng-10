@@ -23,20 +23,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @ParametersAreNonnullByDefault
-public class Calendar {
+public class Calendar extends BaseComponent<Calendar> {
 
   private final SelenideElement dateFilled = $("input[ name = 'date' ]");
   private final SelenideElement calendarBtn = $("button[ aria-label *= 'Choose date' ]");
 
-  private final SelenideElement root = $(".MuiDateCalendar-root");
-  private final SelenideElement currentDate = root.$(".MuiPickersCalendarHeader-label");
-  private final SelenideElement nextMonth = root.$(".MuiIconButton-edgeStart");
-  private final SelenideElement prevMonth = root.$(".MuiIconButton-edgeEnd");
-  private final SelenideElement switchViewBtn = root.$(
+  private final SelenideElement currentDate = self.$(".MuiPickersCalendarHeader-label");
+  private final SelenideElement nextMonth = self.$(".MuiIconButton-edgeStart");
+  private final SelenideElement prevMonth = self.$(".MuiIconButton-edgeEnd");
+  private final SelenideElement switchViewBtn = self.$(
       ".MuiPickersCalendarHeader-switchViewButton");
 
-  private final ElementsCollection years = root.$$(".MuiPickersYear-yearButton");
-  private final ElementsCollection days = root.$$(".MuiPickersDay-root");
+  private final ElementsCollection years = self.$$(".MuiPickersYear-yearButton");
+  private final ElementsCollection days = self.$$(".MuiPickersDay-root");
+
+  public Calendar() {
+    super($(".MuiDateCalendar-root"));
+  }
 
   public @Nonnull Calendar selectDateInCalendar(Date date) {
     open(true);
@@ -93,10 +96,10 @@ public class Calendar {
   }
 
   private @Nonnull Calendar open(boolean state) {
-    if (root.exists() != state) {
+    if (self.exists() != state) {
       calendarBtn.click();
     }
-    root.shouldBe(state ? visible : not(exist));
+    self.shouldBe(state ? visible : not(exist));
     return this;
   }
 
