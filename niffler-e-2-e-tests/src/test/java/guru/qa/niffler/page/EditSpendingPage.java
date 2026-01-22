@@ -15,7 +15,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 
 @ParametersAreNonnullByDefault
-public class EditSpendingPage {
+public class EditSpendingPage extends BasePage<EditSpendingPage> {
 
   private final SelenideElement descriptionInput = $("#description");
   private final SelenideElement amountInput = $("#amount");

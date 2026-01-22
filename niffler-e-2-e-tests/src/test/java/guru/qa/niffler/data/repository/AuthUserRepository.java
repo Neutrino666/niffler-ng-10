@@ -1,6 +1,8 @@
 package guru.qa.niffler.data.repository;
 
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
+import guru.qa.niffler.data.repository.impl.hibernate.user.AuthUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.spring.user.AuthUserRepositorySpringJdbc;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -8,6 +10,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public interface AuthUserRepository {
+
+  @Nonnull
+  static AuthUserRepository getInstance() {
+    return switch (System.getProperty("repository", "jpa")) {
+      case "jpa" -> new AuthUserRepositoryHibernate();
+      case "jdbc" -> new AuthUserRepositorySpringJdbc();
+      case "sjdbc" -> new AuthUserRepositorySpringJdbc();
+      default -> throw new IllegalArgumentException("Неизвестный тип репозитория: "
+          + System.getProperty("repository"));
+    };
+  }
 
   @Nonnull
   AuthUserEntity create(AuthUserEntity user);

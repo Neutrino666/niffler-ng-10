@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.Keys;
 
 @ParametersAreNonnullByDefault
-public class ProfilePage {
+public class ProfilePage extends BasePage<ProfilePage> {
 
   private final SelenideElement usernameInput = $("#username");
   private final SelenideElement nameInput = $("#name");

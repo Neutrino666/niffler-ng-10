@@ -18,10 +18,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 
 @ParametersAreNonnullByDefault
-public class FriendsPage {
-
-  private final SelenideElement headerRoot = $("div[ role = 'navigation' ]");
-  private final ElementsCollection tabs = headerRoot.$$(".MuiTab-textColorInherit");
+public class FriendsPage extends BasePage<FriendsPage> {
 
   private final SelenideElement tableRoot = $("#simple-tabpanel-friends");
   private final ElementsCollection users = tableRoot.$$("tbody tr");

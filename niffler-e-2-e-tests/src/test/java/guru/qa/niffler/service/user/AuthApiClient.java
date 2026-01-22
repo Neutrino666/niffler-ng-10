@@ -1,6 +1,8 @@
 package guru.qa.niffler.service.user;
 
+import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.api.user.AuthApi;
+import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
 import java.io.IOException;
 import java.net.CookieManager;
@@ -14,7 +16,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @ParametersAreNonnullByDefault
-public class AuthApiClient {
+public class AuthApiClient extends RestClient {
 
   private static final CookieManager cm = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
 
@@ -30,7 +32,12 @@ public class AuthApiClient {
       .build();
 
   @Nonnull
-  private final AuthApi authApi = retrofit.create(AuthApi.class);
+  private final AuthApi authApi;
+
+  public AuthApiClient() {
+    super("https://auth.niffler-stage.qa.guru/", true);
+    this.authApi = create(AuthApi.class);
+  }
 
   @Nonnull
   @Step("REST API Регистрация нового пользователя")
@@ -40,12 +47,7 @@ public class AuthApiClient {
         username,
         password,
         password,
-        cm.getCookieStore().getCookies()
-            .stream()
-            .filter(c -> c.getName().equals("XSRF-TOKEN"))
-            .findFirst()
-            .get()
-            .getValue()
+        ThreadSafeCookieStore.INSTANCE.xsrfCookie()
     ).execute();
   }
 }
