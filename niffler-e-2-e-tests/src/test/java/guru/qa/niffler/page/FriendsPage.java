@@ -20,9 +20,6 @@ import lombok.Getter;
 @ParametersAreNonnullByDefault
 public class FriendsPage {
 
-  private final SelenideElement headerRoot = $("div[ role = 'navigation' ]");
-  private final ElementsCollection tabs = headerRoot.$$(".MuiTab-textColorInherit");
-
   private final SelenideElement tableRoot = $("#simple-tabpanel-friends");
   private final ElementsCollection users = tableRoot.$$("tbody tr");
   private final ElementsCollection friends = tableRoot.$$("#friends tr");

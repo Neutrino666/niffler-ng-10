@@ -17,9 +17,6 @@ import lombok.Getter;
 @ParametersAreNonnullByDefault
 public class PeoplePage {
 
-  private final SelenideElement headerRoot = $("div[ role = 'navigation' ]");
-  private final ElementsCollection tabs = headerRoot.$$(".MuiTab-textColorInherit");
-
   private final SelenideElement tableRoot = $("#simple-tabpanel-all");
   private final ElementsCollection users = tableRoot.$$("tbody tr");
 
