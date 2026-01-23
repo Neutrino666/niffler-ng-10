@@ -36,6 +36,6 @@ public class RandomDataUtils {
 
   @Nonnull
   public static String getRandomPassword() {
-    return faker.internet().password();
+    return faker.internet().password(3, 12);
   }
 }
