@@ -8,6 +8,7 @@ import guru.qa.niffler.model.CategoryJson;
 import io.qameta.allure.Step;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -44,7 +45,7 @@ public class CategoryApiClient implements CategoryClient {
   }
 
   @Override
-  @Nullable
+  @Nonnull
   @Step("REST API Создание категории")
   public CategoryJson create(CategoryJson category) {
     final Response<CategoryJson> response;
@@ -56,10 +57,12 @@ public class CategoryApiClient implements CategoryClient {
     }
     Assertions.assertThat(response.code())
         .isEqualTo(SC_OK);
-    return response.body();
+    return Objects.requireNonNull(
+        response.body()
+    );
   }
 
-  @Nullable
+  @Nonnull
   @Step("REST API Обновление категории")
   public CategoryJson update(CategoryJson category) {
     final Response<CategoryJson> response;
@@ -71,6 +74,8 @@ public class CategoryApiClient implements CategoryClient {
     }
     Assertions.assertThat(response.code())
         .isEqualTo(SC_OK);
-    return response.body();
+    return Objects.requireNonNull(
+        response.body()
+    );
   }
 }
