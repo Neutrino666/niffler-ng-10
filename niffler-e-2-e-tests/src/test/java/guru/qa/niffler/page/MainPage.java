@@ -4,7 +4,6 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.page.components.Header;
 import guru.qa.niffler.page.components.SpendingTable;
 import io.qameta.allure.Step;
 import javax.annotation.Nonnull;
@@ -15,9 +14,6 @@ import lombok.Getter;
 public class MainPage extends BasePage<MainPage> {
 
   private final SelenideElement statistics = $("#stat");
-
-  @Getter
-  private final Header header = new Header();
 
   @Getter
   private final SpendingTable spendingTable = new SpendingTable();

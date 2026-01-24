@@ -6,10 +6,12 @@ import static com.codeborne.selenide.Selenide.$;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.components.Header;
 import javax.annotation.ParametersAreNonnullByDefault;
+import lombok.Getter;
 
 @ParametersAreNonnullByDefault
 public abstract class BasePage<T extends BasePage<?>> {
 
+  @Getter
   protected final Header header = new Header();
   protected final SelenideElement snackbar = $(".MuiAlert-message");
 

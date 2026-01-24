@@ -2,28 +2,23 @@ package guru.qa.niffler.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.GithubApi;
-import guru.qa.niffler.config.Config;
 import io.qameta.allure.Step;
 import java.io.IOException;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @ParametersAreNonnullByDefault
-public final class GithubApiClient {
+public final class GithubApiClient extends RestClient {
 
   private static final String GH_TOKEN_ENV = "GITHUB_TOKEN";
 
-  private static final Config CFG = Config.getInstance();
+  private final GithubApi githubApi;
 
-  private final Retrofit retrofit = new Retrofit.Builder()
-      .baseUrl(CFG.githubUrl())
-      .addConverterFactory(JacksonConverterFactory.create())
-      .build();
-
-  private final GithubApi githubApi = retrofit.create(GithubApi.class);
+  public GithubApiClient() {
+    super(CFG.githubUrl());
+    githubApi = create(GithubApi.class);
+  }
 
   @Nonnull
   @Step("REST API Получение информации о статусе дефекта")

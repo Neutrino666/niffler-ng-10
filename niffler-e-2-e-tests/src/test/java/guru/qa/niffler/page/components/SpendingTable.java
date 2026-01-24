@@ -17,20 +17,23 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 
 @ParametersAreNonnullByDefault
-public class SpendingTable {
+public class SpendingTable extends BaseComponent<SpendingTable> {
 
-  private final SelenideElement root = $("#spendings");
-  private final SelenideElement periodDropdown = root.$("#period");
-  private final SelenideElement deleteBtn = root.$("#delete");
-  private final ElementsCollection spendings = root.$$("tbody tr");
+  private final SelenideElement periodDropdown = self.$("#period");
+  private final SelenideElement deleteBtn = self.$("#delete");
+  private final ElementsCollection spendings = self.$$("tbody tr");
 
   private final ElementsCollection menuPeriod = $$("#menu-period li");
 
   @Getter
   private final SearchField searchField = new SearchField();
 
+  public SpendingTable() {
+    super($("#spendings"));
+  }
+
   public @Nonnull SpendingTable checkThatPageLoaded() {
-    root.should(visible);
+    self.should(visible);
     return this;
   }
 
@@ -56,7 +59,7 @@ public class SpendingTable {
     setStateChxSpendingContains(true, description);
     deleteBtn.click();
     new ConfirmDialog().checkThatPageLoaded()
-        .delete();
+        .clickButtonByText("Delete");
     return this;
   }
 

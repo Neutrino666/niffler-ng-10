@@ -102,6 +102,8 @@ dependencies {
     }
     testImplementation "io.qameta.allure:allure-okhttp3:${allureVersion}"
     testImplementation "io.qameta.allure:allure-grpc:${allureVersion}"
+    testImplementation "io.qameta.allure:allure-assertj:${allureVersion}"
+
     // WEB
     testImplementation "com.codeborne:selenide:${selenideVersion}"
     testImplementation "ru.yandex.qatools.ashot:ashot:${ashotVersion}"
