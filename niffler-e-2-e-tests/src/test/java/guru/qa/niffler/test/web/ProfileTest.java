@@ -96,4 +96,15 @@ public class ProfileTest {
         .refresh()
         .checkName(newName);
   }
+
+  @Test
+  @User
+  @DisplayName("Снекбар успешного редактирования профиля")
+  void nameShouldBeEditedInProfile(final UserJson user) {
+    String newName = RandomDataUtils.getRandomName();
+    goToProfilePage(user)
+        .setName(newName)
+        .clickSaveChanges()
+        .checkSnackbarText("Profile successfully updated");
+  }
 }

@@ -15,7 +15,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 
 @ParametersAreNonnullByDefault
-public class PeoplePage {
+public class PeoplePage extends BasePage<PeoplePage> {
 
   private final SelenideElement tableRoot = $("#simple-tabpanel-all");
   private final ElementsCollection users = tableRoot.$$("tbody tr");

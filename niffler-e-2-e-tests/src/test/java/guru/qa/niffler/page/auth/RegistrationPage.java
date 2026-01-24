@@ -4,12 +4,13 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.BasePage;
 import io.qameta.allure.Step;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class RegistrationPage {
+public class RegistrationPage extends BasePage<RegistrationPage> {
 
   private final SelenideElement usernameInput = $("#username");
   private final SelenideElement passwordInput = $("#password");

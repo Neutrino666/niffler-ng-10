@@ -2,6 +2,9 @@ package guru.qa.niffler.data.repository;
 
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
+import guru.qa.niffler.data.repository.impl.hibernate.spend.SpendingRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.jdbc.spend.SpendingRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.spring.spend.SpendingRepositorySpring;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +13,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public interface SpendRepository {
+
+  @Nonnull
+  static SpendRepository getInstance() {
+    return switch (System.getProperty("repository", "jpa")) {
+      case "jpa" -> new SpendingRepositoryHibernate();
+      case "jdbc" -> new SpendingRepositoryJdbc();
+      case "sjdbc" -> new SpendingRepositorySpring();
+      default -> throw new IllegalArgumentException("Неизвестный тип репозитория: "
+          + System.getProperty("repository"));
+    };
+  }
 
   @Nonnull
   SpendEntity create(SpendEntity spend);

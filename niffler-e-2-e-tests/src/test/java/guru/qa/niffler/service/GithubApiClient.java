@@ -12,7 +12,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @ParametersAreNonnullByDefault
-public class GithubApiClient {
+public final class GithubApiClient {
 
   private static final String GH_TOKEN_ENV = "GITHUB_TOKEN";
 

@@ -12,7 +12,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 
 @ParametersAreNonnullByDefault
-public class MainPage {
+public class MainPage extends BasePage<MainPage> {
 
   private final SelenideElement statistics = $("#stat");
 

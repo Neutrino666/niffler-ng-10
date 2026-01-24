@@ -5,37 +5,28 @@ import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
 import guru.qa.niffler.api.spend.SpendApi;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
-import io.qameta.allure.okhttp3.AllureOkHttp3;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import okhttp3.OkHttpClient;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @ParametersAreNonnullByDefault
-public class SpendApiClient implements SpendClient {
+public class SpendApiClient extends RestClient implements SpendClient {
 
-  private static final Config CFG = Config.getInstance();
+  private final SpendApi spendApi;
 
-  private final Retrofit retrofit = new Retrofit.Builder()
-      .baseUrl(CFG.spendUrl())
-      .addConverterFactory(JacksonConverterFactory.create())
-      .client(new OkHttpClient.Builder()
-          .addInterceptor(new AllureOkHttp3())
-          .build())
-      .build();
-
-  private final SpendApi spendApi = retrofit.create(SpendApi.class);
+  public SpendApiClient() {
+    super(CFG.spendUrl());
+    this.spendApi = create(SpendApi.class);
+  }
 
   @Nullable
   @Step("REST API Получение траты по id")

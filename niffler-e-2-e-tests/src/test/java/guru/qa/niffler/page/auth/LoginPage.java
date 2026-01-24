@@ -5,13 +5,14 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.BasePage;
 import guru.qa.niffler.page.MainPage;
 import io.qameta.allure.Step;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class LoginPage {
+public class LoginPage extends BasePage<LoginPage> {
 
   private final SelenideElement usernameInput = $("#username");
   private final SelenideElement passwordInput = $("#password");
