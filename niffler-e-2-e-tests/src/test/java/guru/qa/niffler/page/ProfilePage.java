@@ -6,19 +6,24 @@ import static com.codeborne.selenide.Condition.interactable;
 import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Condition.selected;
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.components.Header;
 import io.qameta.allure.Step;
 import java.io.File;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.Keys;
 
+@ParametersAreNonnullByDefault
 public class ProfilePage {
 
   private final SelenideElement usernameInput = $("#username");
@@ -34,54 +39,63 @@ public class ProfilePage {
   private final SelenideElement archiveCheckbox = $("input[class*=PrivateSwitchBase-input]");
   private final SelenideElement editExistCategoryInput = $("form.MuiBox-root #category");
 
-  @Step("Upload avatar")
-  public ProfilePage uploadAvatar(File file) {
+  @Getter
+  private final Header header = new Header();
+
+  @Step("Загрузка аватара")
+  public @Nonnull ProfilePage uploadAvatar(final File file) {
     avatarInput.shouldBe(interactable).uploadFile(file);
     return this;
   }
 
-  @Step("Click register passkey")
-  public ProfilePage clickRegisterPasskey() {
+  @Step("Клик register passkey")
+  public @Nonnull ProfilePage clickRegisterPasskey() {
     registerPasskeyBtn.click();
     return this;
   }
 
-  @Step("Save changes")
-  public ProfilePage clickSaveChanges() {
+  @Step("Сохранение изменений")
+  public @Nonnull ProfilePage clickSaveChanges() {
     saveChangesBtn.click();
     return this;
   }
 
-  @Step("Check username")
-  public ProfilePage checkUsernameShouldBeDisabled() {
+  @Step("Обновление страницы")
+  public @Nonnull ProfilePage refresh() {
+    Selenide.refresh();
+    return this;
+  }
+
+  @Step("Проверка не редактируемости поля 'имя пользователя'")
+  public @Nonnull ProfilePage checkUsernameShouldBeDisabled() {
     usernameInput.shouldBe(visible, disabled);
     return this;
   }
 
-  @Step("Set name: '{name}'")
-  public ProfilePage setName(@Nonnull final String name) {
+  @Step("Ввод имени: '{name}'")
+  public @Nonnull ProfilePage setName(final String name) {
     nameInput.val(name);
     return this;
   }
 
-  @Step("Add category: '{category}'")
-  public ProfilePage addNewCategory(@Nonnull final String category) {
+  @Step("Добавление категории: '{category}'")
+  public @Nonnull ProfilePage addNewCategory(final String category) {
     categoryInput.val(category);
     return this;
   }
 
-  @Step("Check categories contains in any order: '{categories}'")
-  public ProfilePage checkActiveCategoriesIsDisplayedInAnyOrder(
-      @Nonnull final String... categories) {
+  @Step("Проверка наличия активных категорий в любой последовательности: '{categories}'")
+  public @Nonnull ProfilePage checkActiveCategoriesIsDisplayedInAnyOrder(
+      final String... categories) {
     for (String category : categories) {
       activeCategories.find(text(category)).shouldBe(visible);
     }
     return this;
   }
 
-  @Step("Check categories contains in any order: '{categories}'")
-  public ProfilePage checkArchivedCategoriesIsDisplayedInAnyOrder(
-      @Nonnull final String... categories) {
+  @Step("Проверка наличия архивных категорий в любой последовательности: '{categories}'")
+  public @Nonnull ProfilePage checkArchivedCategoriesIsDisplayedInAnyOrder(
+      final String... categories) {
     showArchive(true);
     for (String category : categories) {
       archiveCategories.find(text(category)).shouldBe(visible);
@@ -89,8 +103,8 @@ public class ProfilePage {
     return this;
   }
 
-  @Step("Check categories contains in any order: '{categories}'")
-  public ProfilePage checkArchivedCategoriesIsNotExist(@Nonnull final String... categories) {
+  @Step("Проверка отсутствия архивных категорий в любой последовательности: '{categories}'")
+  public @Nonnull ProfilePage checkArchivedCategoriesIsNotExist(final String... categories) {
     showArchive(false);
     for (String category : categories) {
       archiveCategories.find(text(category)).shouldBe(not(exist));
@@ -98,9 +112,9 @@ public class ProfilePage {
     return this;
   }
 
-  @Step("Edit active category name old: '{fromCategory}' new: '{toCategory}'")
-  public ProfilePage editActiveCategory(@Nonnull final String fromCategory,
-      @Nonnull final String toCategory) {
+  @Step("Редактирование активной категории название старое: '{fromCategory}' новое: '{toCategory}'")
+  public @Nonnull ProfilePage editActiveCategory(final String fromCategory,
+      final String toCategory) {
     activeCategories.findBy(text(fromCategory))
         .find(getCategoryBtn(CategoryButton.EDIT))
         .click();
@@ -111,16 +125,16 @@ public class ProfilePage {
     return this;
   }
 
-  @Step("Click archive")
-  public ProfilePage clickArchive(@Nonnull final String title) {
+  @Step("Клик на активной категории")
+  public @Nonnull ProfilePage clickArchive(final String title) {
     activeCategories.findBy(text(title))
         .find(getCategoryBtn(CategoryButton.ARCHIVE))
         .click();
     return this;
   }
 
-  @Step("Click unarchive")
-  public ProfilePage clickUnarchive(@Nonnull final String title) {
+  @Step("Клик на архивной категории")
+  public @Nonnull ProfilePage clickUnarchive(final String title) {
     archiveCheckbox.shouldBe(selected);
     archiveCategories.findBy(text(title))
         .find(getCategoryBtn(CategoryButton.UNARCHIVE))
@@ -128,8 +142,8 @@ public class ProfilePage {
     return this;
   }
 
-  @Step("Switch to archive category: '{isSelected}'")
-  public ProfilePage showArchive(@Nonnull final Boolean isSelected) {
+  @Step("Переключение на архивную категорию вкл: '{isSelected}'")
+  public @Nonnull ProfilePage showArchive(final Boolean isSelected) {
     if (isSelectedArchive() != isSelected) {
       archiveCheckbox.click();
       archiveCheckbox.shouldBe(interactable, isSelected ? selected : not(selected));
@@ -137,11 +151,17 @@ public class ProfilePage {
     return this;
   }
 
+  @Step("Проверка имени пользователя: '{name}'")
+  public @Nonnull ProfilePage checkName(final String name) {
+    nameInput.shouldHave(value(name), visible);
+    return this;
+  }
+
   private boolean isSelectedArchive() {
     return archiveCheckbox.shouldBe(interactable).isSelected();
   }
 
-  private String getCategoryBtn(@Nonnull final CategoryButton categoryBtn) {
+  private @Nonnull String getCategoryBtn(final CategoryButton categoryBtn) {
     return "button[aria-label='%s category']".formatted(categoryBtn.getValue());
   }
 

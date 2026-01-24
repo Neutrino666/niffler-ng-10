@@ -1,8 +1,10 @@
 package guru.qa.niffler.jupiter.extension;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+@ParametersAreNonnullByDefault
 public interface SuiteExtension extends BeforeAllCallback {
 
   /*

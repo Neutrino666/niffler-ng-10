@@ -6,10 +6,15 @@ import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
+import io.qameta.allure.Step;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class CategoryDbClient implements CategoryClient {
 
   private final static Config CFG = Config.getInstance();
@@ -21,39 +26,52 @@ public class CategoryDbClient implements CategoryClient {
   );
 
   @Override
-  public CategoryJson create(CategoryJson category) {
-    return jdbcTxTemplate.execute(() ->
-        CategoryJson.fromEntity(categoryDao.create(CategoryEntity.fromJson(category)))
-    );
+  @Step("SQL Создание категории")
+  public @Nonnull CategoryJson create(CategoryJson category) {
+    return Objects.requireNonNull(
+            jdbcTxTemplate.execute(() ->
+                CategoryJson.fromEntity(categoryDao.create(CategoryEntity.fromJson(category)))
+            )
+        );
   }
 
+  @Step("SQL Обновление категории")
   @Override
-  public @Nonnull CategoryJson update(@Nonnull CategoryJson category) {
+  public @Nonnull CategoryJson update(CategoryJson category) {
     throw new UnsupportedOperationException("Not implemented :(");
   }
 
+  @Step("SQL Поиск категории по username и categoryName")
   public @Nonnull Optional<CategoryEntity> findByUsernameAndName(
-      @Nonnull String username,
-      @Nonnull String categoryName
+      String username,
+      String categoryName
   ) {
-    return jdbcTxTemplate.execute(() ->
-        categoryDao.findByUsernameAndName(username, categoryName)
+    return Objects.requireNonNull(
+        jdbcTxTemplate.execute(() ->
+            categoryDao.findByUsernameAndName(username, categoryName)
+        )
     );
   }
 
-  public @Nonnull List<CategoryEntity> findAllByUsername(@Nonnull String username) {
+  @Step("SQL Поиск всех категорий пользователя")
+  public @Nullable List<CategoryEntity> findAllByUsername(String username) {
     return jdbcTxTemplate.execute(() -> categoryDao.findAllByUsername(username));
   }
 
+  @Step("SQL Поиск всех категорий")
   public @Nonnull List<CategoryJson> findAll() {
-    return jdbcTxTemplate.execute(() ->
+    List<CategoryJson> categories = jdbcTxTemplate.execute(() ->
         categoryDao.findAll()
             .stream()
             .map(CategoryJson::fromEntity)
             .toList()
     );
+    return categories == null
+        ? List.of()
+        : categories;
   }
 
+  @Step("SQL Удаление категории")
   public void delete(@Nonnull CategoryEntity category) {
     categoryDao.remove(category);
   }

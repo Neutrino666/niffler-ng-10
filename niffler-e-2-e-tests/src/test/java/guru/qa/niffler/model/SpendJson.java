@@ -6,11 +6,13 @@ import guru.qa.niffler.data.entity.spend.SpendEntity;
 import java.util.Date;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public record SpendJson(
     @JsonProperty("id")
+    @Nullable
     UUID id,
     @JsonProperty("spendDate")
     Date spendDate,

@@ -5,12 +5,14 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.meta.WebTest;
 import guru.qa.niffler.page.auth.LoginPage;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @WebTest
 @DisplayName("Регистрация")
+@ParametersAreNonnullByDefault
 public class RegistrationTest {
 
   private static final Config CFG = Config.getInstance();

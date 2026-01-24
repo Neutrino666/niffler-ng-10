@@ -27,6 +27,6 @@ public interface UserdataApi {
       @Query("searchQuery") String searchQuery
   );
 
-  @GET("/internal/users/current")
+  @GET("internal/users/current")
   Call<UserJson> currentUser(@Query("username") String username);
 }

@@ -7,8 +7,10 @@ import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.spend.SpendDbClient;
 import java.util.Date;
 import java.util.UUID;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.Test;
 
+@ParametersAreNonnullByDefault
 public class SpendTest {
 
   private static final SpendDbClient SPEND_DB_CLIENT = new SpendDbClient();
@@ -118,8 +120,8 @@ public class SpendTest {
     SPEND_DB_CLIENT.removeCategory(
         new CategoryJson(
             UUID.fromString("459e90d0-b798-424c-bad9-014a04131166"),
-            null,
-            null,
+            "test",
+            "username",
             false
         )
     );

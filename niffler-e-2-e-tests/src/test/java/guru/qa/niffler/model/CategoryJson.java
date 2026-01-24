@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public record CategoryJson(
     @JsonProperty("id")
+    @Nullable
     UUID id,
     @JsonProperty("name")
     String name,

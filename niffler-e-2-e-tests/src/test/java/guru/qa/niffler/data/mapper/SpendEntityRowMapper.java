@@ -6,15 +6,19 @@ import guru.qa.niffler.model.CurrencyValues;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 
+@ParametersAreNonnullByDefault
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SpendEntityRowMapper implements RowMapper<SpendEntity> {
 
   public static final SpendEntityRowMapper INSTANCE = new SpendEntityRowMapper();
 
+  @Nonnull
   @Override
   public SpendEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
     CategoryEntity categoryEntity = new CategoryEntity();

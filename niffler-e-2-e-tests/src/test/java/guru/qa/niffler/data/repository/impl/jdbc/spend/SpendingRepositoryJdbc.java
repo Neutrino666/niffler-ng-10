@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class SpendingRepositoryJdbc implements SpendRepository {
 
   private final SpendDao spendDao = new SpendDaoJdbc();
@@ -19,7 +21,7 @@ public class SpendingRepositoryJdbc implements SpendRepository {
 
   @Nonnull
   @Override
-  public SpendEntity create(@Nonnull SpendEntity spend) {
+  public SpendEntity create(SpendEntity spend) {
     if (spend.getCategory().getId() == null) {
       spend.getCategory().setId(
           createCategory(spend.getCategory()).getId()
@@ -30,53 +32,51 @@ public class SpendingRepositoryJdbc implements SpendRepository {
 
   @Nonnull
   @Override
-  public CategoryEntity createCategory(@Nonnull CategoryEntity category) {
+  public CategoryEntity createCategory(CategoryEntity category) {
     return categoryDao.create(category);
   }
 
   @Nonnull
   @Override
-  public Optional<CategoryEntity> findCategoryById(@Nonnull UUID id) {
+  public Optional<CategoryEntity> findCategoryById(UUID id) {
     return categoryDao.findById(id);
   }
 
   @Nonnull
   @Override
-  public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(
-      @Nonnull String username,
-      @Nonnull String name) {
+  public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username,
+      String name) {
     return categoryDao.findByUsernameAndName(username, name);
   }
 
   @Nonnull
   @Override
-  public SpendEntity update(@Nonnull SpendEntity spend) {
+  public SpendEntity update(SpendEntity spend) {
     return spendDao.update(spend);
   }
 
   @Nonnull
   @Override
-  public CategoryEntity updateCategory(@Nonnull CategoryEntity category) {
+  public CategoryEntity updateCategory(CategoryEntity category) {
     return categoryDao.update(category);
   }
 
   @Nonnull
   @Override
-  public Optional<SpendEntity> findById(@Nonnull UUID id) {
+  public Optional<SpendEntity> findById(UUID id) {
     return spendDao.findById(id);
   }
 
   @Nonnull
   @Override
-  public List<SpendEntity> findAllByUsername(@Nonnull String username) {
+  public List<SpendEntity> findAllByUsername(String username) {
     return spendDao.findAllByUsername(username);
   }
 
   @Nonnull
   @Override
-  public Optional<SpendEntity> findByUsernameAndSpendDescription(
-      @Nonnull String username,
-      @Nonnull String description) {
+  public Optional<SpendEntity> findByUsernameAndSpendDescription(String username,
+      String description) {
     return spendDao.findByUsernameAndSpendDescription(username, description);
   }
 
@@ -87,12 +87,12 @@ public class SpendingRepositoryJdbc implements SpendRepository {
   }
 
   @Override
-  public void remove(@Nonnull SpendEntity spend) {
+  public void remove(SpendEntity spend) {
     spendDao.remove(spend);
   }
 
   @Override
-  public void removeCategory(@Nonnull CategoryEntity category) {
+  public void removeCategory(CategoryEntity category) {
     categoryDao.remove(category);
   }
 }

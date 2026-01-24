@@ -13,6 +13,8 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
@@ -21,6 +23,7 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @Entity
 @Table(name = "authority")
+@ParametersAreNonnullByDefault
 public class AuthAuthorityEntity implements Serializable {
 
   @Id
@@ -37,7 +40,7 @@ public class AuthAuthorityEntity implements Serializable {
   private AuthUserEntity user;
 
   @Override
-  public final boolean equals(Object o) {
+  public final boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }

@@ -11,17 +11,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+@ParametersAreNonnullByDefault
 public class SpendingSpringDaoJdbc implements SpendDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
-  public SpendEntity create(@Nonnull SpendEntity spend) {
+  public SpendEntity create(SpendEntity spend) {
     KeyHolder kh = new GeneratedKeyHolder();
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = con.prepareStatement(
@@ -46,7 +48,7 @@ public class SpendingSpringDaoJdbc implements SpendDao {
 
   @Nonnull
   @Override
-  public SpendEntity update(@Nonnull SpendEntity spend) {
+  public SpendEntity update(SpendEntity spend) {
     String sql = """
         UPDATE "spend"
         SET username = ?,
@@ -71,7 +73,7 @@ public class SpendingSpringDaoJdbc implements SpendDao {
 
   @Nonnull
   @Override
-  public Optional<SpendEntity> findById(@Nonnull UUID id) {
+  public Optional<SpendEntity> findById(UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
             getSelectByWhereIs("id"),
@@ -83,7 +85,7 @@ public class SpendingSpringDaoJdbc implements SpendDao {
 
   @Nonnull
   @Override
-  public List<SpendEntity> findAllByUsername(@Nonnull String username) {
+  public List<SpendEntity> findAllByUsername(String username) {
     return getJdbcTemplate()
         .query(
             getSelectByWhereIs("username"),
@@ -109,8 +111,8 @@ public class SpendingSpringDaoJdbc implements SpendDao {
 
   @Nonnull
   @Override
-  public Optional<SpendEntity> findByUsernameAndSpendDescription(@Nonnull String username,
-      @Nonnull String description) {
+  public Optional<SpendEntity> findByUsernameAndSpendDescription(String username,
+      String description) {
     String sql = "SELECT "
         + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
         + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "
@@ -130,7 +132,7 @@ public class SpendingSpringDaoJdbc implements SpendDao {
   }
 
   @Override
-  public void remove(@Nonnull SpendEntity spend) {
+  public void remove(SpendEntity spend) {
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = con.prepareStatement(
           "DELETE FROM spend WHERE id = ?"
@@ -145,7 +147,7 @@ public class SpendingSpringDaoJdbc implements SpendDao {
     return new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT "
         + "s.id, s.amount, s.currency, s.description, s.spend_date, s.username, "
         + "c.id AS c_id, c.username AS c_username, c.archived AS c_archived, c.name AS c_name "

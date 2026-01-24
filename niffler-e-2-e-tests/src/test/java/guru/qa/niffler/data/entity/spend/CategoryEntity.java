@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
@@ -20,6 +21,7 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @Entity
 @Table(name = "category")
+@ParametersAreNonnullByDefault
 public class CategoryEntity implements Serializable {
 
   @Id
@@ -48,7 +50,7 @@ public class CategoryEntity implements Serializable {
   }
 
   @Override
-  public final boolean equals(Object o) {
+  public final boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }

@@ -17,14 +17,16 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class AuthUserDaoJdbc implements AuthUserDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
-  public AuthUserEntity create(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity create(AuthUserEntity user) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "INSERT INTO \"user\" "
             + "(username, password, enabled, "
@@ -55,7 +57,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
+  public Optional<AuthUserEntity> findById(UUID id) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "SELECT * FROM \"user\" WHERE id = ?")
     ) {
@@ -74,7 +76,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
+  public Optional<AuthUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "SELECT "
             + "u.*, "
@@ -106,7 +108,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
   @Nonnull
   @Override
-  public AuthUserEntity update(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity update(AuthUserEntity user) {
     String sql = """
         UPDATE "user"
         SET username = ?,
@@ -133,7 +135,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
   }
 
   @Override
-  public void delete(@Nonnull AuthUserEntity user) {
+  public void delete(AuthUserEntity user) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "DELETE FROM \"user\" WHERE id = ?"
     )) {
@@ -144,7 +146,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
   }
 
-  private @Nonnull AuthUserEntity collectEntity(@Nonnull ResultSet rs)
+  private @Nonnull AuthUserEntity collectEntity(ResultSet rs)
       throws SQLException {
     AuthUserEntity user = new AuthUserEntity();
     user.setId(rs.getObject("id", UUID.class));
@@ -165,6 +167,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     return user;
   }
 
+  @Nonnull
   private Connection getConnection() {
     return holder(CFG.authJdbcUrl()).connection();
   }

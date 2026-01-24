@@ -12,18 +12,23 @@ import guru.qa.niffler.data.repository.impl.hibernate.user.UserdataUserRepositor
 import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.helpers.RandomDataUtils;
+import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
+import io.qameta.allure.Step;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@ParametersAreNonnullByDefault
 public class UserDbClient implements UserClient {
 
   private final static Config CFG = Config.getInstance();
@@ -43,40 +48,50 @@ public class UserDbClient implements UserClient {
 
   @Nonnull
   @Override
-  public UserJson create(@Nonnull String username, @Nonnull String password) {
-    return xaTxTemplate.execute(() -> {
+  @Step("SQL Создание пользователя")
+  public UserJson create(String username, String password) {
+    return Objects.requireNonNull(xaTxTemplate.execute(() -> {
       AuthUserEntity authUser = authUserEntity(username, password);
       authUserRepository.create(authUser);
       return UserJson.fromEntity(udUserRepository.create(userEntity(username)));
-    });
+    }));
   }
 
   @Nonnull
-  public Optional<UserJson> findById(@Nonnull UUID id) {
+  @Step("SQL Поиск пользователя по id")
+  public Optional<UserJson> findById(UUID id) {
     Optional<UserEntity> user = jdbcTxTemplate.execute(() -> udUserRepository.findById(id));
-    return user.map(UserJson::fromEntity);
+    return user != null && user.isPresent()
+        ? user.map(UserJson::fromEntity)
+        : Optional.empty();
   }
 
   @Nonnull
   @Override
-  public Optional<UserJson> findByUsername(@Nonnull String username) {
+  @Step("SQL Поиск пользователя по username")
+  public Optional<UserJson> findByUsername(String username) {
     Optional<UserEntity> user = jdbcTxTemplate.execute(
         () -> udUserRepository.findByUsername(username));
-    return user.map(UserJson::fromEntity);
+    return user != null && user.isPresent()
+        ? user.map(UserJson::fromEntity)
+        : Optional.empty();
   }
 
   @Nonnull
-  public UserJson update(@Nonnull UserJson user) {
-    return xaTxTemplate.execute(
+  @Step("SQL Обновления данных пользователя")
+  public UserJson update(UserJson user) {
+    return Objects.requireNonNull(xaTxTemplate.execute(
         () -> UserJson.fromEntity(
             udUserRepository.update(UserEntity.fromJson(user)
             )
         )
-    );
+    ));
   }
 
+  @Nonnull
   @Override
-  public List<UserJson> createIncomeInvitation(@Nonnull UserJson targetUser, int count) {
+  @Step("SQL Создание входящей заявки добавления в друзья")
+  public List<UserJson> createIncomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count > 0) {
       UserEntity targetEntity = udUserRepository.findById(targetUser.id())
@@ -84,7 +99,7 @@ public class UserDbClient implements UserClient {
       IntStream.range(0, count)
           .forEach(i -> xaTxTemplate.execute(() -> {
                 String username = RandomDataUtils.getRandomName();
-                AuthUserEntity authUser = authUserEntity(username, "12345");
+                AuthUserEntity authUser = authUserEntity(username, UserExtension.DEFAULT_PASSWORD);
                 authUserRepository.create(authUser);
                 UserEntity requester = udUserRepository.create(userEntity(username));
                 udUserRepository.sendInvitation(requester, targetEntity);
@@ -96,8 +111,10 @@ public class UserDbClient implements UserClient {
     return result;
   }
 
+  @Nonnull
   @Override
-  public List<UserJson> createOutcomeInvitation(@Nonnull UserJson targetUser, int count) {
+  @Step("SQL Создание исходящей заявки добавления в друзья")
+  public List<UserJson> createOutcomeInvitation(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count > 0) {
       UserEntity targetEntity = udUserRepository.findById(targetUser.id())
@@ -105,7 +122,7 @@ public class UserDbClient implements UserClient {
       IntStream.range(0, count)
           .forEach(i -> xaTxTemplate.execute(() -> {
                 String username = RandomDataUtils.getRandomName();
-                AuthUserEntity authUser = authUserEntity(username, "12345");
+                AuthUserEntity authUser = authUserEntity(username, UserExtension.DEFAULT_PASSWORD);
                 authUserRepository.create(authUser);
                 UserEntity addressee = udUserRepository.create(userEntity(username));
                 udUserRepository.sendInvitation(targetEntity, addressee);
@@ -117,7 +134,9 @@ public class UserDbClient implements UserClient {
     return result;
   }
 
-  public List<UserJson> createFriends(@Nonnull UserJson targetUser, int count) {
+  @Nonnull
+  @Step("SQL Создание друзей")
+  public List<UserJson> createFriends(UserJson targetUser, int count) {
     List<UserJson> result = new ArrayList<>();
     if (count > 0) {
       UserEntity targetEntity = udUserRepository.findById(targetUser.id())
@@ -125,7 +144,7 @@ public class UserDbClient implements UserClient {
       IntStream.range(0, count)
           .forEach(i -> xaTxTemplate.execute(() -> {
                 String username = RandomDataUtils.getRandomName();
-                AuthUserEntity authUser = authUserEntity(username, "12345");
+                AuthUserEntity authUser = authUserEntity(username, UserExtension.DEFAULT_PASSWORD);
                 authUserRepository.create(authUser);
                 UserEntity friend = udUserRepository.create(userEntity(username));
                 udUserRepository.addFriend(friend, targetEntity);
@@ -138,7 +157,8 @@ public class UserDbClient implements UserClient {
   }
 
   @Override
-  public void delete(@Nonnull UserJson user) {
+  @Step("SQL Удаление пользователя")
+  public void delete(UserJson user) {
     xaTxTemplate.execute(() -> {
       authUserRepository.findByUsername(user.username())
           .ifPresent(authUserRepository::remove);
@@ -148,7 +168,7 @@ public class UserDbClient implements UserClient {
     });
   }
 
-  private @Nonnull UserEntity userEntity(@Nonnull String username) {
+  private @Nonnull UserEntity userEntity(String username) {
     UserEntity ue = new UserEntity();
     ue.setUsername(username);
     ue.setCurrency(CurrencyValues.RUB);
@@ -156,7 +176,7 @@ public class UserDbClient implements UserClient {
   }
 
   @Nonnull
-  private AuthUserEntity authUserEntity(@Nonnull String username, @Nonnull String password) {
+  private AuthUserEntity authUserEntity(String username, String password) {
     AuthUserEntity authUser = new AuthUserEntity();
     authUser.setUsername(username);
     authUser.setPassword(pe.encode(password));

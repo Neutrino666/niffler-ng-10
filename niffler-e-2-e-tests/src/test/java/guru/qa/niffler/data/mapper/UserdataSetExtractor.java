@@ -9,14 +9,18 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+@ParametersAreNonnullByDefault
 public class UserdataSetExtractor implements ResultSetExtractor<UserEntity> {
 
   public static final UserdataSetExtractor INSTANCE = new UserdataSetExtractor();
 
   @Override
+  @Nonnull
   public UserEntity extractData(ResultSet rs) throws SQLException, DataAccessException {
     Map<UUID, UserEntity> userMap = new ConcurrentHashMap<>();
     UUID userId = null;

@@ -2,6 +2,7 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
@@ -10,20 +11,23 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.ProfilePage;
 import guru.qa.niffler.page.auth.LoginPage;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @WebTest
 @DisplayName("Профиль пользователя")
+@ParametersAreNonnullByDefault
 public class ProfileTest {
 
   private static final Config CFG = Config.getInstance();
 
-  private ProfilePage goToProfilePage(@Nonnull final UserJson user) {
+  @Nonnull
+  private ProfilePage goToProfilePage(final UserJson user) {
     return Selenide.open(CFG.frontUrl(), LoginPage.class)
         .login(user.username(), user.testData().password())
-        .getHeaderToolbar()
-        .goToProfilePage();
+        .getHeader()
+        .toProfilePage();
   }
 
   @Test
@@ -33,7 +37,7 @@ public class ProfileTest {
       )
   )
   @DisplayName("Архивная категория должна отображаться в списке")
-  void archivedCategoryShouldPresentInCategoriesList(@Nonnull final UserJson user) {
+  void archivedCategoryShouldPresentInCategoriesList(final UserJson user) {
     goToProfilePage(user)
         .checkArchivedCategoriesIsDisplayedInAnyOrder(
             user.testData().categories().getFirst().name()
@@ -47,7 +51,7 @@ public class ProfileTest {
       )
   )
   @DisplayName("Архивная категория не должна отображаться в списке")
-  void archivedCategoryShouldNotPresentInCategoriesList(@Nonnull final UserJson user) {
+  void archivedCategoryShouldNotPresentInCategoriesList(final UserJson user) {
     CategoryJson category = user.testData().categories().getFirst();
     goToProfilePage(user)
         .checkArchivedCategoriesIsNotExist(category.name());
@@ -60,7 +64,7 @@ public class ProfileTest {
       )
   )
   @DisplayName("Активная категория должна отображаться в списке")
-  void activeCategoryShouldPresentInCategoriesList(@Nonnull final UserJson user) {
+  void activeCategoryShouldPresentInCategoriesList(final UserJson user) {
     CategoryJson category = user.testData().categories().getFirst();
     goToProfilePage(user)
         .showArchive(false)
@@ -74,10 +78,22 @@ public class ProfileTest {
       )
   )
   @DisplayName("Активная категория должны отображаться в списке когда отображаются архивные")
-  void activeCategoryShouldPresentInCategoriesListWhenShowedArchived(@Nonnull final UserJson user) {
+  void activeCategoryShouldPresentInCategoriesListWhenShowedArchived(final UserJson user) {
     CategoryJson category = user.testData().categories().getFirst();
     goToProfilePage(user)
         .showArchive(true)
         .checkActiveCategoriesIsDisplayedInAnyOrder(category.name());
+  }
+
+  @Test
+  @User
+  @DisplayName("Редактирование профиля")
+  void profileShouldPresentNewName(final UserJson user) {
+    String newName = RandomDataUtils.getRandomName();
+    goToProfilePage(user)
+        .setName(newName)
+        .clickSaveChanges()
+        .refresh()
+        .checkName(newName);
   }
 }

@@ -5,17 +5,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface CategoryDao {
 
   @Nonnull
-  CategoryEntity create(@Nonnull CategoryEntity category);
+  CategoryEntity create(CategoryEntity category);
 
   @Nonnull
-  CategoryEntity update(@Nonnull CategoryEntity category);
+  CategoryEntity update(CategoryEntity category);
 
   @Nonnull
-  Optional<CategoryEntity> findById(@Nonnull UUID id);
+  Optional<CategoryEntity> findById(UUID id);
 
   @Nonnull
   Optional<CategoryEntity> findByUsernameAndName(
@@ -23,10 +25,10 @@ public interface CategoryDao {
       @Nonnull String categoryName);
 
   @Nonnull
-  List<CategoryEntity> findAllByUsername(@Nonnull String username);
+  List<CategoryEntity> findAllByUsername(String username);
 
   @Nonnull
   List<CategoryEntity> findAll();
 
-  void remove(@Nonnull CategoryEntity category);
+  void remove(CategoryEntity category);
 }

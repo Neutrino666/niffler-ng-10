@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
@@ -28,6 +30,7 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @Entity
 @Table(name = "spend")
+@ParametersAreNonnullByDefault
 public class SpendEntity implements Serializable {
 
   @Id
@@ -56,7 +59,7 @@ public class SpendEntity implements Serializable {
   private CategoryEntity category;
 
   @Override
-  public final boolean equals(Object o) {
+  public final boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }
@@ -82,7 +85,7 @@ public class SpendEntity implements Serializable {
         .getPersistentClass().hashCode() : getClass().hashCode();
   }
 
-  public static @Nonnull SpendEntity fromJson(@Nonnull SpendJson json) {
+  public static @Nonnull SpendEntity fromJson(SpendJson json) {
     SpendEntity se = new SpendEntity();
     se.setId(json.id());
     se.setUsername(json.username());

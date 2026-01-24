@@ -25,6 +25,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
@@ -33,6 +35,7 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @Entity
 @Table(name = "\"user\"")
+@ParametersAreNonnullByDefault
 public class UserEntity implements Serializable {
 
   @Id
@@ -120,7 +123,7 @@ public class UserEntity implements Serializable {
   }
 
   @Override
-  public final boolean equals(Object o) {
+  public final boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }

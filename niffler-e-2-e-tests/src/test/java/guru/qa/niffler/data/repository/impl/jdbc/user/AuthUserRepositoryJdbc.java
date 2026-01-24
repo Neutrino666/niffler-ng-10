@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   private final static Config CFG = Config.getInstance();
@@ -27,7 +29,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   @Nonnull
   @Override
-  public AuthUserEntity create(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity create(AuthUserEntity user) {
     try (PreparedStatement userPs = getConnection().prepareStatement(
         "INSERT INTO \"user\" "
             + "(username, password, enabled, "
@@ -70,13 +72,13 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   @Nonnull
   @Override
-  public AuthUserEntity update(@Nonnull AuthUserEntity user) {
+  public AuthUserEntity update(AuthUserEntity user) {
     return authUserDao.update(user);
   }
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findById(@Nonnull UUID id) {
+  public Optional<AuthUserEntity> findById(UUID id) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("id"))
     ) {
@@ -110,7 +112,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   @Nonnull
   @Override
-  public Optional<AuthUserEntity> findByUsername(@Nonnull String username) {
+  public Optional<AuthUserEntity> findByUsername(String username) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         getSelectByWhereIs("username"))
     ) {
@@ -143,7 +145,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   @Override
-  public void remove(@Nonnull AuthUserEntity user) {
+  public void remove(AuthUserEntity user) {
     try (PreparedStatement authorityPs = getConnection().prepareStatement(
         "DELETE FROM authority WHERE user_id = ?");
         PreparedStatement userPs = getConnection().prepareStatement(
@@ -162,7 +164,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     return holder(CFG.authJdbcUrl()).connection();
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT "
         + "u.*, "
         + "a.id AS a_id, a.user_id, a.authority "

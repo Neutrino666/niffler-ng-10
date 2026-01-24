@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+@ParametersAreNonnullByDefault
 public class UsersQueueExtension implements
     BeforeEachCallback,
     AfterEachCallback,
@@ -45,7 +47,7 @@ public class UsersQueueExtension implements
   }
 
   @Override
-  public void beforeEach(@Nonnull ExtensionContext context) {
+  public void beforeEach(ExtensionContext context) {
     Queue<StaticUser> users = getUserTypes(context)
         .map(
             ut -> {
@@ -69,7 +71,7 @@ public class UsersQueueExtension implements
 
   @Override
   @SuppressWarnings("unchecked")
-  public void afterEach(@Nonnull ExtensionContext context) {
+  public void afterEach(ExtensionContext context) {
     Queue<StaticUser> users = (Queue<StaticUser>) context
         .getStore(NAMESPACE)
         .get(context.getUniqueId(), ConcurrentLinkedQueue.class);
@@ -83,17 +85,18 @@ public class UsersQueueExtension implements
 
   @Override
   public boolean supportsParameter(
-      @Nonnull final ParameterContext parameterContext,
-      @Nonnull final ExtensionContext extensionContext) throws ParameterResolutionException {
+      final ParameterContext parameterContext,
+      final ExtensionContext extensionContext) throws ParameterResolutionException {
     return parameterContext.getParameter().getType().isAssignableFrom(StaticUser.class)
         && AnnotationSupport.isAnnotated(parameterContext.getParameter(), UserType.class);
   }
 
   @Override
   @SuppressWarnings("unchecked")
+  @Nonnull
   public StaticUser resolveParameter(
-      @Nonnull final ParameterContext parameterContext,
-      @Nonnull final ExtensionContext extensionContext) throws ParameterResolutionException {
+      final ParameterContext parameterContext,
+      final ExtensionContext extensionContext) throws ParameterResolutionException {
     Queue<StaticUser> users = (Queue<StaticUser>) extensionContext
         .getStore(NAMESPACE)
         .get(extensionContext.getUniqueId(), ConcurrentLinkedQueue.class);
@@ -105,6 +108,7 @@ public class UsersQueueExtension implements
     return user;
   }
 
+  @Nonnull
   private Queue<StaticUser> getQueueByUserType(UserType userType) {
     return switch (userType.value()) {
       case EMPTY -> EMPTY_USERS;
@@ -114,7 +118,8 @@ public class UsersQueueExtension implements
     };
   }
 
-  private Stream<UserType> getUserTypes(@Nonnull final ExtensionContext context) {
+  @Nonnull
+  private Stream<UserType> getUserTypes(final ExtensionContext context) {
     return Stream.of(context.getRequiredTestMethod().getParameters())
         .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class)
             && p.getType().isAssignableFrom(StaticUser.class))

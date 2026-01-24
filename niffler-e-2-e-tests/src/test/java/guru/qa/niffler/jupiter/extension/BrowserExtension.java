@@ -6,6 +6,7 @@ import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.Allure;
 import io.qameta.allure.selenide.AllureSelenide;
 import java.io.ByteArrayInputStream;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
+@ParametersAreNonnullByDefault
 public class BrowserExtension implements
     BeforeEachCallback,
     AfterEachCallback,

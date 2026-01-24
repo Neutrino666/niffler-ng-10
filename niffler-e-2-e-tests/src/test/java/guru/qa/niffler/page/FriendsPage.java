@@ -1,80 +1,99 @@
 package guru.qa.niffler.page;
 
 import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.components.ConfirmDialog;
+import guru.qa.niffler.page.components.Header;
+import guru.qa.niffler.page.components.SearchField;
+import guru.qa.niffler.page.components.UsersHeader;
 import io.qameta.allure.Step;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
+@ParametersAreNonnullByDefault
 public class FriendsPage {
 
-  private final ElementsCollection tabs = $$(".MuiTab-textColorInherit");
-  private final SelenideElement searchInput = $("input[aria-label='search']");
-  private final SelenideElement searchBtn = $("#input-submit");
-  private final ElementsCollection users = $$("tbody tr");
-  private final ElementsCollection friends = $$("#friends tr");
-  private final ElementsCollection requests = $$("#requests tr");
-  private final ElementsCollection all = $$("#all tr");
+  private final SelenideElement tableRoot = $("#simple-tabpanel-friends");
+  private final ElementsCollection users = tableRoot.$$("tbody tr");
+  private final ElementsCollection friends = tableRoot.$$("#friends tr");
+  private final ElementsCollection requests = tableRoot.$$("#requests tr");
 
-  @Step("Открываем вкладку друзей '{tab}'")
-  public void switchTab(@Nonnull final Tab tab) {
-    SelenideElement el = tabs.find(text(tab.getValue())).as(tab.getValue());
-    el.click();
-    el.shouldHave(attribute("aria-selected", "true"));
-  }
+  @Getter
+  private final Header header = new Header();
+
+  @Getter
+  private final SearchField searchField = new SearchField();
+
+  @Getter
+  private final UsersHeader usersHeader = new UsersHeader();
 
   @Step("Проверяем отсутствие друзей")
-  public FriendsPage checkFriendsNotExist() {
+  public @Nonnull FriendsPage checkFriendsNotExist() {
     users.shouldHave(size(0));
     return this;
   }
 
   @Step("Проверяем наличие друга: '{friend}'")
-  public FriendsPage checkFriendIsVisible(@Nonnull final String friend) {
-    search(friend);
+  public @Nonnull FriendsPage checkFriendIsVisible(final String friend) {
+    research(friend);
     friends.find(text(friend))
         .shouldBe(visible);
     return this;
   }
 
   @Step("Проверяем наличие входящего запроса в друзья от: '{friend}'")
-  public FriendsPage checkIncomeInvitationIsVisible(@Nonnull final String friend) {
-    search(friend);
+  public FriendsPage checkIncomeInvitationIsVisible(final String friend) {
+    research(friend);
     requests.find(text(friend))
         .shouldBe(visible);
     return this;
   }
 
-  @Step("Проверяем наличие исходящего запроса в друзья к: '{friend}'")
-  public FriendsPage checkOutcomeInvitationIsVisible(@Nonnull final String friend) {
-    switchTab(Tab.ALL_PEOPLE);
-    search(friend);
-    all.find(text(friend))
-        .shouldBe(visible);
+  @Step("Прием заявки в друзья")
+  public @Nonnull FriendsPage acceptFriends(String... friends) {
+    for (String friend : friends) {
+      research(friend);
+      SelenideElement user = requests.find(text(friend));
+      SelenideElement acceptBtn = acceptBtnByRequestRow(user);
+      acceptBtn.click();
+      acceptBtn.shouldNotBe(exist);
+    }
     return this;
   }
 
-  public FriendsPage search(@Nonnull final String string) {
-    searchInput.setValue(string)
-        .pressEnter();
+  @Step("Отклонение заявки в друзья")
+  public @Nonnull FriendsPage declineFriends(String... friends) {
+    for (@Nonnull String friend : friends) {
+      research(friend);
+      SelenideElement user = requests.find(text(friend));
+      SelenideElement declineBtn = declineBtnByRequestRow(user);
+      declineBtn.click();
+      new ConfirmDialog().checkThatPageLoaded()
+          .decline();
+      declineBtn.shouldNotBe(exist);
+    }
     return this;
   }
 
-  @Getter
-  @ToString
-  @RequiredArgsConstructor
-  public enum Tab {
-    FRIENDS("Friends"),
-    ALL_PEOPLE("All people");
-    private final String value;
+  private void research(String username) {
+    searchField.clearIfNotEmpty()
+        .search(username);
+  }
+
+  private @Nonnull SelenideElement acceptBtnByRequestRow(SelenideElement request) {
+    return request.$$("button")
+        .find(text("Accept"));
+  }
+
+  private @Nonnull SelenideElement declineBtnByRequestRow(SelenideElement request) {
+    return request.$$("button")
+        .find(text("Decline"));
   }
 }

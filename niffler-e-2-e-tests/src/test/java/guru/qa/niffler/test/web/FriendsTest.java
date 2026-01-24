@@ -17,11 +17,12 @@ public class FriendsTest {
 
   private static final Config CFG = Config.getInstance();
 
-  private FriendsPage goToFriendsPage(@Nonnull final UserJson user) {
+  @Nonnull
+  private FriendsPage goToFriendsPage(final UserJson user) {
     return Selenide.open(CFG.frontUrl(), LoginPage.class)
         .login(user.username(), user.testData().password())
-        .getHeaderToolbar()
-        .goToFriendsPage();
+        .getHeader()
+        .toFriendsPage();
   }
 
   @User(
@@ -29,7 +30,7 @@ public class FriendsTest {
   )
   @Test
   @DisplayName("[Таблица друзей] У пользователя отображается друг")
-  void friendShouldBePresentInFriendsTable(@Nonnull final UserJson user) {
+  void friendShouldBePresentInFriendsTable(final UserJson user) {
     goToFriendsPage(user)
         .checkFriendIsVisible(user.testData().friends().getFirst().username());
   }
@@ -37,7 +38,7 @@ public class FriendsTest {
   @User
   @Test
   @DisplayName("[Таблица друзей] У нового пользователя нет друзей")
-  void friendsTableShouldBeEmptyForNewUser(@Nonnull final UserJson user) {
+  void friendsTableShouldBeEmptyForNewUser(final UserJson user) {
     goToFriendsPage(user)
         .checkFriendsNotExist();
   }
@@ -47,7 +48,7 @@ public class FriendsTest {
   )
   @Test
   @DisplayName("[Таблица друзей] Отображение входящего запроса в друзья")
-  void incomeInvitationBePresentInFriendsTable(@Nonnull final UserJson user) {
+  void incomeInvitationBePresentInFriendsTable(final UserJson user) {
     final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
     goToFriendsPage(user)
         .checkIncomeInvitationIsVisible(incomeUsername);
@@ -58,9 +59,35 @@ public class FriendsTest {
   )
   @Test
   @DisplayName("[Все пользователи] Отображение исходящего запроса в друзья")
-  void outcomeInvitationBePresentInAllPeoplesTable(@Nonnull final UserJson user) {
+  void outcomeInvitationBePresentInAllPeoplesTable(final UserJson user) {
     final String outcomeUsername = user.testData().outcomeInvitation().getFirst().username();
     goToFriendsPage(user)
+        .getUsersHeader()
+        .toAllPeoplePage()
         .checkOutcomeInvitationIsVisible(outcomeUsername);
+  }
+
+  @User(
+      incomeInvitations = 1
+  )
+  @Test
+  @DisplayName("Прием заявки в друзья")
+  void acceptIncomeInvitationInFriendsTable(final UserJson user) {
+    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    goToFriendsPage(user)
+        .acceptFriends(incomeUsername)
+        .checkFriendIsVisible(incomeUsername);
+  }
+
+  @User(
+      incomeInvitations = 1
+  )
+  @Test
+  @DisplayName("Отклонение заявки в друзья")
+  void declineIncomeInvitationInFriendsTable(final UserJson user) {
+    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    goToFriendsPage(user)
+        .declineFriends(incomeUsername)
+        .checkFriendsNotExist();
   }
 }

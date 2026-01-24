@@ -10,21 +10,23 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+@ParametersAreNonnullByDefault
 public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Override
-  public void create(@Nonnull AuthAuthorityEntity... authorities) {
+  public void create(AuthAuthorityEntity... authorities) {
     getJdbcTemplate().batchUpdate(
         "INSERT INTO authority (user_id, authority) "
             + "VALUES(?, ?)",
         new BatchPreparedStatementSetter() {
           @Override
-          public void setValues(@Nonnull PreparedStatement ps, int i) throws SQLException {
+          public void setValues(PreparedStatement ps, int i) throws SQLException {
             ps.setObject(1, authorities[i].getUser().getId());
             ps.setString(2, authorities[i].getAuthority().name());
           }
@@ -39,7 +41,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
   @Nonnull
   @Override
-  public List<AuthAuthorityEntity> findAllByUserId(@Nonnull UUID userId) {
+  public List<AuthAuthorityEntity> findAllByUserId(UUID userId) {
     return getJdbcTemplate().query(
         getSelectByWhereIs("user_id"),
         AuthAuthorityEntityRowMapper.INSTANCE,
@@ -48,7 +50,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
   }
 
   @Override
-  public void delete(@Nonnull AuthAuthorityEntity authority) {
+  public void delete(AuthAuthorityEntity authority) {
     getJdbcTemplate().update("DELETE FROM authority WHERE id = ?", authority.getId());
   }
 
@@ -57,7 +59,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     return new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
   }
 
-  private @Nonnull String getSelectByWhereIs(@Nonnull String key) {
+  private @Nonnull String getSelectByWhereIs(String key) {
     return "SELECT "
         + "a.id AS a_id, a.user_id AS a_id, a.authority AS a_authority, "
         + "u.id, u.username, u.password, u.enabled, "

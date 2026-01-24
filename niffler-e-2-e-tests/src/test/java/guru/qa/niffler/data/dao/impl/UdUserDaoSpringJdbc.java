@@ -10,17 +10,19 @@ import java.sql.Statement;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+@ParametersAreNonnullByDefault
 public class UdUserDaoSpringJdbc implements UserDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
-  public UserEntity create(@Nonnull UserEntity user) {
+  public UserEntity create(UserEntity user) {
     KeyHolder kh = new GeneratedKeyHolder();
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = con.prepareStatement(
@@ -45,7 +47,7 @@ public class UdUserDaoSpringJdbc implements UserDao {
 
   @Nonnull
   @Override
-  public Optional<UserEntity> findById(@Nonnull UUID id) {
+  public Optional<UserEntity> findById(UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
             "SELECT * FROM \"user\" WHERE id = ?",
@@ -57,7 +59,7 @@ public class UdUserDaoSpringJdbc implements UserDao {
 
   @Nonnull
   @Override
-  public Optional<UserEntity> findByUsername(@Nonnull String username) {
+  public Optional<UserEntity> findByUsername(String username) {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
             "SELECT * FROM \"user\" WHERE username = ?",
@@ -69,7 +71,7 @@ public class UdUserDaoSpringJdbc implements UserDao {
 
   @Nonnull
   @Override
-  public UserEntity update(@Nonnull UserEntity user) {
+  public UserEntity update(UserEntity user) {
     String sql = """
         UPDATE "user"
         SET currency = ?,
@@ -91,7 +93,7 @@ public class UdUserDaoSpringJdbc implements UserDao {
   }
 
   @Override
-  public void delete(@Nonnull UserEntity user) {
+  public void delete(UserEntity user) {
     getJdbcTemplate().update("DELETE FROM \"user\" WHERE id = ?", user.getId());
   }
 

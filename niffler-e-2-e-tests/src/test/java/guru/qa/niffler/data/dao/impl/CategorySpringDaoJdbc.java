@@ -13,17 +13,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+@ParametersAreNonnullByDefault
 public class CategorySpringDaoJdbc implements CategoryDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Nonnull
   @Override
-  public CategoryEntity create(@Nonnull CategoryEntity category) {
+  public CategoryEntity create(CategoryEntity category) {
     KeyHolder kh = new GeneratedKeyHolder();
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -43,7 +45,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
 
   @Nonnull
   @Override
-  public CategoryEntity update(@Nonnull CategoryEntity category) {
+  public CategoryEntity update(CategoryEntity category) {
     String sql = """
         UPDATE category
         SET name = ?, username =?, archived =?
@@ -61,7 +63,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
 
   @Nonnull
   @Override
-  public Optional<CategoryEntity> findById(@Nonnull UUID id) {
+  public Optional<CategoryEntity> findById(UUID id) {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
             getSelectByWhereIs("id"),
@@ -73,8 +75,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
 
   @Nonnull
   @Override
-  public Optional<CategoryEntity> findByUsernameAndName(@Nonnull String username,
-      @Nonnull String categoryName) {
+  public Optional<CategoryEntity> findByUsernameAndName(String username, String categoryName) {
     return Optional.ofNullable(
         getJdbcTemplate().queryForObject(
             "SELECT * FROM category WHERE username = ? AND name = ?",
@@ -87,7 +88,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
 
   @Nonnull
   @Override
-  public List<CategoryEntity> findAllByUsername(@Nonnull String username) {
+  public List<CategoryEntity> findAllByUsername(String username) {
     return getJdbcTemplate()
         .query(
             getSelectByWhereIs("username"),
@@ -107,7 +108,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
   }
 
   @Override
-  public void remove(@Nonnull CategoryEntity category) {
+  public void remove(CategoryEntity category) {
     getJdbcTemplate().update(con -> {
       PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
           "DELETE FROM category WHERE id = ?"
@@ -123,7 +124,7 @@ public class CategorySpringDaoJdbc implements CategoryDao {
   }
 
   @Nonnull
-  private String getSelectByWhereIs(@Nonnull String key) {
+  private String getSelectByWhereIs(String key) {
     return "SELECT * FROM category WHERE %s = ?".formatted(key);
   }
 }

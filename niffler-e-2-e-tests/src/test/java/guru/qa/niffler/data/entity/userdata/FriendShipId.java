@@ -3,18 +3,21 @@ package guru.qa.niffler.data.entity.userdata;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@ParametersAreNonnullByDefault
 public class FriendShipId implements Serializable {
 
   private UUID requester;
   private UUID addressee;
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }
