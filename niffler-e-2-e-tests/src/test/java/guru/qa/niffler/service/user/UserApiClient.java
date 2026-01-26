@@ -198,6 +198,21 @@ public class UserApiClient extends RestClient implements UserClient {
     return result;
   }
 
+  @Nonnull
+  @Step("REST API Получение всех пользователей")
+  public List<UserJson> getAllUsers(String username, String searchQuery) {
+    try {
+      List<UserJson> result = userdataApi.allUsers(username, searchQuery)
+          .execute().
+          body();
+      return result != null
+          ? result
+          : List.of();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+  }
+
   @Override
   @Step("REST API Удаление пользователя")
   public void delete(UserJson user) {

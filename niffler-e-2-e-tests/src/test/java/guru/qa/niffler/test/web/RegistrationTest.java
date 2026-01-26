@@ -3,7 +3,9 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.auth.LoginPage;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,12 +36,13 @@ public class RegistrationTest {
         .checkThatPageLoaded();
   }
 
+  @User
   @Test
   @DisplayName("Создание существующего пользователя")
-  void shouldNotRegisterUserWithExistingUsername() {
+  void shouldNotRegisterUserWithExistingUsername(final UserJson user) {
     // создан юзер с данными логином
-    String username = "admin";
-    String password = "somePassword";
+    String username = user.username();
+    String password = user.testData().password();
 
     loginPage.openRegistrationPage()
         .setUsername(username)

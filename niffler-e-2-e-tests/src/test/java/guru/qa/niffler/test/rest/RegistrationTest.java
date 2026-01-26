@@ -12,10 +12,12 @@ import io.qameta.allure.Step;
 import java.io.IOException;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import retrofit2.Response;
 
 @ParametersAreNonnullByDefault
+@DisplayName("REST Registration")
 public class RegistrationTest {
 
   private final AuthApiClient authApiClient = new AuthApiClient();

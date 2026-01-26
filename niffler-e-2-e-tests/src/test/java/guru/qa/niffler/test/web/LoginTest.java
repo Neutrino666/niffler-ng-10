@@ -3,7 +3,9 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.auth.LoginPage;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,10 +27,13 @@ public class LoginTest {
     loginPage = Selenide.open(CFG.frontUrl(), LoginPage.class);
   }
 
+  @User
   @Test
   @DisplayName("Успешный вход")
-  void mainPageShouldBeDisplayedAfterSuccessLogin() {
-    loginPage.login("admin", "admin")
+  void mainPageShouldBeDisplayedAfterSuccessLogin(final UserJson user) {
+    String username = user.username();
+    String password = user.testData().password();
+    loginPage.login(username, password)
         .checkThatPageLoaded();
   }
 
