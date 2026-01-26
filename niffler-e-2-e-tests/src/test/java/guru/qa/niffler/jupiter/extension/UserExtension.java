@@ -23,7 +23,9 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 @ParametersAreNonnullByDefault
-public class UserExtension implements BeforeEachCallback, ParameterResolver {
+public final class UserExtension implements
+    BeforeEachCallback,
+    ParameterResolver {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       UserExtension.class);
@@ -32,7 +34,7 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
 
   @Override
   public void beforeEach(ExtensionContext context) {
-    AnnotationUtils.findTestMethodAnnotation(context, User.class)
+    AnnotationUtils.findTestMethodAnnotation(User.class)
         .ifPresent(
             userAnno -> {
               if (userAnno.username().isEmpty()) {

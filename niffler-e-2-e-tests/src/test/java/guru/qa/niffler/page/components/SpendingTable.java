@@ -17,13 +17,16 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 
 @ParametersAreNonnullByDefault
-public class SpendingTable extends BaseComponent<SpendingTable> {
+public final class SpendingTable extends BaseComponent<SpendingTable> {
 
   private final SelenideElement periodDropdown = self.$("#period");
   private final SelenideElement deleteBtn = self.$("#delete");
   private final ElementsCollection spendings = self.$$("tbody tr");
 
   private final ElementsCollection menuPeriod = $$("#menu-period li");
+
+  @Getter
+  private final Header header = new Header();
 
   @Getter
   private final SearchField searchField = new SearchField();

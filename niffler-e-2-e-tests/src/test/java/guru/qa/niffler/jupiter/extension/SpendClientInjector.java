@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 
-public class SpendClientInjector implements TestInstancePostProcessor {
+public final class SpendClientInjector implements TestInstancePostProcessor {
 
   @Override
   public void postProcessTestInstance(Object testInstance, ExtensionContext context)
