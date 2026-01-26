@@ -1,15 +1,15 @@
 package guru.qa.niffler.service.category;
 
 import guru.qa.niffler.model.CategoryJson;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public interface CategoryClient {
 
-  @Nullable
+  @Nonnull
   CategoryJson create(CategoryJson category);
 
-  @Nullable
+  @Nonnull
   CategoryJson update(CategoryJson category);
 }

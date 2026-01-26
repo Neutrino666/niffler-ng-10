@@ -8,6 +8,7 @@ import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import io.qameta.allure.Step;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,10 +27,12 @@ public class CategoryDbClient implements CategoryClient {
 
   @Override
   @Step("SQL Создание категории")
-  public CategoryJson create(CategoryJson category) {
-    return jdbcTxTemplate.execute(() ->
-        CategoryJson.fromEntity(categoryDao.create(CategoryEntity.fromJson(category)))
-    );
+  public @Nonnull CategoryJson create(CategoryJson category) {
+    return Objects.requireNonNull(
+            jdbcTxTemplate.execute(() ->
+                CategoryJson.fromEntity(categoryDao.create(CategoryEntity.fromJson(category)))
+            )
+        );
   }
 
   @Step("SQL Обновление категории")
@@ -39,12 +42,14 @@ public class CategoryDbClient implements CategoryClient {
   }
 
   @Step("SQL Поиск категории по username и categoryName")
-  public @Nullable Optional<CategoryEntity> findByUsernameAndName(
+  public @Nonnull Optional<CategoryEntity> findByUsernameAndName(
       String username,
       String categoryName
   ) {
-    return jdbcTxTemplate.execute(() ->
-        categoryDao.findByUsernameAndName(username, categoryName)
+    return Objects.requireNonNull(
+        jdbcTxTemplate.execute(() ->
+            categoryDao.findByUsernameAndName(username, categoryName)
+        )
     );
   }
 
@@ -54,13 +59,16 @@ public class CategoryDbClient implements CategoryClient {
   }
 
   @Step("SQL Поиск всех категорий")
-  public @Nullable List<CategoryJson> findAll() {
-    return jdbcTxTemplate.execute(() ->
+  public @Nonnull List<CategoryJson> findAll() {
+    List<CategoryJson> categories = jdbcTxTemplate.execute(() ->
         categoryDao.findAll()
             .stream()
             .map(CategoryJson::fromEntity)
             .toList()
     );
+    return categories == null
+        ? List.of()
+        : categories;
   }
 
   @Step("SQL Удаление категории")
