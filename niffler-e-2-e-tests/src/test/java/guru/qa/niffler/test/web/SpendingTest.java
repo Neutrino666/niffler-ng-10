@@ -1,8 +1,12 @@
 package guru.qa.niffler.test.web;
 
+import static com.codeborne.selenide.Selenide.$;
+
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
+import guru.qa.niffler.helpers.ScreenDiffResult;
+import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
@@ -10,10 +14,14 @@ import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.page.auth.LoginPage;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.imageio.ImageIO;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -51,6 +59,27 @@ public class SpendingTest {
         .save()
         .getSpendingTable()
         .checkThatTableContains(newDescription);
+  }
+
+  @User(
+      spendings = @Spending(
+          category = "Учеба",
+          amount = 79900,
+          currency = CurrencyValues.RUB,
+          description = "Обучение Niffler 2.0 юбилейный поток!"
+      )
+  )
+  @Test
+  @ScreenShotTest("img/expected-stat.png")
+  @DisplayName("Скриншот тест")
+  void checkStatComponentTest(final UserJson user, BufferedImage expected) throws IOException {
+    login(user);
+    BufferedImage actual = ImageIO.read($("canvas[ role = 'img' ]").screenshot());
+    Assertions.assertThat(new ScreenDiffResult(
+            expected, actual
+        ).getAsBoolean())
+        .describedAs("Отличия в скриншотах должны отсутствовать")
+        .isFalse();
   }
 
   @User
