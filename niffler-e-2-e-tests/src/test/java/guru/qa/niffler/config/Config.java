@@ -6,6 +6,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public interface Config {
 
+  @Nonnull
   static Config getInstance() {
     return "docker".equals(System.getProperty("test.env"))
         ? DockerConfig.INSTANCE
