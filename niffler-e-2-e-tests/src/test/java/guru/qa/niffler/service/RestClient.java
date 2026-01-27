@@ -19,6 +19,8 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 @ParametersAreNonnullByDefault
 public abstract class RestClient {
 
+  private static final String HTTP_REQUEST_TEMPLATE = "http-request.ftl";
+  private static final String HTTP_RESPONSE_TEMPLATE = "http-response.ftl";
   protected static final Config CFG = Config.getInstance();
 
   private final OkHttpClient okHttpClient;
@@ -60,7 +62,10 @@ public abstract class RestClient {
       }
     }
     builder.addNetworkInterceptor(new HttpLoggingInterceptor().setLevel(Level.BASIC));
-    builder.addNetworkInterceptor(new AllureOkHttp3());
+    builder.addNetworkInterceptor(
+        new AllureOkHttp3().setRequestTemplate(HTTP_REQUEST_TEMPLATE)
+            .setResponseTemplate(HTTP_RESPONSE_TEMPLATE)
+    );
     this.okHttpClient = builder.build();
     this.retrofit = new Retrofit.Builder()
         .baseUrl(baseUrl)
