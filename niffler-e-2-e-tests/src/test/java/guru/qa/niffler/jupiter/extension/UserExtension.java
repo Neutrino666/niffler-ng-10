@@ -8,8 +8,8 @@ import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.service.user.UserApiClient;
 import guru.qa.niffler.service.user.UserClient;
-import guru.qa.niffler.service.user.UserDbClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +29,7 @@ public final class UserExtension implements
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       UserExtension.class);
-  private final UserClient userClient = new UserDbClient();
+  private final UserClient userClient = new UserApiClient();
   public static final String DEFAULT_PASSWORD = "12345";
 
   @Override
