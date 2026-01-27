@@ -180,6 +180,7 @@ public final class ProfileTest {
   @DisplayName("SCREEN Загруженный аватар должен совпадать")
   void uploadedAvatarIsNotHaveDifference(final UserJson user, BufferedImage expected) {
     goToProfilePage(user)
-        .uploadAvatar("img/avatar.png", expected);
+        .uploadAvatar("img/avatar.png")
+        .assertAvatar(expected);
   }
 }
