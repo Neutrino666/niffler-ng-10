@@ -1,13 +1,15 @@
-package guru.qa.niffler.jupiter.extension;
+package guru.qa.niffler.jupiter.extension.allure;
 
 import static guru.qa.niffler.jupiter.extension.TestMethodContextExtension.context;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.qa.niffler.helpers.AnnotationUtils;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.model.allure.ScreenDiff;
 import io.qameta.allure.Allure;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import javax.annotation.Nonnull;
@@ -16,6 +18,7 @@ import javax.imageio.ImageIO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -25,9 +28,10 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.springframework.core.io.ClassPathResource;
 
 @ParametersAreNonnullByDefault
-public class ScreenShotTestExtension implements
+public final class ScreenShotTestExtension implements
     ParameterResolver,
-    TestExecutionExceptionHandler {
+    TestExecutionExceptionHandler,
+    AfterEachCallback {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       ScreenShotTestExtension.class);
@@ -59,7 +63,11 @@ public class ScreenShotTestExtension implements
   public @Nonnull BufferedImage resolveParameter(ParameterContext parameterContext,
       ExtensionContext extensionContext) throws ParameterResolutionException {
     return ImageIO.read(
-        new ClassPathResource("img/expected-stat.png")
+        new ClassPathResource(
+            AnnotationUtils.findTestMethodAnnotation(ScreenShotTest.class)
+                .orElseThrow()
+                .value()
+        )
             .getInputStream()
     );
   }
@@ -67,23 +75,44 @@ public class ScreenShotTestExtension implements
   @Override
   public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
       throws Throwable {
+    addAttachment();
+    throw throwable;
+  }
+
+  public static void storeSet(Type type, BufferedImage image) {
+    context().getStore(NAMESPACE)
+        .put(type, image);
+  }
+
+  @Override
+  public void afterEach(ExtensionContext context) {
+    AnnotationUtils.findTestMethodAnnotation(ScreenShotTest.class)
+        .ifPresent(anno -> {
+              if (anno.rewriteExpected()) {
+                updateResourceFile(anno.value());
+              }
+            }
+        );
+  }
+
+  private void addAttachment() throws Throwable {
     ScreenDiff screenDiff = new ScreenDiff(
         "data:image/png;base64," + Base64.getEncoder()
             .encodeToString(
                 imageToBytes(
-                    get(Type.EXPECTED)
+                    storeGet(Type.EXPECTED)
                 )
             ),
         "data:image/png;base64," + Base64.getEncoder()
             .encodeToString(
                 imageToBytes(
-                    get(Type.ACTUAL)
+                    storeGet(Type.ACTUAL)
                 )
             ),
         "data:image/png;base64," + Base64.getEncoder()
             .encodeToString(
                 imageToBytes(
-                    get(Type.DIFF)
+                    storeGet(Type.DIFF)
                 )
             )
     );
@@ -92,15 +121,19 @@ public class ScreenShotTestExtension implements
         "application/vnd.allure.image.diff",
         objectMapper.writeValueAsString(screenDiff)
     );
-    throw throwable;
   }
 
-  public static void set(Type type, BufferedImage image) {
-    context().getStore(NAMESPACE)
-        .put(type, image);
+  private void updateResourceFile(String path) {
+    File file = new File("src/test/resources/" + path);
+    BufferedImage actual = storeGet(Type.ACTUAL);
+    try {
+      ImageIO.write(actual, "png", file);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  public BufferedImage get(Type type) {
+  private BufferedImage storeGet(Type type) {
     return context().getStore(NAMESPACE)
         .get(type, BufferedImage.class);
   }

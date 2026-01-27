@@ -16,7 +16,7 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.components.ConfirmDialog;
 import io.qameta.allure.Step;
-import java.io.File;
+import java.awt.image.BufferedImage;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.Keys;
 
 @ParametersAreNonnullByDefault
-public class ProfilePage extends BasePage<ProfilePage> {
+public final class ProfilePage extends BasePage<ProfilePage> {
 
   private final SelenideElement usernameInput = $("#username");
   private final SelenideElement nameInput = $("#name");
@@ -38,14 +38,21 @@ public class ProfilePage extends BasePage<ProfilePage> {
       ".MuiGrid-item:has(.MuiChip-filled.MuiChip-colorDefault)");
   private final SelenideElement archiveCheckbox = $("input[class*=PrivateSwitchBase-input]");
   private final SelenideElement editExistCategoryInput = $("form.MuiBox-root #category");
+  private final SelenideElement uploadedAvatar = $(".MuiAvatar-root img");
 
   private final ConfirmDialog confirmDialog = new ConfirmDialog();
 
   @Step("Загрузка аватара")
-  public @Nonnull ProfilePage uploadAvatar(final File file) {
-    avatarInput.shouldBe(interactable).uploadFile(file);
+  public @Nonnull ProfilePage uploadAvatar(final String file)  {
+    avatarInput.uploadFromClasspath(file);
     return this;
   }
+
+  @Step("Сверяем загруженный файл с ожидаемым")
+  public @Nonnull ProfilePage assertAvatar(final BufferedImage expected){
+    assertScreen(expected, uploadedAvatar);
+  	return this;
+}
 
   @Step("Клик register passkey")
   public @Nonnull ProfilePage clickRegisterPasskey() {

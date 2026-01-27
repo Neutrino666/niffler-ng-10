@@ -24,7 +24,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 @ParametersAreNonnullByDefault
-public class CategoryExtension implements
+public final class CategoryExtension implements
     BeforeEachCallback,
     AfterTestExecutionCallback,
     ParameterResolver {
@@ -35,7 +35,7 @@ public class CategoryExtension implements
 
   @Override
   public void beforeEach(ExtensionContext context) {
-    findTestMethodAnnotation(context, User.class)
+    findTestMethodAnnotation(User.class)
         .ifPresent(
             anno -> {
               if (anno.categories().length > 0) {

@@ -4,7 +4,7 @@ import guru.qa.niffler.data.tpl.Connections;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class DatabasesExtension implements SuiteExtension {
+public final class DatabasesExtension implements SuiteExtension {
 
   @Override
   public void afterSuite() {

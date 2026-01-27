@@ -10,9 +10,11 @@ import guru.qa.niffler.page.MainPage;
 import io.qameta.allure.Step;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @ParametersAreNonnullByDefault
-public class LoginPage extends BasePage<LoginPage> {
+public final class LoginPage extends BasePage<LoginPage> {
 
   private final SelenideElement usernameInput = $("#username");
   private final SelenideElement passwordInput = $("#password");

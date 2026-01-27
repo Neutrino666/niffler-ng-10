@@ -11,7 +11,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.SearchOption;
 
 @ParametersAreNonnullByDefault
-public class IssueExtension implements ExecutionCondition {
+public final class IssueExtension implements ExecutionCondition {
 
   private final GithubApiClient ghApiClient = new GithubApiClient();
 

@@ -11,25 +11,24 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 @ParametersAreNonnullByDefault
-public class AnnotationUtils {
+public final class AnnotationUtils {
 
   @Nonnull
   public static <A extends Annotation> Optional<A> findTestMethodAnnotation(
-      final ExtensionContext context,
       final Class<A> annotationType) {
     return AnnotationSupport.findAnnotation(
-        context.getRequiredTestMethod(),
+        context().getRequiredTestMethod(),
         annotationType
     );
   }
 
   @Nullable
   public static <T> T createdStore(
-      final ExtensionContext.Namespace NAMESPACE,
+      final ExtensionContext.Namespace namespace,
       final Class<T> clazz
   ) {
     final ExtensionContext methodContext = context();
-    return context().getStore(NAMESPACE)
+    return context().getStore(namespace)
         .get(methodContext.getUniqueId(), clazz);
   }
 }

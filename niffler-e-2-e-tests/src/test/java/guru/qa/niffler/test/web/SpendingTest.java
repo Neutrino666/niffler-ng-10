@@ -1,16 +1,14 @@
 package guru.qa.niffler.test.web;
 
-import static com.codeborne.selenide.Selenide.$;
-
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
-import guru.qa.niffler.helpers.ScreenDiffResult;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
 import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.page.auth.LoginPage;
@@ -18,17 +16,16 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.imageio.ImageIO;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @WebTest
 @DisplayName("Spendings")
 @ParametersAreNonnullByDefault
-public class SpendingTest {
+public final class SpendingTest {
 
   private static final Config CFG = Config.getInstance();
 
@@ -59,27 +56,6 @@ public class SpendingTest {
         .save()
         .getSpendingTable()
         .checkThatTableContains(newDescription);
-  }
-
-  @User(
-      spendings = @Spending(
-          category = "Учеба",
-          amount = 79900,
-          currency = CurrencyValues.RUB,
-          description = "Обучение Niffler 2.0 юбилейный поток!"
-      )
-  )
-  @Test
-  @ScreenShotTest("img/expected-stat.png")
-  @DisplayName("Скриншот тест")
-  void checkStatComponentTest(final UserJson user, BufferedImage expected) throws IOException {
-    login(user);
-    BufferedImage actual = ImageIO.read($("canvas[ role = 'img' ]").screenshot());
-    Assertions.assertThat(new ScreenDiffResult(
-            expected, actual
-        ).getAsBoolean())
-        .describedAs("Отличия в скриншотах должны отсутствовать")
-        .isFalse();
   }
 
   @User
@@ -135,5 +111,117 @@ public class SpendingTest {
         .setNewSpendingDescription(newDescription)
         .save()
         .checkSnackbarText("Spending is edited successfully");
+  }
+
+  @User(
+      spendings = @Spending(
+          category = "Учеба",
+          amount = 666,
+          currency = CurrencyValues.RUB,
+          description = "Обучение Niffler 2.0 юбилейный поток!"
+      )
+  )
+  @ScreenShotTest(value = "img/expected-stat.png")
+  @DisplayName("SCREEN Сравнение создания траты")
+  void checkStatComponentTest(final UserJson user, BufferedImage expected) throws IOException {
+    login(user)
+        .assertStatisticScreen(expected);
+  }
+
+  @User(
+      spendings = {
+          @Spending(
+              category = "Учеба",
+              amount = 666,
+              currency = CurrencyValues.RUB,
+              description = "Обучение Niffler 2.0 юбилейный поток!"
+          ),
+          @Spending(
+              category = "Театр",
+              amount = 1000,
+              currency = CurrencyValues.RUB,
+              description = "Дж. Верди 'Аида'"
+          )
+      }
+  )
+  @ScreenShotTest(value = "img/remove-stat.png")
+  @DisplayName("SCREEN Сравнение удаление траты")
+  void checkRemoveStatComponentTest(final UserJson user, BufferedImage expected) {
+    List<SpendJson> spends = user.testData()
+        .spendings();
+    String description = spends.get(0)
+        .description();
+    login(user)
+        .assertStatCount(spends.size())
+        .getSpendingTable()
+        .deleteSpending(description)
+        .getHeader()
+        .toMainPage()
+        .assertStatisticScreen(expected)
+        .assertStatCount(spends.size() - 1);
+  }
+
+  @User(
+      spendings = {
+          @Spending(
+              category = "Учеба",
+              amount = 90000,
+              currency = CurrencyValues.RUB,
+              description = "Обучение Niffler 2.0 юбилейный поток!"
+          ),
+          @Spending(
+              category = "Театр",
+              amount = 1000,
+              currency = CurrencyValues.RUB,
+              description = "Дж. Верди 'Аида'"
+          )
+      }
+  )
+  @ScreenShotTest(value = "img/archive-stat.png")
+  @DisplayName("SCREEN Сравнение отображения архивных траты")
+  void checkArchiveStatComponentTest(final UserJson user, BufferedImage expected) {
+    List<SpendJson> spends = user.testData()
+        .spendings();
+    String category = spends.get(0)
+        .category()
+        .name();
+    login(user)
+        .assertStatCount(spends.size())
+        .getHeader()
+        .toProfilePage()
+        .clickArchive(category)
+        .acceptToArchive()
+        .getHeader()
+        .toMainPage()
+        .assertStatisticScreen(expected)
+        .assertStatCount(spends.size());
+  }
+
+
+  @User(
+      spendings = @Spending(
+          category = "Учеба",
+          amount = 10000,
+          currency = CurrencyValues.RUB,
+          description = "Обучение Niffler 2.0 юбилейный поток!"
+      )
+  )
+  @ScreenShotTest(value = "img/edited-stat.png")
+  @DisplayName("SCREEN Редактирование траты")
+  void editedStatComponent(final UserJson user, BufferedImage expected) {
+    final String description = user.testData().spendings().getFirst().description();
+    final String newDescription = "Обучение Niffler Next Generation";
+    List<SpendJson> spends = user.testData()
+        .spendings();
+
+    login(user)
+        .assertStatCount(spends.size())
+        .getSpendingTable()
+        .editSpending(description)
+        .setNewSpendingDescription(newDescription)
+        .setAmount(100500)
+        .save()
+        .assertStatCount(spends.size())
+        .assertStatisticScreen(expected);
   }
 }

@@ -1,6 +1,6 @@
 package guru.qa.niffler.jupiter.annotation;
 
-import guru.qa.niffler.jupiter.extension.ScreenShotTestExtension;
+import guru.qa.niffler.jupiter.extension.allure.ScreenShotTestExtension;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,4 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface ScreenShotTest {
 
   String value();
+
+  boolean rewriteExpected() default false;
 }

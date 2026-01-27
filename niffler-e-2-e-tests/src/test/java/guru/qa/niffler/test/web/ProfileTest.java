@@ -4,12 +4,14 @@ import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.ProfilePage;
 import guru.qa.niffler.page.auth.LoginPage;
+import java.awt.image.BufferedImage;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +20,7 @@ import org.junit.jupiter.api.Test;
 @WebTest
 @DisplayName("Профиль пользователя")
 @ParametersAreNonnullByDefault
-public class ProfileTest {
+public final class ProfileTest {
 
   private static final Config CFG = Config.getInstance();
 
@@ -171,5 +173,14 @@ public class ProfileTest {
     goToProfilePage(user)
         .editActiveCategory(name, newName)
         .checkSnackbarText("Category name is changed");
+  }
+
+  @User
+  @ScreenShotTest(value = "img/avatar.png")
+  @DisplayName("SCREEN Загруженный аватар должен совпадать")
+  void uploadedAvatarIsNotHaveDifference(final UserJson user, BufferedImage expected) {
+    goToProfilePage(user)
+        .uploadAvatar("img/avatar.png")
+        .assertAvatar(expected);
   }
 }
