@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
@@ -13,7 +14,6 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.page.auth.LoginPage;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -123,9 +123,11 @@ public final class SpendingTest {
   )
   @ScreenShotTest(value = "img/expected-stat.png")
   @DisplayName("SCREEN Сравнение создания траты")
-  void checkStatComponentTest(final UserJson user, BufferedImage expected) throws IOException {
+  void checkStatComponentTest(final UserJson user, BufferedImage expected) {
     login(user)
-        .assertStatisticScreen(expected);
+        .assertStatisticScreen(expected)
+        .getStatComponent()
+        .checkBubbles(Color.YELLOW, Color.GREEN);
   }
 
   @User(

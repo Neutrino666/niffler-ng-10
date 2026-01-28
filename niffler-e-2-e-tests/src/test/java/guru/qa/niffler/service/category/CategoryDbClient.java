@@ -29,10 +29,10 @@ public class CategoryDbClient implements CategoryClient {
   @Step("SQL Создание категории")
   public @Nonnull CategoryJson create(CategoryJson category) {
     return Objects.requireNonNull(
-            jdbcTxTemplate.execute(() ->
-                CategoryJson.fromEntity(categoryDao.create(CategoryEntity.fromJson(category)))
-            )
-        );
+        jdbcTxTemplate.execute(() ->
+            CategoryJson.fromEntity(categoryDao.create(CategoryEntity.fromJson(category)))
+        )
+    );
   }
 
   @Step("SQL Обновление категории")

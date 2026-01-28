@@ -49,7 +49,7 @@ public abstract class BasePage<T extends BasePage<?>> {
           )
           .isFalse();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Screen comparison failure: " + e);
     }
   }
 }

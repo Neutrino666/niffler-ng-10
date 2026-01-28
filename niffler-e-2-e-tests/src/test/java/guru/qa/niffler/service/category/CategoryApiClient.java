@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.assertj.core.api.Assertions;
 import retrofit2.Response;
