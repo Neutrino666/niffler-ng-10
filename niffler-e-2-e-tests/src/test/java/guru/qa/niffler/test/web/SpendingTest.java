@@ -8,6 +8,7 @@ import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
+import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
@@ -127,7 +128,7 @@ public final class SpendingTest {
     login(user)
         .assertStatisticScreen(expected)
         .getStatComponent()
-        .checkBubbles(Color.YELLOW, Color.GREEN);
+        .checkStatBubbles(new Bubble(Color.YELLOW, "Учеба 666 ₽"));
   }
 
   @User(
@@ -225,5 +226,29 @@ public final class SpendingTest {
         .save()
         .assertStatCount(spends.size())
         .assertStatisticScreen(expected);
+  }
+
+  @User(
+      spendings = {
+          @Spending(
+              category = "Учеба",
+              amount = 666,
+              currency = CurrencyValues.RUB,
+              description = "Обучение Niffler 2.0 юбилейный поток!"
+          ),
+          @Spending(
+              category = "Театр",
+              amount = 1000,
+              currency = CurrencyValues.RUB,
+              description = "Дж. Верди 'Риголетто'"
+          )
+      }
+  )
+  @Test
+  @DisplayName("Сравнение наполнения таблицы трат")
+  void checkSpendTable(final UserJson user) {
+    login(user)
+        .getSpendingTable()
+        .assertSpends(user.testData().spendings());
   }
 }
