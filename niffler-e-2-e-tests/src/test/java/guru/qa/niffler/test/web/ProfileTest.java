@@ -3,6 +3,7 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
@@ -89,10 +90,11 @@ public final class ProfileTest {
 
   @Test
   @User
+  @ApiLogin
   @DisplayName("Редактирование профиля")
-  void profileShouldPresentNewName(final UserJson user) {
+  void profileShouldPresentNewName() {
     String newName = RandomDataUtils.getRandomName();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .setName(newName)
         .clickSaveChanges()
         .refresh()

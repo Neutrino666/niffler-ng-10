@@ -40,6 +40,13 @@ public abstract class RestClient {
         null);
   }
 
+  public RestClient(String baseUrl, boolean followRedirect, @Nullable Interceptor... interceptors) {
+    this(baseUrl,
+        JacksonConverterFactory.create(),
+        followRedirect,
+        interceptors);
+  }
+
   public RestClient(
       String baseUrl,
       Converter.Factory converterFactory,
