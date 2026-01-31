@@ -22,16 +22,16 @@ public class OAuth2ApiClient extends RestClient {
   private final static String GRANT_TYPE ="authorization_code";
   private final static String SHA ="S256";
 
-  private final OAuth2Api OAuth2Api;
+  private final OAuth2Api oAuth2Api;
 
   public OAuth2ApiClient() {
     super(CFG.authUrl());
-    OAuth2Api = create(OAuth2Api.class);
+    oAuth2Api = create(OAuth2Api.class);
   }
 
   @Step("REST API authorized")
   public void preRequest(String codeChallenge) throws IOException {
-    Response<Void> response = OAuth2Api.authorize(
+    Response<Void> response = oAuth2Api.authorize(
         RESPONSE_TYPE,
         CLIENT_ID,
         SCOPE,
@@ -45,7 +45,7 @@ public class OAuth2ApiClient extends RestClient {
 
   @Step("REST API login")
   public String login(String username, String password) throws IOException {
-    Response<Void> response = OAuth2Api
+    Response<Void> response = oAuth2Api
         .login(username, password, ThreadSafeCookieStore.INSTANCE.xsrfCookie())
         .execute();
     Assertions.assertThat(response.code())
@@ -55,7 +55,7 @@ public class OAuth2ApiClient extends RestClient {
 
   @Step("REST API token")
   public String token(String code, String codeVerifier) throws IOException {
-    Response<JsonNode> response = OAuth2Api
+    Response<JsonNode> response = oAuth2Api
         .token(code,
             REDIRECT_URI,
             codeVerifier,
