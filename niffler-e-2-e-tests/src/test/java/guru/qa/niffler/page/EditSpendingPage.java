@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selenide.$$;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.page.components.Calendar;
 import io.qameta.allure.Step;
 import java.util.Date;
@@ -15,6 +16,9 @@ import lombok.Getter;
 
 @ParametersAreNonnullByDefault
 public class EditSpendingPage extends BasePage<EditSpendingPage> {
+
+  private static final Config CFG = Config.getInstance();
+  public static final String URL = CFG.frontUrl() + "spending";
 
   private final SelenideElement descriptionInput = $("#description");
   private final SelenideElement amountInput = $("#amount");

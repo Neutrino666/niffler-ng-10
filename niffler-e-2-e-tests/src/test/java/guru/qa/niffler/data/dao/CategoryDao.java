@@ -21,8 +21,8 @@ public interface CategoryDao {
 
   @Nonnull
   Optional<CategoryEntity> findByUsernameAndName(
-      @Nonnull String username,
-      @Nonnull String categoryName);
+      String username,
+      String categoryName);
 
   @Nonnull
   List<CategoryEntity> findAllByUsername(String username);

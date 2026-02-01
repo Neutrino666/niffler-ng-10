@@ -73,6 +73,11 @@ public class SpendingRepositoryJdbc implements SpendRepository {
     return spendDao.findAllByUsername(username);
   }
 
+  @Override
+  public @Nonnull List<CategoryEntity> findAllCategoryByUsername(String username) {
+    return categoryDao.findAllByUsername(username);
+  }
+
   @Nonnull
   @Override
   public Optional<SpendEntity> findByUsernameAndSpendDescription(String username,

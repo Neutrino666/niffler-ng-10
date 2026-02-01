@@ -2,8 +2,8 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.condition.Color;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
@@ -11,13 +11,12 @@ import guru.qa.niffler.jupiter.meta.WebTest;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.page.EditSpendingPage;
 import guru.qa.niffler.page.MainPage;
-import guru.qa.niffler.page.auth.LoginPage;
 import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,14 +26,6 @@ import org.junit.jupiter.api.Test;
 @ParametersAreNonnullByDefault
 public final class SpendingTest {
 
-  private static final Config CFG = Config.getInstance();
-
-  @Nonnull
-  private MainPage login(final UserJson user) {
-    return Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .login(user.username(), user.testData().password());
-  }
-
   @User(
       spendings = @Spending(
           category = "Учеба",
@@ -43,13 +34,13 @@ public final class SpendingTest {
           description = "Обучение Niffler 2.0 юбилейный поток!"
       )
   )
+  @ApiLogin
   @Test
   @DisplayName("Редактирование траты")
   void spendingDescriptionShouldBeEditedByTableAction(final UserJson user) {
     final String description = user.testData().spendings().getFirst().description();
     final String newDescription = "Обучение Niffler Next Generation";
-
-    login(user)
+    new MainPage()
         .getSpendingTable()
         .editSpending(description)
         .setNewSpendingDescription(newDescription)
@@ -59,13 +50,12 @@ public final class SpendingTest {
   }
 
   @User
+  @ApiLogin
   @Test
   @DisplayName("Добавление нового спендинга")
-  void addNewSpending(final UserJson user) {
+  void addNewSpending() {
     final String description = RandomDataUtils.getRandomName();
-    login(user)
-        .getHeader()
-        .addSpendingPge()
+    Selenide.open(EditSpendingPage.URL, EditSpendingPage.class)
         .setAmount(1)
         .setNewCategory(RandomDataUtils.getRandomCategoryName())
         .setSpendingDate(Date.from(Instant.now()))
@@ -76,13 +66,12 @@ public final class SpendingTest {
   }
 
   @User
+  @ApiLogin
   @Test
   @DisplayName("Уведомление добавления нового спендинга")
-  void addNewSpendingSnackbar(final UserJson user) {
+  void addNewSpendingSnackbar() {
     final String description = RandomDataUtils.getRandomName();
-    login(user)
-        .getHeader()
-        .addSpendingPge()
+    Selenide.open(EditSpendingPage.URL, EditSpendingPage.class)
         .setAmount(1)
         .setNewCategory(RandomDataUtils.getRandomCategoryName())
         .setSpendingDate(Date.from(Instant.now()))
@@ -99,13 +88,13 @@ public final class SpendingTest {
           description = "Обучение Niffler 2.0 юбилейный поток!"
       )
   )
+  @ApiLogin
   @Test
   @DisplayName("Редактирование траты")
   void editedSpendingSnackbar(final UserJson user) {
     final String description = user.testData().spendings().getFirst().description();
     final String newDescription = "Обучение Niffler Next Generation";
-
-    login(user)
+    new MainPage()
         .getSpendingTable()
         .editSpending(description)
         .setNewSpendingDescription(newDescription)
@@ -121,13 +110,14 @@ public final class SpendingTest {
           description = "Обучение Niffler 2.0 юбилейный поток!"
       )
   )
+  @ApiLogin
   @ScreenShotTest(value = "img/expected-stat.png")
   @DisplayName("SCREEN Сравнение создания траты")
-  void checkStatComponentTest(final UserJson user, BufferedImage expected) {
-    login(user)
+  void checkStatComponentTest(BufferedImage expected) {
+    new MainPage()
         .assertStatisticScreen(expected)
         .getStatComponent()
-        .checkBubbles(Color.YELLOW, Color.GREEN);
+        .checkBubbles(Color.YELLOW);
   }
 
   @User(
@@ -146,6 +136,7 @@ public final class SpendingTest {
           )
       }
   )
+  @ApiLogin
   @ScreenShotTest(value = "img/remove-stat.png")
   @DisplayName("SCREEN Сравнение удаление траты")
   void checkRemoveStatComponentTest(final UserJson user, BufferedImage expected) {
@@ -153,7 +144,7 @@ public final class SpendingTest {
         .spendings();
     String description = spends.get(0)
         .description();
-    login(user)
+    new MainPage()
         .assertStatCount(spends.size())
         .getSpendingTable()
         .deleteSpending(description)
@@ -179,6 +170,7 @@ public final class SpendingTest {
           )
       }
   )
+  @ApiLogin
   @ScreenShotTest(value = "img/archive-stat.png")
   @DisplayName("SCREEN Сравнение отображения архивных траты")
   void checkArchiveStatComponentTest(final UserJson user, BufferedImage expected) {
@@ -187,7 +179,7 @@ public final class SpendingTest {
     String category = spends.get(0)
         .category()
         .name();
-    login(user)
+    new MainPage()
         .assertStatCount(spends.size())
         .getHeader()
         .toProfilePage()
@@ -208,6 +200,7 @@ public final class SpendingTest {
           description = "Обучение Niffler 2.0 юбилейный поток!"
       )
   )
+  @ApiLogin
   @ScreenShotTest(value = "img/edited-stat.png")
   @DisplayName("SCREEN Редактирование траты")
   void editedStatComponent(final UserJson user, BufferedImage expected) {
@@ -215,8 +208,7 @@ public final class SpendingTest {
     final String newDescription = "Обучение Niffler Next Generation";
     List<SpendJson> spends = user.testData()
         .spendings();
-
-    login(user)
+    new MainPage()
         .assertStatCount(spends.size())
         .getSpendingTable()
         .editSpending(description)

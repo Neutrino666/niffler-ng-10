@@ -22,6 +22,7 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +32,8 @@ public final class UserDbClient implements UserClient {
 
   private final static Config CFG = Config.getInstance();
   private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  private final static String NOT_IMPLEMENTED_MSG = "Не реализовано для: "
+      + UserDbClient.class.getSimpleName();
 
   private final AuthUserRepository authUserRepository = AuthUserRepository.getInstance();
   private final UserdataUserRepository udUserRepository = UserdataUserRepository.getInstance();
@@ -152,6 +155,18 @@ public final class UserDbClient implements UserClient {
           );
     }
     return result;
+  }
+
+  @Override
+  @Step("SQL Получение всех пользователей")
+  public @Nonnull List<UserJson> getAllUsers(String username, @Nullable String searchQuery) {
+    throw new UnsupportedOperationException(NOT_IMPLEMENTED_MSG);
+  }
+
+  @Override
+  @Step("SQL Получение всех друзей пользователя")
+  public @Nonnull List<UserJson> getAllFriends(String username, @Nullable String searchQuery) {
+    throw new UnsupportedOperationException(NOT_IMPLEMENTED_MSG);
   }
 
   @Override

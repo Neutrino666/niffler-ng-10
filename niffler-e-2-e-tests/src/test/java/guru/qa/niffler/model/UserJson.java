@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import lombok.Getter;
 
 @ParametersAreNonnullByDefault
 public record UserJson(
@@ -28,6 +29,7 @@ public record UserJson(
     @Nullable
     String photoSmall,
     @Nullable
+    @Getter
     FriendshipStatus friendshipStatus,
     @JsonIgnore
     @Nullable

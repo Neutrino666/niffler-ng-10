@@ -5,9 +5,12 @@ import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
 import guru.qa.niffler.api.spend.SpendApi;
+import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.RestClient;
+import guru.qa.niffler.service.category.CategoryApiClient;
+import guru.qa.niffler.service.category.CategoryClient;
 import io.qameta.allure.Step;
 import java.io.IOException;
 import java.util.Date;
@@ -22,6 +25,7 @@ import retrofit2.Response;
 public class SpendApiClient extends RestClient implements SpendClient {
 
   private final SpendApi spendApi;
+  private final CategoryClient categoryClient = new CategoryApiClient();
 
   public SpendApiClient() {
     super(CFG.spendUrl());
@@ -93,9 +97,13 @@ public class SpendApiClient extends RestClient implements SpendClient {
 
   @Nonnull
   @Override
-  @Step("REST API Поиск всех трат пользователя")
   public List<SpendJson> findAllByUsername(String username) {
     return getAll(username, null, null, null);
+  }
+
+  @Override
+  public @Nonnull List<CategoryJson> findAllCategoryByUsername(String username) {
+    return categoryClient.findAllByUsername(username);
   }
 
   @Override
