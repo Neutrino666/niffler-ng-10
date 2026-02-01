@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
+public final class UserdataUserRepositoryHibernate implements UserdataUserRepository {
 
   private final static Config CFG = Config.getInstance();
 

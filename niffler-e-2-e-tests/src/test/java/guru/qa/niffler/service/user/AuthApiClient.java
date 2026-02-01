@@ -10,7 +10,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import retrofit2.Response;
 
 @ParametersAreNonnullByDefault
-public class AuthApiClient extends RestClient {
+public final class AuthApiClient extends RestClient {
 
   @Nonnull
   private final AuthApi authApi;
@@ -28,7 +28,7 @@ public class AuthApiClient extends RestClient {
         username,
         password,
         password,
-        ThreadSafeCookieStore.INSTANCE.xsrfCookie()
+        ThreadSafeCookieStore.INSTANCE.value("XSRF-TOKEN")
     ).execute();
   }
 }

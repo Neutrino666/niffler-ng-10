@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @ParametersAreNonnullByDefault
-public class UsersHeader extends BaseComponent<UsersHeader> {
+public final class UsersHeader extends BaseComponent<UsersHeader> {
 
   private final ElementsCollection tabs = self.$$(".MuiTab-textColorInherit");
 

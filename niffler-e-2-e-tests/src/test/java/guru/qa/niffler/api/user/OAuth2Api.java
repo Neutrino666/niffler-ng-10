@@ -1,6 +1,7 @@
 package guru.qa.niffler.api.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import javax.annotation.Nonnull;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -11,6 +12,7 @@ import retrofit2.http.Query;
 public interface OAuth2Api {
 
   @GET("oauth2/authorize")
+  @Nonnull
   Call<Void> authorize(
       @Query("response_type") String responseType,
       @Query("client_id") String clientId,
@@ -22,6 +24,7 @@ public interface OAuth2Api {
 
   @POST("login")
   @FormUrlEncoded
+  @Nonnull
   Call<Void> login(
       @Field("username") String username,
       @Field("password") String password,
@@ -29,6 +32,7 @@ public interface OAuth2Api {
 
   @POST("oauth2/token")
   @FormUrlEncoded
+  @Nonnull
   Call<JsonNode> token(
       @Field("code") String code,
       @Field(value = "redirect_uri", encoded = true) String redirectUri,

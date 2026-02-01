@@ -9,6 +9,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public interface CategoryClient {
 
   @Nonnull
+  static CategoryClient getInstance() {
+    return "api".equals(System.getProperty("client.impl"))
+        ? new CategoryApiClient()
+        : new CategoryDbClient();
+  }
+
+  @Nonnull
   CategoryJson create(CategoryJson category);
 
   @Nonnull

@@ -21,7 +21,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 @ParametersAreNonnullByDefault
-public class UdUserRepositorySpringJdbc implements UserdataUserRepository {
+public final class UdUserRepositorySpringJdbc implements UserdataUserRepository {
 
   private final static Config CFG = Config.getInstance();
   private final UserDao userDao = new UdUserDaoSpringJdbc();

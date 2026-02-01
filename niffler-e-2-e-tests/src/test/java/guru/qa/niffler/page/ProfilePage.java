@@ -14,7 +14,6 @@ import static com.codeborne.selenide.Selenide.$$;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.page.components.ConfirmDialog;
 import io.qameta.allure.Step;
 import java.awt.image.BufferedImage;
@@ -27,7 +26,6 @@ import org.openqa.selenium.Keys;
 @ParametersAreNonnullByDefault
 public final class ProfilePage extends BasePage<ProfilePage> {
 
-  private static final Config CFG = Config.getInstance();
   public static final String URL = CFG.frontUrl() + "profile";
 
   private final SelenideElement usernameInput = $("#username");
@@ -45,6 +43,13 @@ public final class ProfilePage extends BasePage<ProfilePage> {
   private final SelenideElement uploadedAvatar = $(".MuiAvatar-root img");
 
   private final ConfirmDialog confirmDialog = new ConfirmDialog();
+
+  @Step("Проверка прогрузки страницы")
+  @Nonnull
+  public ProfilePage checkThatPageLoaded() {
+    usernameInput.should(visible);
+    return this;
+  }
 
   @Step("Загрузка аватара")
   public @Nonnull ProfilePage uploadAvatar(final String file, final BufferedImage expected) {

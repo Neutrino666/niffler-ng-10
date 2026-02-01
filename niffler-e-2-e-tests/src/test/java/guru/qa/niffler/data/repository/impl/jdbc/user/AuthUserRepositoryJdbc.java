@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class AuthUserRepositoryJdbc implements AuthUserRepository {
+public final class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   private final static Config CFG = Config.getInstance();
   private final AuthUserDao authUserDao = new AuthUserDaoJdbc();
@@ -31,14 +31,15 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   @Override
   public AuthUserEntity create(AuthUserEntity user) {
     try (PreparedStatement userPs = getConnection().prepareStatement(
-        "INSERT INTO \"user\" "
-            + "(username, password, enabled, "
-            + "account_non_expired, account_non_locked, credentials_non_expired)"
-            + "VALUES(?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO "user" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)
+            VALUES(?, ?, ?, ?, ?, ?)
+            """,
         PreparedStatement.RETURN_GENERATED_KEYS);
         PreparedStatement authorityPs = getConnection().prepareStatement(
-            "INSERT INTO authority (user_id, authority)"
-                + "VALUES(?, ?)"
+            """
+                INSERT INTO "authority" (user_id, authority) VALUES(?, ?)
+                """
         )) {
       userPs.setString(1, user.getUsername());
       userPs.setString(2, user.getPassword());
@@ -57,11 +58,14 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
         }
       }
 
-      for (AuthAuthorityEntity authority : user.getAuthorities()) {
-        authorityPs.setObject(1, user.getId());
-        authorityPs.setString(2, authority.getAuthority().name());
-        authorityPs.addBatch();
-        authorityPs.clearParameters();
+      final List<AuthAuthorityEntity> authorities = user.getAuthorities();
+      if (authorities != null && !authorities.isEmpty()) {
+        for (AuthAuthorityEntity authority : user.getAuthorities()) {
+          authorityPs.setObject(1, user.getId());
+          authorityPs.setString(2, authority.getAuthority().name());
+          authorityPs.addBatch();
+          authorityPs.clearParameters();
+        }
       }
       authorityPs.executeBatch();
       return user;
@@ -165,12 +169,11 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   private @Nonnull String getSelectByWhereIs(String key) {
-    return "SELECT "
-        + "u.*, "
-        + "a.id AS a_id, a.user_id, a.authority "
-        + "FROM \"user\" AS u "
-        + "JOIN authority AS a "
-        + "ON u.id = a.user_id "
-        + "WHERE %s = ?".formatted(key);
+    return """
+        SELECT u.*, a.id AS a_id, a.user_id, a.authority
+        FROM "user" AS u
+        JOIN authority AS a
+        ON u.id = a.user_id
+        WHERE %s = ?""".formatted(key);
   }
 }

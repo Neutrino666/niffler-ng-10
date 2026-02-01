@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class Header extends BaseComponent<Header> {
+public final class Header extends BaseComponent<Header> {
 
   private final SelenideElement menuBtn = self.$("button[aria-label='Menu']");
   private final SelenideElement addSpendingBtn = self.$(".MuiButton-contained");

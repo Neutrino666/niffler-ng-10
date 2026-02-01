@@ -1,5 +1,6 @@
 package guru.qa.niffler.jupiter.extension;
 
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.logevents.SelenideLogger;
@@ -8,6 +9,7 @@ import io.qameta.allure.selenide.AllureSelenide;
 import java.io.ByteArrayInputStream;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.LifecycleMethodExecutionExceptionHandler;
@@ -16,7 +18,8 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
 @ParametersAreNonnullByDefault
-public class BrowserExtension implements
+public final class BrowserExtension implements
+    BeforeAllCallback,
     BeforeEachCallback,
     AfterEachCallback,
     TestExecutionExceptionHandler,
@@ -34,10 +37,9 @@ public class BrowserExtension implements
   }
 
   @Override
-  public void afterEach(ExtensionContext context) throws Exception {
-    if (WebDriverRunner.hasWebDriverStarted()) {
-      Selenide.closeWebDriver();
-    }
+  public void beforeAll(ExtensionContext context) throws Exception {
+    Configuration.browser = "chrome";
+    Configuration.timeout = 8000L;
   }
 
   @Override
@@ -49,15 +51,22 @@ public class BrowserExtension implements
   }
 
   @Override
-  public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
-      throws Throwable {
-    doScreenshot();
-    throw throwable;
+  public void afterEach(ExtensionContext context) throws Exception {
+    if (WebDriverRunner.hasWebDriverStarted()) {
+      Selenide.closeWebDriver();
+    }
   }
 
   @Override
   public void handleBeforeEachMethodExecutionException(ExtensionContext context,
       Throwable throwable) throws Throwable {
+    doScreenshot();
+    throw throwable;
+  }
+
+  @Override
+  public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
+      throws Throwable {
     doScreenshot();
     throw throwable;
   }

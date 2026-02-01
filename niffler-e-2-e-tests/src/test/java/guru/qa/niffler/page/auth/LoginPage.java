@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 @ParametersAreNonnullByDefault
 public final class LoginPage extends BasePage<LoginPage> {
 
+  public static final String URL = CFG.authUrl() + "login";
+
   private final SelenideElement usernameInput = $("#username");
   private final SelenideElement passwordInput = $("#password");
   private final SelenideElement submitBtn = $("#login-button");
@@ -23,7 +25,7 @@ public final class LoginPage extends BasePage<LoginPage> {
   private final SelenideElement formError = $(".form__error");
 
   @Step("Авторизация username: '{username}' password: '{password}'")
-  public @Nonnull MainPage login(String username, String password) {
+  public @Nonnull MainPage login(final String username, final String password) {
     setUsername(username);
     setPassword(password);
     submit();
@@ -57,6 +59,13 @@ public final class LoginPage extends BasePage<LoginPage> {
   @Step("Проверка текста ошибки: '{message}'")
   public @Nonnull LoginPage checkError(final String message) {
     formError.shouldHave(text(message), visible);
+    return this;
+  }
+
+  @Step("Проверяем что страница прогрузилась")
+  public @Nonnull LoginPage checkThatPageLoaded() {
+    usernameInput.should(visible);
+    passwordInput.should(visible);
     return this;
   }
 }

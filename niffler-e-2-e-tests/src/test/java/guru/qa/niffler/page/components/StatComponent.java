@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class StatComponent extends BaseComponent<StatComponent> {
+public final class StatComponent extends BaseComponent<StatComponent> {
 
   private final SelenideElement statCanvas = self.$("canvas[ role = 'img' ]");
 
@@ -29,18 +29,18 @@ public class StatComponent extends BaseComponent<StatComponent> {
     return this;
   }
 
-  public @Nonnull StatComponent assertStatisticScreen(BufferedImage expected) {
+  public @Nonnull StatComponent assertStatisticScreen(final BufferedImage expected) {
     assertScreen(expected, statCanvas, 4000);
     return this;
   }
 
-  public @Nonnull StatComponent assertStatCount(Integer count) {
+  public @Nonnull StatComponent assertStatCount(final Integer count) {
     statRows.shouldHave(size(count));
     return this;
   }
 
   @Step("Проверям цвет первой траты в статистике")
-  public @Nonnull StatComponent checkBubbles(Color... expectedColors) {
+  public @Nonnull StatComponent checkBubbles(final Color... expectedColors) {
     statRows.shouldHave(colors(expectedColors));
     return this;
   }

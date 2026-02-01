@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.Test;
 @WebTest
 @DisplayName("Друзья")
 public class FriendsTest {
-
-  private static final Config CFG = Config.getInstance();
 
   @User(
       friends = 1
@@ -44,7 +41,7 @@ public class FriendsTest {
   @ApiLogin
   @DisplayName("[Таблица друзей] Отображение входящего запроса в друзья")
   void incomeInvitationBePresentInFriendsTable(final UserJson user) {
-    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    final String incomeUsername = user.testData().incomeInvitations().getFirst().username();
     Selenide.open(FriendsPage.URL, FriendsPage.class)
         .checkIncomeInvitationIsVisible(incomeUsername);
   }
@@ -56,7 +53,7 @@ public class FriendsTest {
   @ApiLogin
   @DisplayName("[Все пользователи] Отображение исходящего запроса в друзья")
   void outcomeInvitationBePresentInAllPeoplesTable(final UserJson user) {
-    final String outcomeUsername = user.testData().outcomeInvitation().getFirst().username();
+    final String outcomeUsername = user.testData().outcomeInvitations().getFirst().username();
     Selenide.open(PeoplePage.URL, PeoplePage.class)
         .checkOutcomeInvitationIsVisible(outcomeUsername);
   }
@@ -68,7 +65,7 @@ public class FriendsTest {
   @ApiLogin
   @DisplayName("Прием заявки в друзья")
   void acceptIncomeInvitationInFriendsTable(final UserJson user) {
-    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    final String incomeUsername = user.testData().incomeInvitations().getFirst().username();
     Selenide.open(FriendsPage.URL, FriendsPage.class)
         .acceptFriends(incomeUsername)
         .checkFriendIsVisible(incomeUsername);
@@ -81,7 +78,7 @@ public class FriendsTest {
   @ApiLogin
   @DisplayName("Отклонение заявки в друзья")
   void declineIncomeInvitationInFriendsTable(final UserJson user) {
-    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    final String incomeUsername = user.testData().incomeInvitations().getFirst().username();
     Selenide.open(FriendsPage.URL, FriendsPage.class)
         .declineFriends(incomeUsername)
         .checkFriendsNotExist();
@@ -94,7 +91,7 @@ public class FriendsTest {
   @ApiLogin
   @DisplayName("Уведомление приема заявки в друзья")
   void acceptIncomeInvitationInFriendsTableSnackbar(final UserJson user) {
-    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    final String incomeUsername = user.testData().incomeInvitations().getFirst().username();
     Selenide.open(FriendsPage.URL, FriendsPage.class)
         .acceptFriends(incomeUsername)
         .checkSnackbarText("Invitation of %s accepted".formatted(incomeUsername));
@@ -107,7 +104,7 @@ public class FriendsTest {
   @ApiLogin
   @DisplayName("Уведомление отклонение заявки в друзья")
   void declineIncomeInvitationInFriendsTableSnackbar(final UserJson user) {
-    final String incomeUsername = user.testData().incomeInvitation().getFirst().username();
+    final String incomeUsername = user.testData().incomeInvitations().getFirst().username();
     Selenide.open(FriendsPage.URL, FriendsPage.class)
         .declineFriends(incomeUsername)
         .checkSnackbarText("Invitation of %s is declined".formatted(incomeUsername));

@@ -30,7 +30,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @ParametersAreNonnullByDefault
-public class UserApiClient extends RestClient implements UserClient {
+public final class UsersApiClient extends RestClient implements UserClient {
 
   private static final CookieManager cm = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
 
@@ -48,7 +48,7 @@ public class UserApiClient extends RestClient implements UserClient {
   private final AuthApi authApi = authRetrofit.create(AuthApi.class);
   private final UserdataApi userdataApi;
 
-  public UserApiClient() {
+  public UsersApiClient() {
     super(CFG.userdataUrl());
     userdataApi = create(UserdataApi.class);
   }

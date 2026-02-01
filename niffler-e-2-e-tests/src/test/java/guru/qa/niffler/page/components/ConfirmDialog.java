@@ -24,7 +24,7 @@ public final class ConfirmDialog extends BaseComponent<ConfirmDialog> {
     return this;
   }
 
-  public void clickButtonByText(String text) {
+  public void clickButtonByText(final String text) {
     buttons.find(text(text))
         .click();
     self.shouldNotBe(visible);

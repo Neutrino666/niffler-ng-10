@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class AuthUserRepositoryHibernate implements AuthUserRepository {
+public final class AuthUserRepositoryHibernate implements AuthUserRepository {
 
   private final static Config CFG = Config.getInstance();
 

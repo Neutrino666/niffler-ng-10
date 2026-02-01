@@ -8,7 +8,6 @@ import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.page.components.ConfirmDialog;
 import guru.qa.niffler.page.components.SearchField;
 import guru.qa.niffler.page.components.UsersHeader;
@@ -18,10 +17,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
 
 @ParametersAreNonnullByDefault
-public class FriendsPage extends BasePage<FriendsPage> {
+public final class FriendsPage extends BasePage<FriendsPage> {
 
-  private static final Config CFG = Config.getInstance();
   public static final String URL = CFG.frontUrl() + "people/friends";
+
+  private final SelenideElement peopleTab = $("a[href='/people/friends']");
+  private final SelenideElement allTab = $("a[href='/people/all']");
 
   private final SelenideElement tableRoot = $("#simple-tabpanel-friends");
   private final ElementsCollection users = tableRoot.$$("tbody tr");
@@ -33,6 +34,20 @@ public class FriendsPage extends BasePage<FriendsPage> {
 
   @Getter
   private final UsersHeader usersHeader = new UsersHeader();
+
+  @Step("Проверка загрузки страницы с пользователями")
+  public @Nonnull FriendsPage checkThatPageLoaded() {
+    peopleTab.shouldBe(visible);
+    allTab.shouldBe(visible);
+    return this;
+  }
+
+  @Step("Проверяем количество существующих пользователей")
+  @Nonnull
+  public FriendsPage checkExistingFriendsCount(int expectedCount) {
+    users.shouldHave(size(expectedCount));
+    return this;
+  }
 
   @Step("Проверяем отсутствие друзей")
   public @Nonnull FriendsPage checkFriendsNotExist() {
@@ -57,7 +72,7 @@ public class FriendsPage extends BasePage<FriendsPage> {
   }
 
   @Step("Прием заявки в друзья")
-  public @Nonnull FriendsPage acceptFriends(String... friends) {
+  public @Nonnull FriendsPage acceptFriends(final String... friends) {
     for (String friend : friends) {
       research(friend);
       SelenideElement user = requests.find(text(friend));
@@ -69,7 +84,7 @@ public class FriendsPage extends BasePage<FriendsPage> {
   }
 
   @Step("Отклонение заявки в друзья")
-  public @Nonnull FriendsPage declineFriends(String... friends) {
+  public @Nonnull FriendsPage declineFriends(final String... friends) {
     for (@Nonnull String friend : friends) {
       research(friend);
       SelenideElement user = requests.find(text(friend));
@@ -82,17 +97,17 @@ public class FriendsPage extends BasePage<FriendsPage> {
     return this;
   }
 
-  private void research(String username) {
+  private void research(final String username) {
     searchField.clearIfNotEmpty()
         .search(username);
   }
 
-  private @Nonnull SelenideElement acceptBtnByRequestRow(SelenideElement request) {
+  private @Nonnull SelenideElement acceptBtnByRequestRow(final SelenideElement request) {
     return request.$$("button")
         .find(text("Accept"));
   }
 
-  private @Nonnull SelenideElement declineBtnByRequestRow(SelenideElement request) {
+  private @Nonnull SelenideElement declineBtnByRequestRow(final SelenideElement request) {
     return request.$$("button")
         .find(text("Decline"));
   }

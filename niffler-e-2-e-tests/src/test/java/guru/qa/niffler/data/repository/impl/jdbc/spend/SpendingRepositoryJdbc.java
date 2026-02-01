@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class SpendingRepositoryJdbc implements SpendRepository {
+public final class SpendingRepositoryJdbc implements SpendRepository {
 
   private final SpendDao spendDao = new SpendDaoJdbc();
   private final CategoryDao categoryDao = new CategoryDaoJdbc();
@@ -44,7 +44,8 @@ public class SpendingRepositoryJdbc implements SpendRepository {
 
   @Nonnull
   @Override
-  public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username,
+  public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(
+      String username,
       String name) {
     return categoryDao.findByUsernameAndName(username, name);
   }

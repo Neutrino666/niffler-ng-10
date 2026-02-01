@@ -18,15 +18,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class CategoryDaoJdbc implements CategoryDao {
+public final class CategoryDaoJdbc implements CategoryDao {
 
   private final static Config CFG = Config.getInstance();
 
   @Override
   public @Nonnull CategoryEntity create(CategoryEntity category) {
     try (PreparedStatement ps = getConnection().prepareStatement(
-        "INSERT INTO category (username, name, archived)"
-            + "VALUES(?, ?, ?)",
+        """
+            INSERT INTO category (username, name, archived)
+            VALUES(?, ?, ?)
+            """,
         Statement.RETURN_GENERATED_KEYS
     )) {
       ps.setString(1, category.getUsername());
@@ -86,7 +88,8 @@ public class CategoryDaoJdbc implements CategoryDao {
   }
 
   @Override
-  public @Nonnull Optional<CategoryEntity> findByUsernameAndName(String username,
+  public @Nonnull Optional<CategoryEntity> findByUsernameAndName(
+      String username,
       String categoryName) {
     try (PreparedStatement ps = getConnection().prepareStatement(
         "SELECT * FROM category WHERE username = ? AND name = ?"

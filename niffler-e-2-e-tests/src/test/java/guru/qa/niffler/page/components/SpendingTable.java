@@ -10,6 +10,7 @@ import static com.codeborne.selenide.Selenide.$$;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.model.DataFilterValues;
 import guru.qa.niffler.page.EditSpendingPage;
 import io.qameta.allure.Step;
 import javax.annotation.Nonnull;
@@ -49,7 +50,7 @@ public final class SpendingTable extends BaseComponent<SpendingTable> {
   }
 
   @Step("Переход в редактирование траты: '{description}'")
-  public @Nonnull EditSpendingPage editSpending(String description) {
+  public @Nonnull EditSpendingPage editSpending(final String description) {
     spendings.find(text(description))
         .$$("td")
         .get(5)
