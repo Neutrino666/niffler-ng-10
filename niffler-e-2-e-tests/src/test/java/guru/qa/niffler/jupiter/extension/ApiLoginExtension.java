@@ -55,7 +55,7 @@ public final class ApiLoginExtension implements
     this.setupBrowser = true;
   }
 
-  public static ApiLoginExtension restApiLoginExtension() {
+  public static ApiLoginExtension rest() {
     return new ApiLoginExtension(false);
   }
 
@@ -87,7 +87,7 @@ public final class ApiLoginExtension implements
   @Override
   public String resolveParameter(final ParameterContext parameterContext,
       final ExtensionContext extensionContext) throws ParameterResolutionException {
-    return getToken();
+    return "Bearer " + getToken();
   }
 
   public static void setToken(final String token) {
