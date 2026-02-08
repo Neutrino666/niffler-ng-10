@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -38,7 +37,23 @@ public class CategoryDbClient implements CategoryClient {
   @Step("SQL Обновление категории")
   @Override
   public @Nonnull CategoryJson update(CategoryJson category) {
-    throw new UnsupportedOperationException("Not implemented :(");
+    return Objects.requireNonNull(
+        jdbcTxTemplate.execute(() ->
+            CategoryJson.fromEntity(categoryDao.update(CategoryEntity.fromJson(category)))
+        )
+    );
+  }
+
+  @Override
+  public @Nonnull List<CategoryJson> findAllByUsername(String username) {
+    List<CategoryJson> categories = jdbcTxTemplate.execute(() ->
+        categoryDao.findAllByUsername(username).stream()
+            .map(CategoryJson::fromEntity)
+            .toList()
+    );
+    return categories == null
+        ? List.of()
+        : categories;
   }
 
   @Step("SQL Поиск категории по username и categoryName")
@@ -51,11 +66,6 @@ public class CategoryDbClient implements CategoryClient {
             categoryDao.findByUsernameAndName(username, categoryName)
         )
     );
-  }
-
-  @Step("SQL Поиск всех категорий пользователя")
-  public @Nullable List<CategoryEntity> findAllByUsername(String username) {
-    return jdbcTxTemplate.execute(() -> categoryDao.findAllByUsername(username));
   }
 
   @Step("SQL Поиск всех категорий")
@@ -72,7 +82,7 @@ public class CategoryDbClient implements CategoryClient {
   }
 
   @Step("SQL Удаление категории")
-  public void delete(@Nonnull CategoryEntity category) {
+  public void delete(CategoryEntity category) {
     categoryDao.remove(category);
   }
 }

@@ -1,5 +1,6 @@
 package guru.qa.niffler.service.spend;
 
+import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -17,6 +18,9 @@ public interface SpendClient {
 
   @Nonnull
   List<SpendJson> findAllByUsername(String username);
+
+  @Nonnull
+  List<CategoryJson> findAllCategoryByUsername(String username);
 
   void remove(SpendJson spend);
 }

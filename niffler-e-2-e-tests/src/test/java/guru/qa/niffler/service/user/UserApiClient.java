@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -200,9 +201,24 @@ public class UserApiClient extends RestClient implements UserClient {
 
   @Nonnull
   @Step("REST API Получение всех пользователей")
-  public List<UserJson> getAllUsers(String username, String searchQuery) {
+  public List<UserJson> getAllUsers(String username, @Nullable String searchQuery) {
     try {
       List<UserJson> result = userdataApi.allUsers(username, searchQuery)
+          .execute().
+          body();
+      return result != null
+          ? result
+          : List.of();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  @Override
+  @Step("REST API Получение всех друзей пользователя")
+  public @Nonnull List<UserJson> getAllFriends(String username, @Nullable String searchQuery) {
+    try {
+      List<UserJson> result = userdataApi.allFriends(username, searchQuery)
           .execute().
           body();
       return result != null

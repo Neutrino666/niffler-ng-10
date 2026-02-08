@@ -127,6 +127,16 @@ public final class SpendDbClient implements SpendClient {
         .toList();
   }
 
+  @Override
+  public @Nonnull List<CategoryJson> findAllCategoryByUsername(String username) {
+    return Objects.requireNonNull(
+            jdbcTxTemplate.execute(() -> spendRepository.findAllCategoryByUsername(username))
+        )
+        .stream()
+        .map(CategoryJson::fromEntity)
+        .toList();
+  }
+
   @Nonnull
   @Step("SQL Поиск траты по username и description")
   public Optional<SpendJson> findByUsernameAndSpendDescription(

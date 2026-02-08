@@ -87,6 +87,15 @@ public class SpendingRepositoryHibernate implements SpendRepository {
         .getResultList();
   }
 
+  @Override
+  public @Nonnull List<CategoryEntity> findAllCategoryByUsername(String username) {
+    return entityManager.createQuery(
+            "FROM CategoryEntity s WHERE s.username = :username",
+            CategoryEntity.class)
+        .setParameter("username", username)
+        .getResultList();
+  }
+
   @Nonnull
   @Override
   public Optional<SpendEntity> findByUsernameAndSpendDescription(String username,

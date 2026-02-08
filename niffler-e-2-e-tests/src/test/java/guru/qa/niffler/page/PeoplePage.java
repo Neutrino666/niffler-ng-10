@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.page.components.SearchField;
 import guru.qa.niffler.page.components.UsersHeader;
 import io.qameta.allure.Step;
@@ -15,6 +16,9 @@ import lombok.Getter;
 
 @ParametersAreNonnullByDefault
 public class PeoplePage extends BasePage<PeoplePage> {
+
+  private static final Config CFG = Config.getInstance();
+  public static final String URL = CFG.frontUrl() + "people/all";
 
   private final SelenideElement tableRoot = $("#simple-tabpanel-all");
   private final ElementsCollection users = tableRoot.$$("tbody tr");

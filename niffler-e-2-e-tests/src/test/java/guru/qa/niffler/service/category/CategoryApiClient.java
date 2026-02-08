@@ -24,12 +24,13 @@ public class CategoryApiClient extends RestClient implements CategoryClient {
     categoryApi = create(CategoryApi.class);
   }
 
+  @Override
   @Nonnull
   @Step("REST API Получение категорий пользователя с фильтрацией по признаку в архиве")
-  public List<CategoryJson> getAllByUsername(String username, boolean excludeArchived) {
+  public List<CategoryJson> findAllByUsername(String username) {
     final Response<List<CategoryJson>> response;
     try {
-      response = categoryApi.getCategories(username, excludeArchived)
+      response = categoryApi.getCategories(username, false)
           .execute();
     } catch (IOException e) {
       throw new AssertionError(e);

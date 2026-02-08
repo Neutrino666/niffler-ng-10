@@ -1,7 +1,6 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Category;
@@ -11,9 +10,7 @@ import guru.qa.niffler.jupiter.meta.WebTest;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.ProfilePage;
-import guru.qa.niffler.page.auth.LoginPage;
 import java.awt.image.BufferedImage;
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,25 +20,16 @@ import org.junit.jupiter.api.Test;
 @ParametersAreNonnullByDefault
 public final class ProfileTest {
 
-  private static final Config CFG = Config.getInstance();
-
-  @Nonnull
-  private ProfilePage goToProfilePage(final UserJson user) {
-    return Selenide.open(CFG.frontUrl(), LoginPage.class)
-        .login(user.username(), user.testData().password())
-        .getHeader()
-        .toProfilePage();
-  }
-
   @Test
   @User(
       categories = @Category(
           archived = true
       )
   )
+  @ApiLogin
   @DisplayName("Архивная категория должна отображаться в списке")
   void archivedCategoryShouldPresentInCategoriesList(final UserJson user) {
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .checkArchivedCategoriesIsDisplayedInAnyOrder(
             user.testData().categories().getFirst().name()
         );
@@ -53,10 +41,11 @@ public final class ProfileTest {
           archived = true
       )
   )
+  @ApiLogin
   @DisplayName("Архивная категория не должна отображаться в списке")
   void archivedCategoryShouldNotPresentInCategoriesList(final UserJson user) {
     CategoryJson category = user.testData().categories().getFirst();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .checkArchivedCategoriesIsNotExist(category.name());
   }
 
@@ -66,10 +55,11 @@ public final class ProfileTest {
           archived = false
       )
   )
+  @ApiLogin
   @DisplayName("Активная категория должна отображаться в списке")
   void activeCategoryShouldPresentInCategoriesList(final UserJson user) {
     CategoryJson category = user.testData().categories().getFirst();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .showArchive(false)
         .checkActiveCategoriesIsDisplayedInAnyOrder(category.name());
   }
@@ -80,10 +70,11 @@ public final class ProfileTest {
           archived = false
       )
   )
+  @ApiLogin
   @DisplayName("Активная категория должны отображаться в списке когда отображаются архивные")
   void activeCategoryShouldPresentInCategoriesListWhenShowedArchived(final UserJson user) {
     CategoryJson category = user.testData().categories().getFirst();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .showArchive(true)
         .checkActiveCategoriesIsDisplayedInAnyOrder(category.name());
   }
@@ -103,10 +94,11 @@ public final class ProfileTest {
 
   @Test
   @User
+  @ApiLogin
   @DisplayName("Снекбар успешного редактирования профиля")
-  void nameShouldBeEditedInProfile(final UserJson user) {
+  void nameShouldBeEditedInProfile() {
     String newName = RandomDataUtils.getRandomName();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .setName(newName)
         .clickSaveChanges()
         .checkSnackbarText("Profile successfully updated");
@@ -114,10 +106,11 @@ public final class ProfileTest {
 
   @Test
   @User
+  @ApiLogin
   @DisplayName("Снекбар успешного создания категории")
-  void addNewCategory(final UserJson user) {
+  void addNewCategory() {
     String name = RandomDataUtils.getRandomCategoryName();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .addNewCategory(name)
         .checkSnackbarText("You've added new category: %s".formatted(name));
   }
@@ -128,13 +121,14 @@ public final class ProfileTest {
           archived = false
       )
   )
+  @ApiLogin
   @DisplayName("Снекбар отправки категории в архив")
   void addCategoryToArchiveSnackbar(final UserJson user) {
     String name = user.testData()
         .categories()
         .getFirst()
         .name();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .clickArchive(name)
         .acceptToArchive()
         .checkSnackbarText("Category %s is archived".formatted(name));
@@ -146,13 +140,14 @@ public final class ProfileTest {
           archived = true
       )
   )
+  @ApiLogin
   @DisplayName("Снекбар восстановления категории из архива")
   void addCategoryToUnarchiveSnackbar(final UserJson user) {
     String name = user.testData()
         .categories()
         .getFirst()
         .name();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .showArchive(true)
         .clickUnarchive(name)
         .acceptToUnarchive()
@@ -165,6 +160,7 @@ public final class ProfileTest {
           archived = false
       )
   )
+  @ApiLogin
   @DisplayName("Снекбар редактирования категории")
   void changeCategorySnackbar(final UserJson user) {
     String name = user.testData()
@@ -172,16 +168,17 @@ public final class ProfileTest {
         .getFirst()
         .name();
     String newName = RandomDataUtils.getRandomCategoryName();
-    goToProfilePage(user)
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .editActiveCategory(name, newName)
         .checkSnackbarText("Category name is changed");
   }
 
   @User
+  @ApiLogin
   @ScreenShotTest(value = "img/avatar.png")
   @DisplayName("SCREEN Загруженный аватар должен совпадать")
-  void uploadedAvatarIsNotHaveDifference(final UserJson user, BufferedImage expected) {
-    goToProfilePage(user)
+  void uploadedAvatarIsNotHaveDifference(BufferedImage expected) {
+    Selenide.open(ProfilePage.URL, ProfilePage.class)
         .uploadAvatar("img/avatar.png")
         .assertAvatar(expected);
   }

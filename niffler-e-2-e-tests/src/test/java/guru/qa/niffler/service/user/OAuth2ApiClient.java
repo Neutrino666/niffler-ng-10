@@ -9,6 +9,7 @@ import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.api.user.OAuth2Api;
 import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
 import guru.qa.niffler.service.RestClient;
+import io.qameta.allure.Step;
 import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.SneakyThrows;
 import retrofit2.Response;
@@ -31,6 +32,7 @@ public class OAuth2ApiClient extends RestClient {
   }
 
   @SneakyThrows
+  @Step("REST API login OAuth2")
   public String login(String username, String password) {
     String codeVerifier = generateCodeVerifier();
     String codeChallenge = generateCodeChallenge(codeVerifier);

@@ -8,6 +8,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.page.components.ConfirmDialog;
 import guru.qa.niffler.page.components.SearchField;
 import guru.qa.niffler.page.components.UsersHeader;
@@ -18,6 +19,9 @@ import lombok.Getter;
 
 @ParametersAreNonnullByDefault
 public class FriendsPage extends BasePage<FriendsPage> {
+
+  private static final Config CFG = Config.getInstance();
+  public static final String URL = CFG.frontUrl() + "people/friends";
 
   private final SelenideElement tableRoot = $("#simple-tabpanel-friends");
   private final ElementsCollection users = tableRoot.$$("tbody tr");

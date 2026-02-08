@@ -27,8 +27,8 @@ public interface SpendDao {
 
   @Nonnull
   Optional<SpendEntity> findByUsernameAndSpendDescription(
-      @Nonnull String username,
-      @Nonnull String description
+      String username,
+      String description
   );
 
   void remove(SpendEntity spend);
