@@ -4,10 +4,11 @@ import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static guru.qa.niffler.condition.StatConditions.colors;
+import static guru.qa.niffler.condition.StatConditions.statBubbles;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.condition.Color;
+import guru.qa.niffler.model.Bubble;
 import io.qameta.allure.Step;
 import java.awt.image.BufferedImage;
 import javax.annotation.Nonnull;
@@ -39,9 +40,9 @@ public final class StatComponent extends BaseComponent<StatComponent> {
     return this;
   }
 
-  @Step("Проверям цвет первой траты в статистике")
-  public @Nonnull StatComponent checkBubbles(final Color... expectedColors) {
-    statRows.shouldHave(colors(expectedColors));
+  @Step("Проверям список трат в статистике")
+  public @Nonnull StatComponent checkStatBubbles(final Bubble... bubbles) {
+    statRows.shouldHave(statBubbles(bubbles));
     return this;
   }
 }
