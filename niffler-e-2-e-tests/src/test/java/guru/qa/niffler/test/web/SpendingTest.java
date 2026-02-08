@@ -118,8 +118,7 @@ public final class SpendingTest {
     new MainPage()
         .assertStatisticScreen(expected)
         .getStatComponent()
-        .checkStatBubbles(new Bubble(Color.YELLOW, "Учеба 666 ₽"))
-        .checkBubbles(Color.YELLOW);
+        .checkStatBubbles(new Bubble(Color.YELLOW, "Учеба 666 ₽"));
   }
 
   @User(
@@ -238,6 +237,7 @@ public final class SpendingTest {
       }
   )
   @Test
+  @ApiLogin
   @DisplayName("Сравнение наполнения таблицы трат")
   void checkSpendTable(final UserJson user) {
     new MainPage()

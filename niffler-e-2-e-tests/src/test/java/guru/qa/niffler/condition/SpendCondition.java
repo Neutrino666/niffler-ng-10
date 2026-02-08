@@ -94,7 +94,7 @@ public final class SpendCondition {
 
   private @Nonnull
   static List<String> convertToExpectedSpend(List<SpendJson> spends) {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
     DecimalFormat decimalFormat = new DecimalFormat("0.#");
     return spends.stream()
         .map(s -> List.of(
