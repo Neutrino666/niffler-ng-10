@@ -15,13 +15,21 @@ public enum ThreadSafeCookieStore implements CookieStore {
       ThreadSafeCookieStore::inMemoryCookieStore
   );
 
+  public String value(final String name) {
+    return cs.get().getCookies()
+        .stream()
+        .filter(c -> c.getName().equals(name))
+        .findFirst().orElseThrow()
+        .getValue();
+  }
+
   @Override
-  public void add(URI uri, HttpCookie cookie) {
+  public void add(final URI uri, final HttpCookie cookie) {
     cs.get().add(uri, cookie);
   }
 
   @Override
-  public List<HttpCookie> get(URI uri) {
+  public List<HttpCookie> get(final URI uri) {
     return cs.get().get(uri);
   }
 
@@ -36,7 +44,7 @@ public enum ThreadSafeCookieStore implements CookieStore {
   }
 
   @Override
-  public boolean remove(URI uri, HttpCookie cookie) {
+  public boolean remove(final URI uri, final HttpCookie cookie) {
     return cs.get().remove(uri, cookie);
   }
 

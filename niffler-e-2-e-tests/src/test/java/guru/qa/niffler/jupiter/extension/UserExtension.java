@@ -66,7 +66,7 @@ public final class UserExtension implements
 
   @Override
   public boolean supportsParameter(ParameterContext parameterContext,
-      @Nonnull ExtensionContext extensionContext) throws ParameterResolutionException {
+      ExtensionContext extensionContext) throws ParameterResolutionException {
     return parameterContext.getParameter().getType().isAssignableFrom(UserJson.class);
   }
 
@@ -84,5 +84,12 @@ public final class UserExtension implements
     final ExtensionContext methodContext = context();
     return Optional.ofNullable(methodContext.getStore(NAMESPACE)
         .get(methodContext.getUniqueId(), UserJson.class));
+  }
+
+  public static void setUser(UserJson user) {
+    context().getStore(NAMESPACE).put(
+        context().getUniqueId(),
+        user
+    );
   }
 }
