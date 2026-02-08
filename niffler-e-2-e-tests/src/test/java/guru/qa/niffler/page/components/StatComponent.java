@@ -29,7 +29,7 @@ public final class StatComponent extends BaseComponent<StatComponent> {
     return this;
   }
 
-  public @Nonnull StatComponent assertStatisticScreen(BufferedImage expected) {
+  public @Nonnull StatComponent assertStatisticScreen(final BufferedImage expected) {
     assertScreen(expected, statCanvas, 4000);
     return this;
   }

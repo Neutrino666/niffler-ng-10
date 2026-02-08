@@ -5,15 +5,23 @@ import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.jpa.EntityManagers;
 import guru.qa.niffler.data.repository.SpendRepository;
+import guru.qa.niffler.model.CurrencyValues;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class SpendingRepositoryHibernate implements SpendRepository {
+public final class SpendingRepositoryHibernate implements SpendRepository {
 
   private final static Config CFG = Config.getInstance();
 
@@ -23,6 +31,11 @@ public class SpendingRepositoryHibernate implements SpendRepository {
   @Override
   public SpendEntity create(SpendEntity spend) {
     entityManager.joinTransaction();
+    if (spend.getCategory().getId() != null && !entityManager.contains(spend.getCategory())) {
+      CategoryEntity categoryRef = entityManager.getReference(CategoryEntity.class,
+          spend.getCategory().getId());
+      spend.setCategory(categoryRef);
+    }
     entityManager.persist(spend);
     return spend;
   }
@@ -34,6 +47,7 @@ public class SpendingRepositoryHibernate implements SpendRepository {
     entityManager.persist(category);
     return category;
   }
+
 
   @Nonnull
   @Override
@@ -121,13 +135,35 @@ public class SpendingRepositoryHibernate implements SpendRepository {
         .getResultList();
   }
 
+  @Nonnull
+  public List<SpendEntity> all(String username, @Nullable CurrencyValues currency,
+      @Nullable Date from, @Nullable Date to) {
+    final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    final CriteriaQuery<SpendEntity> cq = cb.createQuery(SpendEntity.class);
+    final Root<SpendEntity> root = cq.from(SpendEntity.class);
+
+    final List<Predicate> predicates = new ArrayList<>();
+    predicates.add(cb.equal(root.get("username"), username));
+    if (currency != null) {
+      predicates.add(cb.equal(root.get("currency"), currency));
+    }
+    if (from != null) {
+      predicates.add(cb.greaterThanOrEqualTo(root.get("spendDate"), from));
+    }
+    if (to != null) {
+      predicates.add(cb.lessThanOrEqualTo(root.get("spendDate"), to));
+    }
+
+    cq.select(root).where(predicates.toArray(new Predicate[0]))
+        .orderBy(cb.desc(root.get("spendDate")));
+
+    return entityManager.createQuery(cq).getResultList();
+  }
+
   @Override
   public void remove(SpendEntity spend) {
     entityManager.joinTransaction();
-    if (!entityManager.contains(spend)) {
-      spend = entityManager.merge(spend);
-    }
-    entityManager.remove(spend);
+    entityManager.remove(entityManager.contains(spend) ? spend : entityManager.merge(spend));
   }
 
   @Override

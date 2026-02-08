@@ -8,7 +8,7 @@ import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.spend.SpendDbClient;
+import guru.qa.niffler.service.category.CategoryClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +31,7 @@ public final class CategoryExtension implements
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       CategoryExtension.class);
-  private final SpendDbClient categoryClient = new SpendDbClient();
+  private final CategoryClient categoryClient = CategoryClient.getInstance();
 
   @Override
   public void beforeEach(ExtensionContext context) {
@@ -49,7 +49,7 @@ public final class CategoryExtension implements
                 List<CategoryJson> results = new ArrayList<>();
 
                 for (Category category : anno.categories()) {
-                  CategoryJson created = categoryClient.createCategory(
+                  CategoryJson created = categoryClient.create(
                       new CategoryJson(
                           null,
                           "".equals(category.name())
@@ -60,16 +60,13 @@ public final class CategoryExtension implements
                       )
                   );
                   if (category.archived()) {
-                    if (created == null) {
-                      throw new RuntimeException("Не удалось создать категорию");
-                    }
                     CategoryJson update = new CategoryJson(
                         created.id(),
                         created.name(),
                         created.username(),
                         true
                     );
-                    created = categoryClient.updateCategory(update);
+                    created = categoryClient.update(update);
                   }
                   results.add(created);
                 }
@@ -100,7 +97,7 @@ public final class CategoryExtension implements
               category.username(),
               true
           );
-          categoryClient.updateCategory(archivedCategory);
+          categoryClient.update(archivedCategory);
         }
       }
     }

@@ -21,8 +21,9 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+@Deprecated
 @ParametersAreNonnullByDefault
-public class UsersQueueExtension implements
+public final class UsersQueueExtension implements
     BeforeEachCallback,
     AfterEachCallback,
     ParameterResolver {

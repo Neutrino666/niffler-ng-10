@@ -17,7 +17,7 @@ public interface UserdataUserRepository {
     return switch (System.getProperty("repository", "jpa")) {
       case "jpa" -> new UserdataUserRepositoryHibernate();
       case "jdbc" -> new UdUserRepositoryJdbc();
-      case "sjdbc" -> new UdUserRepositorySpringJdbc();
+      case "spring-jdbc" -> new UdUserRepositorySpringJdbc();
       default -> throw new IllegalArgumentException("Неизвестный тип репозитория: "
           + System.getProperty("repository"));
     };

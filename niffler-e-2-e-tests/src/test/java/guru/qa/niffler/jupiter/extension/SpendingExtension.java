@@ -8,7 +8,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.spend.SpendDbClient;
+import guru.qa.niffler.service.spend.SpendClient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,10 +27,10 @@ public final class SpendingExtension implements BeforeEachCallback, ParameterRes
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       SpendingExtension.class);
-  private final SpendDbClient spendClient = new SpendDbClient();
+  private final SpendClient spendClient = SpendClient.getInstance();
 
   @Override
-  public void beforeEach(@Nonnull final ExtensionContext context) {
+  public void beforeEach(final ExtensionContext context) {
     findTestMethodAnnotation(User.class)
         .ifPresent(
             anno -> {
@@ -76,15 +76,17 @@ public final class SpendingExtension implements BeforeEachCallback, ParameterRes
   }
 
   @Override
-  public boolean supportsParameter(ParameterContext parameterContext,
-      @Nonnull final ExtensionContext extensionContext) throws ParameterResolutionException {
+  public boolean supportsParameter(
+      ParameterContext parameterContext,
+      final ExtensionContext extensionContext) throws ParameterResolutionException {
     return parameterContext.getParameter().getType().isAssignableFrom(SpendJson[].class);
   }
 
   @Override
   @Nonnull
-  public SpendJson[] resolveParameter(@Nonnull final ParameterContext parameterContext,
-      @Nonnull final ExtensionContext extensionContext) throws ParameterResolutionException {
+  public SpendJson[] resolveParameter(
+      final ParameterContext parameterContext,
+      final ExtensionContext extensionContext) throws ParameterResolutionException {
     return createdStore(NAMESPACE, SpendJson[].class);
   }
 }

@@ -10,6 +10,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public interface SpendClient {
 
+  @Nonnull
+  static SpendClient getInstance() {
+    return "api".equals(System.getProperty("client.impl"))
+        ? new SpendApiClient()
+        : new SpendDbClient();
+  }
+
   @Nullable
   SpendJson create(SpendJson spend);
 

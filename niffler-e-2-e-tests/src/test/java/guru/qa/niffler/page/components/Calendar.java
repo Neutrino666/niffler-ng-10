@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @ParametersAreNonnullByDefault
-public class Calendar extends BaseComponent<Calendar> {
+public final class Calendar extends BaseComponent<Calendar> {
 
   private final SelenideElement dateFilled = $("input[ name = 'date' ]");
   private final SelenideElement calendarBtn = $("button[ aria-label *= 'Choose date' ]");
@@ -41,9 +42,8 @@ public class Calendar extends BaseComponent<Calendar> {
     super($(".MuiDateCalendar-root"));
   }
 
-  public @Nonnull Calendar selectDateInCalendar(Date date) {
+  public @Nonnull Calendar selectDateInCalendar(final Date date) {
     open(true);
-
     LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
     switchView(View.YEAR);
     selectYear(localDate.getYear());
@@ -53,14 +53,14 @@ public class Calendar extends BaseComponent<Calendar> {
     return this;
   }
 
-  private @Nonnull Calendar selectYear(Integer year) {
+  private @Nonnull Calendar selectYear(final Integer year) {
     years.find(text(String.valueOf(year)))
         .scrollIntoCenter()
         .click();
     return this;
   }
 
-  private @Nonnull Calendar checkDate(LocalDate date) {
+  private @Nonnull Calendar checkDate(final LocalDate date) {
     String actualDate = dateFilled.val();
     assertThat(actualDate)
         .isNotEmpty();
@@ -69,7 +69,7 @@ public class Calendar extends BaseComponent<Calendar> {
     return this;
   }
 
-  private @Nonnull Calendar selectMonth(Integer month) {
+  private @Nonnull Calendar selectMonth(final Integer month) {
     Integer currentMonth = Month.valueOf(getCurrentDate()[0].toUpperCase())
         .getValue();
     if (month.equals(currentMonth)) {
@@ -89,13 +89,13 @@ public class Calendar extends BaseComponent<Calendar> {
     return this;
   }
 
-  private @Nonnull Calendar selectDay(Integer day) {
+  private @Nonnull Calendar selectDay(final Integer day) {
     days.find(text(String.valueOf(day)))
         .click();
     return this;
   }
 
-  private @Nonnull Calendar open(boolean state) {
+  private @Nonnull Calendar open(final boolean state) {
     if (self.exists() != state) {
       calendarBtn.click();
     }
@@ -103,7 +103,7 @@ public class Calendar extends BaseComponent<Calendar> {
     return this;
   }
 
-  private @Nonnull Calendar switchView(View view) {
+  private @Nonnull Calendar switchView(final View view) {
     String stateView = switchViewBtn.getAttribute("aria-label");
     if (stateView != null && !stateView.startsWith(view.getValue())) {
       switchViewBtn.click();
@@ -114,7 +114,7 @@ public class Calendar extends BaseComponent<Calendar> {
               String text = el.getAttribute("aria-label");
               return text != null && text.startsWith(view.getValue());
             }
-        )
+        ), Duration.ofSeconds(8)
     );
     return this;
   }

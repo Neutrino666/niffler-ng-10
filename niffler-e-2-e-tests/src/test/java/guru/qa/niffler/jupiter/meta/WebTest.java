@@ -1,6 +1,11 @@
 package guru.qa.niffler.jupiter.meta;
 
+import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.extension.CategoryExtension;
+import guru.qa.niffler.jupiter.extension.SpendingExtension;
+import guru.qa.niffler.jupiter.extension.UserExtension;
+import io.qameta.allure.junit5.AllureJunit5;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,7 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith({
-    BrowserExtension.class
+    BrowserExtension.class,
+    AllureJunit5.class,
+    UserExtension.class,
+    CategoryExtension.class,
+    SpendingExtension.class,
+    ApiLoginExtension.class
 })
 public @interface WebTest {
 

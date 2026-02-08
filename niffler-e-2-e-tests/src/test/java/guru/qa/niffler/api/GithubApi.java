@@ -1,6 +1,7 @@
 package guru.qa.niffler.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import javax.annotation.Nonnull;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -14,6 +15,7 @@ public interface GithubApi {
       "Accept: application/vnd.github+json",
       "X-GitHub-Api-Version: 2022-11-28"
   })
+  @Nonnull
   Call<JsonNode> issue(@Header("Authorization") String bearerToken,
       @Path("issue_number") String issue_number);
 }

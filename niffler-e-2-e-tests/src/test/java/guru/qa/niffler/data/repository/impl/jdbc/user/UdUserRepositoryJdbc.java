@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class UdUserRepositoryJdbc implements UserdataUserRepository {
+public final class UdUserRepositoryJdbc implements UserdataUserRepository {
 
   private final static Config CFG = Config.getInstance();
   private final UserDao userDao = new UdUserDaoJdbc();

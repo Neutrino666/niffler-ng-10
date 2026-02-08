@@ -1,4 +1,4 @@
-package guru.qa.niffler.page.components;
+package guru.qa.niffler.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

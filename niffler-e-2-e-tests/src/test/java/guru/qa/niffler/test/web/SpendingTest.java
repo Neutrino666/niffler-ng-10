@@ -44,7 +44,7 @@ public final class SpendingTest {
     new MainPage()
         .getSpendingTable()
         .editSpending(description)
-        .setNewSpendingDescription(newDescription)
+        .setSpendingDescription(newDescription)
         .save()
         .getSpendingTable()
         .checkThatTableContains(newDescription);
@@ -57,10 +57,10 @@ public final class SpendingTest {
   void addNewSpending() {
     final String description = RandomDataUtils.getRandomName();
     Selenide.open(EditSpendingPage.URL, EditSpendingPage.class)
-        .setAmount(1)
-        .setNewCategory(RandomDataUtils.getRandomCategoryName())
+        .setAmount(1.)
+        .setCategory(RandomDataUtils.getRandomCategoryName())
         .setSpendingDate(Date.from(Instant.now()))
-        .setNewSpendingDescription(description)
+        .setSpendingDescription(description)
         .save()
         .getSpendingTable()
         .checkThatTableContains(description);
@@ -73,10 +73,10 @@ public final class SpendingTest {
   void addNewSpendingSnackbar() {
     final String description = RandomDataUtils.getRandomName();
     Selenide.open(EditSpendingPage.URL, EditSpendingPage.class)
-        .setAmount(1)
-        .setNewCategory(RandomDataUtils.getRandomCategoryName())
+        .setAmount(1.)
+        .setCategory(RandomDataUtils.getRandomCategoryName())
         .setSpendingDate(Date.from(Instant.now()))
-        .setNewSpendingDescription(description)
+        .setSpendingDescription(description)
         .save()
         .checkSnackbarText("New spending is successfully created");
   }
@@ -98,7 +98,7 @@ public final class SpendingTest {
     new MainPage()
         .getSpendingTable()
         .editSpending(description)
-        .setNewSpendingDescription(newDescription)
+        .setSpendingDescription(newDescription)
         .save()
         .checkSnackbarText("Spending is edited successfully");
   }
@@ -213,8 +213,8 @@ public final class SpendingTest {
         .assertStatCount(spends.size())
         .getSpendingTable()
         .editSpending(description)
-        .setNewSpendingDescription(newDescription)
-        .setAmount(100500)
+        .setSpendingDescription(newDescription)
+        .setAmount(100500.)
         .save()
         .assertStatCount(spends.size())
         .assertStatisticScreen(expected);

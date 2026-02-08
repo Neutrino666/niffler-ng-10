@@ -1,6 +1,7 @@
 package guru.qa.niffler.page.auth;
 
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.SelenideElement;
@@ -10,7 +11,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class RegistrationPage extends BasePage<RegistrationPage> {
+public final class RegistrationPage extends BasePage<RegistrationPage> {
+
+  public static final String URL = CFG.authUrl() + "register";
 
   private final SelenideElement usernameInput = $("#username");
   private final SelenideElement passwordInput = $("#password");
@@ -18,6 +21,15 @@ public class RegistrationPage extends BasePage<RegistrationPage> {
   private final SelenideElement submitRegistrationBtn = $("#register-button");
   private final SelenideElement signInBtn = $(".form_sign-in");
   private final SelenideElement formError = $(".form__error");
+
+  @Step("Проверка прогрузки страницы")
+  @Nonnull
+  public RegistrationPage checkThatPageLoaded() {
+    usernameInput.should(visible);
+    passwordInput.should(visible);
+    passwordSubmitInput.should(visible);
+    return this;
+  }
 
   @Step("Регистрация пользователя")
   public @Nonnull LoginPage registrationUser(final String username,

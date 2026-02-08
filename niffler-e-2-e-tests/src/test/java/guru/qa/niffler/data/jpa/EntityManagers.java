@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @ParametersAreNonnullByDefault
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EntityManagers {
+public final class EntityManagers {
 
   private static final Map<String, EntityManagerFactory> EMFS = new ConcurrentHashMap<>();
 
@@ -27,5 +27,9 @@ public class EntityManagers {
             }
         ).createEntityManager()
     );
+  }
+
+  public static void closeAllEmfs() {
+    EMFS.values().forEach(EntityManagerFactory::close);
   }
 }

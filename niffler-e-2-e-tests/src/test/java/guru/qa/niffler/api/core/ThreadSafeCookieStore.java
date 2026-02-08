@@ -7,7 +7,9 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public enum ThreadSafeCookieStore implements CookieStore {
   INSTANCE;
 
@@ -15,11 +17,12 @@ public enum ThreadSafeCookieStore implements CookieStore {
       ThreadSafeCookieStore::inMemoryCookieStore
   );
 
-  public String value(final String name) {
+  public @Nonnull String value(final String name) {
     return cs.get().getCookies()
         .stream()
         .filter(c -> c.getName().equals(name))
-        .findFirst().orElseThrow()
+        .findFirst()
+        .orElseThrow()
         .getValue();
   }
 
@@ -29,17 +32,17 @@ public enum ThreadSafeCookieStore implements CookieStore {
   }
 
   @Override
-  public List<HttpCookie> get(final URI uri) {
+  public @Nonnull List<HttpCookie> get(final URI uri) {
     return cs.get().get(uri);
   }
 
   @Override
-  public List<HttpCookie> getCookies() {
+  public @Nonnull List<HttpCookie> getCookies() {
     return cs.get().getCookies();
   }
 
   @Override
-  public List<URI> getURIs() {
+  public @Nonnull List<URI> getURIs() {
     return cs.get().getURIs();
   }
 
@@ -62,7 +65,7 @@ public enum ThreadSafeCookieStore implements CookieStore {
         .getValue();
   }
 
-  private static CookieStore inMemoryCookieStore() {
+  private static @Nonnull CookieStore inMemoryCookieStore() {
     return new CookieManager(null, CookiePolicy.ACCEPT_ALL).getCookieStore();
   }
 }

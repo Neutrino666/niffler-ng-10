@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class SpendingRepositorySpring implements SpendRepository {
+public final class SpendingRepositorySpring implements SpendRepository {
 
   private final SpendDao spendDao = new SpendingSpringDaoJdbc();
   private final CategoryDao categoryDao = new CategorySpringDaoJdbc();

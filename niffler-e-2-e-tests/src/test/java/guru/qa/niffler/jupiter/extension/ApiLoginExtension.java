@@ -19,8 +19,8 @@ import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.service.spend.SpendApiClient;
 import guru.qa.niffler.service.spend.SpendClient;
 import guru.qa.niffler.service.user.OAuth2ApiClient;
-import guru.qa.niffler.service.user.UserApiClient;
 import guru.qa.niffler.service.user.UserClient;
+import guru.qa.niffler.service.user.UsersApiClient;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -34,7 +34,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
 
 @ParametersAreNonnullByDefault
-public class ApiLoginExtension implements
+public final class ApiLoginExtension implements
     BeforeEachCallback,
     ParameterResolver {
 
@@ -44,7 +44,7 @@ public class ApiLoginExtension implements
 
   private final OAuth2ApiClient oAuth2ApiClient = new OAuth2ApiClient();
   private final SpendClient spendClient = new SpendApiClient();
-  private final UserClient userClient = new UserApiClient();
+  private final UserClient userClient = new UsersApiClient();
   private final boolean setupBrowser;
 
   private ApiLoginExtension(boolean setupBrowser) {
@@ -55,7 +55,7 @@ public class ApiLoginExtension implements
     this.setupBrowser = true;
   }
 
-  public static ApiLoginExtension restApiLoginExtension() {
+  public static ApiLoginExtension rest() {
     return new ApiLoginExtension(false);
   }
 
@@ -87,7 +87,7 @@ public class ApiLoginExtension implements
   @Override
   public String resolveParameter(final ParameterContext parameterContext,
       final ExtensionContext extensionContext) throws ParameterResolutionException {
-    return getToken();
+    return "Bearer " + getToken();
   }
 
   public static void setToken(final String token) {

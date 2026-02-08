@@ -20,7 +20,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 @ParametersAreNonnullByDefault
-public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
+public final class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
   private final static Config CFG = Config.getInstance();
 
@@ -30,10 +30,10 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     KeyHolder kh = new GeneratedKeyHolder();
     getJdbcTemplate().update(con -> {
       PreparedStatement userPs = con.prepareStatement(
-          "INSERT INTO \"user\" "
-              + "(username, password, enabled, "
-              + "account_non_expired, account_non_locked, credentials_non_expired)"
-              + "VALUES(?, ?, ?, ?, ?, ?)",
+          """
+              INSERT INTO "user" (username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired)
+              VALUES(?, ?, ?, ?, ?, ?)
+              """,
           Statement.RETURN_GENERATED_KEYS
       );
       userPs.setString(1, user.getUsername());
@@ -50,8 +50,9 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
     List<AuthAuthorityEntity> authorities = user.getAuthorities();
     getJdbcTemplate().batchUpdate(
-        "INSERT INTO authority (user_id, authority) "
-            + "VALUES(?, ?)",
+        """
+            INSERT INTO "authority" (user_id, authority) VALUES(?, ?)
+            """,
         new BatchPreparedStatementSetter() {
           @Override
           public void setValues(PreparedStatement ps, int i) throws SQLException {

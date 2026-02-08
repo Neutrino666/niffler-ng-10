@@ -11,6 +11,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public interface UserClient {
 
   @Nonnull
+  static UserClient getInstance() {
+    return "api".equals(System.getProperty("client.impl"))
+        ? new UsersApiClient()
+        : new UserDbClient();
+  }
+
+  @Nonnull
   UserJson create(String username, String password);
 
   @Nonnull

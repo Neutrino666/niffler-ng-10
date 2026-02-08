@@ -1,7 +1,8 @@
 package guru.qa.niffler.test.rest;
 
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.service.user.UserApiClient;
+import guru.qa.niffler.service.user.UserClient;
+import guru.qa.niffler.service.user.UsersApiClient;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -14,15 +15,15 @@ import org.junit.jupiter.api.parallel.Isolated;
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("REST Users")
 @ParametersAreNonnullByDefault
-public class LastTest {
+public final class LastTest {
 
-  private UserApiClient userApiClient = new UserApiClient();
+  private UserClient usersApiClient = new UsersApiClient();
 
   @User
   @Test
   @DisplayName("Список пользователей не пуст")
   void getAllUsersIsNotEmpty() {
-    int usersCount = userApiClient.getAllUsers("", "").size();
+    int usersCount = usersApiClient.getAllUsers("", "").size();
     int minUsersCount = 1;
     Assertions.assertThat(usersCount)
         .describedAs("Пользователей в системе: %d ожидается больше или равно: %d",

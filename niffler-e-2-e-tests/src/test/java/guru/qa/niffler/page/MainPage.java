@@ -1,6 +1,5 @@
 package guru.qa.niffler.page;
 
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.page.components.SpendingTable;
 import guru.qa.niffler.page.components.StatComponent;
 import io.qameta.allure.Step;
@@ -11,8 +10,6 @@ import lombok.Getter;
 
 @ParametersAreNonnullByDefault
 public final class MainPage extends BasePage<MainPage> {
-
-  private static final Config CFG = Config.getInstance();
 
   public static final String URL = CFG.frontUrl() + "main";
 

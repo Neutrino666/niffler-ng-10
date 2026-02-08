@@ -17,15 +17,15 @@ public abstract class BaseComponent<T extends BaseComponent<?>> {
 
   protected final SelenideElement self;
 
-  public BaseComponent(SelenideElement self) {
+  public BaseComponent(final SelenideElement self) {
     this.self = self;
   }
 
-  protected void assertScreen(BufferedImage expected, SelenideElement actualLocator) {
+  protected void assertScreen(final BufferedImage expected, final SelenideElement actualLocator) {
     assertScreen(expected, actualLocator, 0);
   }
 
-  protected void assertScreen(BufferedImage expected, SelenideElement actualLocator,
+  protected void assertScreen(final BufferedImage expected, final SelenideElement actualLocator,
       Integer waitMills) {
     Selenide.sleep(waitMills);
     try {

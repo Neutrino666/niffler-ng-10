@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.ScreenDiffResult;
 import guru.qa.niffler.page.components.Header;
 import java.awt.image.BufferedImage;
@@ -17,6 +18,8 @@ import lombok.Getter;
 
 @ParametersAreNonnullByDefault
 public abstract class BasePage<T extends BasePage<?>> {
+
+  protected static final Config CFG = Config.getInstance();
 
   @Getter
   protected final Header header = new Header();
