@@ -3,7 +3,6 @@ package guru.qa.niffler.page.components;
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static guru.qa.niffler.condition.StatConditions.colors;
 import static guru.qa.niffler.condition.StatConditions.statBubbles;
 
 import com.codeborne.selenide.ElementsCollection;
