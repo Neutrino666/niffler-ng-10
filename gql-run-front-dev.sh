@@ -1,4 +1,4 @@
-cd niffler-ng-client
+cd niffler-ng-gql-client
 # Для первого запуска
 # npm i
 npm run build:dev

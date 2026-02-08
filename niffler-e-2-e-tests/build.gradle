@@ -22,10 +22,10 @@ buildscript {
         atomikosVersion = '6.0.0'
         userdataWsdlUrl = System.getProperty("test.env") == "docker"
                 ? "http://userdata.niffler.dc:8089/ws/userdata.wsdl"
-                : "http://localhost:8089/ws/userdata.wsdl"
+                : "http://127.0.0.1:8089/ws/userdata.wsdl"
         gatewayGraphqlUrl = System.getProperty("test.env") == "docker"
                 ? "http://gateway.niffler.dc:8090/graphql"
-                : "http://localhost:8090/graphql"
+                : "http://127.0.0.1:8090/graphql"
     }
 }
 
@@ -33,6 +33,7 @@ plugins {
     id 'io.qameta.allure' version '3.0.0'
     id 'io.qameta.allure-adapter' version '3.0.0'
     id 'com.github.edeandrea.xjc-generation' version '1.6'
+    id'com.apollographql.apollo' version '4.3.3'
 }
 
 group = 'guru.qa'
@@ -57,11 +58,28 @@ xjcGeneration {
     }
 }
 
+apollo {
+    service("niffler"){
+        generateKotlinModels.set(false)
+        packageName.set("guru.qa")
+        srcDir("src/test/graphql")
+        mapScalar("Date", "java.util.Date")
+        introspection {
+            endpointUrl.set("$gatewayGraphqlUrl")
+            schemaFile.set(file("src/test/graphql/schema.graphqls"))
+        }
+        outputDirConnection {
+            connectToJavaSourceSet("test")
+        }
+    }
+}
+
 sourceSets {
     test {
         java {
             srcDir('src/test/java')
             srcDir("$buildDir/generated-sources/test/xjc")
+            srcDir("$buildDir/generated/source/apollo/niffler")
         }
     }
 }
@@ -86,6 +104,10 @@ dependencies {
         exclude group: "com.squareup.okhttp3"
     }
     testImplementation "org.springframework.data:spring-data-commons:${springDataCommonsVersion}"
+    // Graphql
+    implementation 'com.apollographql.java:client:0.0.2'
+    implementation 'com.apollographql.java:rx2:0.0.2'
+    implementation 'com.apollographql.adapters:apollo-adapters-core:0.7.0'
     // DB
     testImplementation "org.springframework:spring-jdbc:${springJdbcVersion}"
     testImplementation "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
@@ -150,6 +172,10 @@ tasks.register('printVersion') {
     doLast {
         println project.version
     }
+}
+
+tasks.named {it == "generateNifflerApolloSources"}.configureEach {
+    dependsOn("downloadNifflerApolloSchemaFromIntrospection")
 }
 
 test {
