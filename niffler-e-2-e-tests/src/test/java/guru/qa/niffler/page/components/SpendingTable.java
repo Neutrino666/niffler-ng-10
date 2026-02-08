@@ -7,12 +7,15 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static guru.qa.niffler.condition.SpendCondition.spends;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.DataFilterValues;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.EditSpendingPage;
 import io.qameta.allure.Step;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.Getter;
@@ -68,7 +71,7 @@ public final class SpendingTable extends BaseComponent<SpendingTable> {
   }
 
   @Step("Поиск траты: '{description}'")
-  public SpendingTable searchSpendingByDescription(final String description) {
+  public @Nonnull SpendingTable searchSpendingByDescription(final String description) {
     searchField.search(description);
     return this;
   }
@@ -84,12 +87,19 @@ public final class SpendingTable extends BaseComponent<SpendingTable> {
   }
 
   @Step("Проверка размера таблицы ожидается: '{expectedSize}'")
-  public SpendingTable checkTableSize(final int expectedSize) {
+  public @Nonnull SpendingTable checkTableSize(final int expectedSize) {
     spendings.shouldHave(size(expectedSize));
     return this;
   }
 
-  private @Nonnull SpendingTable setStateChxSpendingContains(final boolean state,
+  @Step("Проверка наполнения таблицы")
+  public @Nonnull SpendingTable assertSpends(final List<SpendJson> expectedSpends) {
+    spendings.shouldHave(spends(expectedSpends));
+    return this;
+  }
+
+  private @Nonnull SpendingTable setStateChxSpendingContains(
+      final boolean state,
       final String... strings) {
     for (String s : strings) {
       searchField.search(s);
