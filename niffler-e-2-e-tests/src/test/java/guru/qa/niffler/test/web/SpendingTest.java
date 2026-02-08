@@ -1,19 +1,20 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.meta.WebTest;
+import guru.qa.niffler.model.Bubble;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.page.auth.LoginPage;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -123,9 +124,11 @@ public final class SpendingTest {
   )
   @ScreenShotTest(value = "img/expected-stat.png")
   @DisplayName("SCREEN Сравнение создания траты")
-  void checkStatComponentTest(final UserJson user, BufferedImage expected) throws IOException {
+  void checkStatComponentTest(final UserJson user, BufferedImage expected) {
     login(user)
-        .assertStatisticScreen(expected);
+        .assertStatisticScreen(expected)
+        .getStatComponent()
+        .checkStatBubbles(new Bubble(Color.YELLOW, "Учеба 666 ₽"));
   }
 
   @User(
@@ -223,5 +226,29 @@ public final class SpendingTest {
         .save()
         .assertStatCount(spends.size())
         .assertStatisticScreen(expected);
+  }
+
+  @User(
+      spendings = {
+          @Spending(
+              category = "Учеба",
+              amount = 666,
+              currency = CurrencyValues.RUB,
+              description = "Обучение Niffler 2.0 юбилейный поток!"
+          ),
+          @Spending(
+              category = "Театр",
+              amount = 1000,
+              currency = CurrencyValues.RUB,
+              description = "Дж. Верди 'Риголетто'"
+          )
+      }
+  )
+  @Test
+  @DisplayName("Сравнение наполнения таблицы трат")
+  void checkSpendTable(final UserJson user) {
+    login(user)
+        .getSpendingTable()
+        .assertSpends(user.testData().spendings());
   }
 }

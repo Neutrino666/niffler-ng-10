@@ -75,7 +75,9 @@ public final class ScreenShotTestExtension implements
   @Override
   public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
       throws Throwable {
-    addAttachment();
+    if (throwable.getMessage().contains("Screen comparison failure")) {
+      addAttachment();
+    }
     throw throwable;
   }
 
