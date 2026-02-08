@@ -179,6 +179,7 @@ public final class ProfileTest {
   @DisplayName("SCREEN Загруженный аватар должен совпадать")
   void uploadedAvatarIsNotHaveDifference(BufferedImage expected) {
     Selenide.open(ProfilePage.URL, ProfilePage.class)
-        .uploadAvatar("img/avatar.png", expected);
+        .uploadAvatar("img/avatar.png", expected)
+        .assertAvatar(expected);
   }
 }
