@@ -54,6 +54,9 @@ public interface SpendRepository {
   List<CategoryEntity> findAllCategoryByUsername(String username);
 
   @Nonnull
+  List<CategoryEntity> findAllCategory();
+
+  @Nonnull
   Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description
   );
 

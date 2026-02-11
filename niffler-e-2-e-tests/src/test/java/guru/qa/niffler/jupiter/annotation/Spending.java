@@ -16,5 +16,5 @@ public @interface Spending {
 
   double amount();
 
-  CurrencyValues currency();
+  CurrencyValues currency() default CurrencyValues.RUB;
 }

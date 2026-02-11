@@ -52,16 +52,16 @@ public final class ProfilePage extends BasePage<ProfilePage> {
   }
 
   @Step("Загрузка аватара")
-  public @Nonnull ProfilePage uploadAvatar(final String file)  {
+  public @Nonnull ProfilePage uploadAvatar(final String file) {
     avatarInput.uploadFromClasspath(file);
     return this;
   }
 
   @Step("Сверяем загруженный файл с ожидаемым")
-  public @Nonnull ProfilePage assertAvatar(final BufferedImage expected){
+  public @Nonnull ProfilePage assertAvatar(final BufferedImage expected) {
     assertScreen(expected, uploadedAvatar);
-  	return this;
-}
+    return this;
+  }
 
   @Step("Клик register passkey")
   public @Nonnull ProfilePage clickRegisterPasskey() {

@@ -80,6 +80,12 @@ public final class SpendingRepositorySpring implements SpendRepository {
 
   @Nonnull
   @Override
+  public List<CategoryEntity> findAllCategory() {
+    return categoryDao.findAll();
+  }
+
+  @Nonnull
+  @Override
   public Optional<SpendEntity> findByUsernameAndSpendDescription(String username,
       String description) {
     return spendDao.findByUsernameAndSpendDescription(username, description);

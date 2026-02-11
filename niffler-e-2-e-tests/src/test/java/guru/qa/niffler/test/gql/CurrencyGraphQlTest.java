@@ -16,7 +16,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Currency")
+@DisplayName("GRAPHQL Currency")
 public class CurrencyGraphQlTest extends BaseGraphQlTest {
 
   @User

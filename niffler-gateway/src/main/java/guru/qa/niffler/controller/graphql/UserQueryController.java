@@ -11,6 +11,7 @@ import guru.qa.niffler.service.UserDataClient;
 import guru.qa.niffler.service.utils.GqlQueryPaginationAndSort;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -20,8 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
 
 @Controller
 @PreAuthorize("isAuthenticated()")
@@ -37,11 +36,12 @@ public class UserQueryController {
   }
 
   @SchemaMapping(typeName = "User", field = "friends")
-  public Slice<UserGql> friends(UserGql user,
-                                @Argument int page,
-                                @Argument int size,
-                                @Argument @Nullable List<String> sort,
-                                @Argument @Nullable String searchQuery) {
+  public Slice<UserGql> friends(
+      UserGql user,
+      @Argument int page,
+      @Argument int size,
+      @Argument @Nullable List<String> sort,
+      @Argument @Nullable String searchQuery) {
     return userDataClient.friendsV2(
         user.username(),
         new GqlQueryPaginationAndSort(page, size, sort).pageable(),
@@ -51,7 +51,7 @@ public class UserQueryController {
 
   @SchemaMapping(typeName = "User", field = "categories")
   public List<CategoryJson> categories(@AuthenticationPrincipal Jwt principal,
-                                       UserGql user) {
+      UserGql user) {
     final String principalUsername = principal.getClaim("sub");
     if (!principalUsername.equals(user.username())) {
       throw new IllegalGqlFieldAccessException("Can`t query categories for another user");
@@ -60,13 +60,14 @@ public class UserQueryController {
   }
 
   @QueryMapping
-  public Slice<UserGql> allPeople(@AuthenticationPrincipal Jwt principal,
-                                  @Argument int page,
-                                  @Argument int size,
-                                  @Argument @Nullable List<String> sort,
-                                  @Argument @Nullable String searchQuery,
-                                  @Nonnull DataFetchingEnvironment env) {
-    checkSubQueries(env, 2, "friends");
+  public Slice<UserGql> allPeople(
+      @AuthenticationPrincipal Jwt principal,
+      @Argument int page,
+      @Argument int size,
+      @Argument @Nullable List<String> sort,
+      @Argument @Nullable String searchQuery,
+      @Nonnull DataFetchingEnvironment env) {
+    checkSubQueries(env, "friends");
     final String principalUsername = principal.getClaim("sub");
     return userDataClient.allUsersV2(
         principalUsername,
@@ -76,20 +77,22 @@ public class UserQueryController {
   }
 
   @QueryMapping
-  public UserGql user(@AuthenticationPrincipal Jwt principal,
-                      @Nonnull DataFetchingEnvironment env) {
-    checkSubQueries(env, 2, "friends");
+  public UserGql user(
+      @AuthenticationPrincipal Jwt principal,
+      @Nonnull DataFetchingEnvironment env) {
+    checkSubQueries(env, "friends");
     final String principalUsername = principal.getClaim("sub");
     return UserGql.fromUserJson(
         userDataClient.currentUser(principalUsername)
     );
   }
 
-  private void checkSubQueries(@Nonnull DataFetchingEnvironment env, int depth, @Nonnull String... queryKeys) {
+  private void checkSubQueries(@Nonnull DataFetchingEnvironment env, @Nonnull String... queryKeys) {
     for (String queryKey : queryKeys) {
-      List<SelectedField> selectors = env.getSelectionSet().getFieldsGroupedByResultKey().get(queryKey);
-      if (selectors != null && selectors.size() > depth) {
-        throw new TooManySubQueriesException("Can`t fetch over 2 " + queryKey + " sub-queries");
+      List<SelectedField> selectors = env.getSelectionSet().getFieldsGroupedByResultKey()
+          .get(queryKey);
+      if (selectors != null && selectors.size() > 1) {
+        throw new TooManySubQueriesException("Can`t fetch over 1 " + queryKey + " sub-queries");
       }
     }
   }

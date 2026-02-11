@@ -11,11 +11,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class XaTransactionTemplate {
 
-  private final JdbcConnectionHolders holdes;
+  private final JdbcConnectionHolders holders;
   private final AtomicBoolean closeAfterAction = new AtomicBoolean(true);
 
   public XaTransactionTemplate(String... jdbcUrl) {
-    this.holdes = Connections.holders(jdbcUrl);
+    this.holders = Connections.holders(jdbcUrl);
   }
 
   public XaTransactionTemplate holdConnectionAfterAction() {
@@ -43,7 +43,7 @@ public class XaTransactionTemplate {
       throw new RuntimeException(e);
     } finally {
       if (closeAfterAction.get()) {
-        holdes.close();
+        holders.close();
       }
     }
   }

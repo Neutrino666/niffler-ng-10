@@ -110,6 +110,14 @@ public final class SpendingRepositoryHibernate implements SpendRepository {
         .getResultList();
   }
 
+  @Override
+  public @Nonnull List<CategoryEntity> findAllCategory() {
+    return entityManager.createQuery(
+            "FROM CategoryEntity s",
+            CategoryEntity.class)
+        .getResultList();
+  }
+
   @Nonnull
   @Override
   public Optional<SpendEntity> findByUsernameAndSpendDescription(String username,
