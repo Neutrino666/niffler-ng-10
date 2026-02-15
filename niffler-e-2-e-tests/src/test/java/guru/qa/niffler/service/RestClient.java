@@ -2,7 +2,7 @@ package guru.qa.niffler.service;
 
 import static org.apache.commons.lang.ArrayUtils.isNotEmpty;
 
-import guru.qa.niffler.api.core.ThreadSafeCookieStore;
+import guru.qa.niffler.api.rest.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import io.qameta.allure.okhttp3.AllureOkHttp3;
 import java.net.CookieManager;

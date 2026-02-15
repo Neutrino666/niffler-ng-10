@@ -4,7 +4,7 @@ import static guru.qa.niffler.jupiter.extension.TestMethodContextExtension.conte
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
-import guru.qa.niffler.api.core.ThreadSafeCookieStore;
+import guru.qa.niffler.api.rest.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.helpers.AnnotationUtils;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;

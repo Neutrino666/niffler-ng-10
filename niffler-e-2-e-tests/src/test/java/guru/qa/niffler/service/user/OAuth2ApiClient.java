@@ -4,9 +4,9 @@ import static guru.qa.niffler.helpers.OAuth2Utils.generateCodeChallenge;
 import static guru.qa.niffler.helpers.OAuth2Utils.generateCodeVerifier;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import guru.qa.niffler.api.core.CodeInterceptor;
-import guru.qa.niffler.api.core.ThreadSafeCookieStore;
-import guru.qa.niffler.api.user.OAuth2Api;
+import guru.qa.niffler.api.rest.core.CodeInterceptor;
+import guru.qa.niffler.api.rest.core.ThreadSafeCookieStore;
+import guru.qa.niffler.api.rest.user.OAuth2Api;
 import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
 import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
