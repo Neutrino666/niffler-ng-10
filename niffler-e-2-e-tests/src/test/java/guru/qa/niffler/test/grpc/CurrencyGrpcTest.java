@@ -26,7 +26,8 @@ public class CurrencyGrpcTest extends BaseGrpcTest {
   @Test
   @DisplayName("Все номиналы")
   void allCurrenciesShouldBeReturned() {
-    final CurrencyResponse response = blockingStub.getAllCurrencies(Empty.getDefaultInstance());
+    final CurrencyResponse response = currencyBlockingStub.getAllCurrencies(
+        Empty.getDefaultInstance());
     final List<String> actual = response.getAllCurrenciesList()
         .stream()
         .map(c -> c.getCurrency().name())
@@ -35,7 +36,7 @@ public class CurrencyGrpcTest extends BaseGrpcTest {
         .map(CurrencyValues::name)
         .toList();
     assertThat(actual)
-        .as("Количество номиналов соответвует")
+        .as("Количество номиналов соответствует")
         .hasSize(CurrencyValues.values().length)
         .as("Присутствует только корректные номиналы")
         .containsExactlyInAnyOrderElementsOf(expected);
@@ -78,11 +79,12 @@ public class CurrencyGrpcTest extends BaseGrpcTest {
       double amount,
       double expected
   ) {
-    final CalculateResponse response = blockingStub.calculateRate(CalculateRequest.newBuilder()
-        .setAmount(amount)
-        .setSpendCurrency(from)
-        .setDesiredCurrency(to)
-        .build());
+    final CalculateResponse response = currencyBlockingStub.calculateRate(
+        CalculateRequest.newBuilder()
+            .setAmount(amount)
+            .setSpendCurrency(from)
+            .setDesiredCurrency(to)
+            .build());
     assertThat(response.getCalculatedAmount())
         .as("Валидируем конвертацию")
         .isGreaterThanOrEqualTo(0.0d)
