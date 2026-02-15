@@ -41,22 +41,24 @@ public class StatGraphQlTest extends BaseGraphQlTest {
     StatQuery.Stat actual = data.stat;
     assertThat(actual)
         .extracting(s -> s.total)
-        .isEqualTo(0.0);
+        .isEqualTo(0.);
   }
 
   @User(
       categories = {
           @Category(name = "active"),
-          @Category(name = "archive", archived = true)
+          @Category(name = "archive1", archived = true),
+          @Category(name = "archive2", archived = true)
       },
       spendings = {
           @Spending(category = "active", description = "active description", amount = 1., currency = CurrencyValues.USD),
-          @Spending(category = "archive", description = "archive description", amount = 1.)
+          @Spending(category = "archive1", description = "archive description", amount = .3),
+          @Spending(category = "archive2", description = "archive description", amount = .7)
       }
   )
   @Test
   @ApiLogin
-  @DisplayName("Валидация трат архивна + активная")
+  @DisplayName("Валидация трат архивная + активная")
   void archiveAndActiveSpendingIsPresent(@Token String bearerToken) {
     final ApolloCall<Data> currenciesCall = apolloClient.query(
             StatQuery.builder()
@@ -98,7 +100,7 @@ public class StatGraphQlTest extends BaseGraphQlTest {
   )
   @Test
   @ApiLogin
-  @DisplayName("Фильтрация трат при наличии всех наминалов")
+  @DisplayName("Фильтрация трат при наличии всех номиналов")
   void allNominalSpendsIsPresent(@Token String bearerToken) {
     final ApolloCall<Data> currenciesCall = apolloClient.query(
             StatQuery.builder()
@@ -123,7 +125,7 @@ public class StatGraphQlTest extends BaseGraphQlTest {
             .hasFieldOrPropertyWithValue("currency.rawValue", CurrencyValues.USD.name())
             .hasFieldOrPropertyWithValue("sum", 1.),
         () -> Assertions.assertThat(actual.statByCategories)
-            .as("Валидация количества отлфильтрованных трат")
+            .as("Валидация количества отфильтрованных трат")
             .hasSize(1)
     );
   }
