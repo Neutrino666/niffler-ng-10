@@ -1,10 +1,9 @@
 package guru.qa.niffler.service.category;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.CategoryDao;
-import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
-import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
+import guru.qa.niffler.data.repository.SpendRepository;
+import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import io.qameta.allure.Step;
 import java.util.List;
@@ -18,9 +17,9 @@ public class CategoryDbClient implements CategoryClient {
 
   private final static Config CFG = Config.getInstance();
 
-  private final CategoryDao categoryDao = new CategoryDaoJdbc();
+  private final SpendRepository spendClient = SpendRepository.getInstance();
 
-  private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(
+  private final XaTransactionTemplate xaTxTemplate = new XaTransactionTemplate(
       CFG.spendJdbcUrl()
   );
 
@@ -28,8 +27,8 @@ public class CategoryDbClient implements CategoryClient {
   @Step("SQL Создание категории")
   public @Nonnull CategoryJson create(CategoryJson category) {
     return Objects.requireNonNull(
-        jdbcTxTemplate.execute(() ->
-            CategoryJson.fromEntity(categoryDao.create(CategoryEntity.fromJson(category)))
+        xaTxTemplate.execute(() ->
+            CategoryJson.fromEntity(spendClient.createCategory(CategoryEntity.fromJson(category)))
         )
     );
   }
@@ -38,16 +37,16 @@ public class CategoryDbClient implements CategoryClient {
   @Override
   public @Nonnull CategoryJson update(CategoryJson category) {
     return Objects.requireNonNull(
-        jdbcTxTemplate.execute(() ->
-            CategoryJson.fromEntity(categoryDao.update(CategoryEntity.fromJson(category)))
+        xaTxTemplate.execute(() ->
+            CategoryJson.fromEntity(spendClient.updateCategory(CategoryEntity.fromJson(category)))
         )
     );
   }
 
   @Override
   public @Nonnull List<CategoryJson> findAllByUsername(String username) {
-    List<CategoryJson> categories = jdbcTxTemplate.execute(() ->
-        categoryDao.findAllByUsername(username).stream()
+    List<CategoryJson> categories = xaTxTemplate.execute(() ->
+        spendClient.findAllCategoryByUsername(username).stream()
             .map(CategoryJson::fromEntity)
             .toList()
     );
@@ -62,16 +61,16 @@ public class CategoryDbClient implements CategoryClient {
       String categoryName
   ) {
     return Objects.requireNonNull(
-        jdbcTxTemplate.execute(() ->
-            categoryDao.findByUsernameAndName(username, categoryName)
+        xaTxTemplate.execute(() ->
+            spendClient.findCategoryByUsernameAndCategoryName(username, categoryName)
         )
     );
   }
 
   @Step("SQL Поиск всех категорий")
   public @Nonnull List<CategoryJson> findAll() {
-    List<CategoryJson> categories = jdbcTxTemplate.execute(() ->
-        categoryDao.findAll()
+    List<CategoryJson> categories = xaTxTemplate.execute(() ->
+        spendClient.findAllCategory()
             .stream()
             .map(CategoryJson::fromEntity)
             .toList()
@@ -83,6 +82,6 @@ public class CategoryDbClient implements CategoryClient {
 
   @Step("SQL Удаление категории")
   public void delete(CategoryEntity category) {
-    categoryDao.remove(category);
+    spendClient.removeCategory(category);
   }
 }

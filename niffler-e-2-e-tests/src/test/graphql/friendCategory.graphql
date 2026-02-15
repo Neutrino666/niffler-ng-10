@@ -1,0 +1,14 @@
+query FriendCategoryAccessError($page:Int!, $size:Int!, $sort: [String!], $searchQuery:String) {
+    user {
+        friends(page: $page, size: $size, sort: $sort, searchQuery: $searchQuery) {
+            edges {
+                node {
+                    username
+                    categories {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}

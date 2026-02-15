@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -32,22 +31,27 @@ public final class SpendDbClient implements SpendClient {
       CFG.spendJdbcUrl()
   );
 
-  @Nullable
+  @Nonnull
   @Override
   @Step("SQL Создание траты")
   public SpendJson create(SpendJson spend) {
-    return xaTxTemplate.execute(() -> SpendJson.fromEntity(
-            spendRepository.create(SpendEntity.fromJson(spend))
+    return Objects.requireNonNull(
+        xaTxTemplate.execute(() ->
+            SpendJson.fromEntity(
+                spendRepository.create(SpendEntity.fromJson(spend))
+            )
         )
     );
   }
 
-  @Nullable
+  @Nonnull
   @Override
   @Step("SQL Обновление траты")
   public SpendJson update(SpendJson spend) {
-    return xaTxTemplate.execute(() -> SpendJson.fromEntity(
-            spendRepository.update(SpendEntity.fromJson(spend))
+    return Objects.requireNonNull(
+        xaTxTemplate.execute(() -> SpendJson.fromEntity(
+                spendRepository.update(SpendEntity.fromJson(spend))
+            )
         )
     );
   }
@@ -63,11 +67,13 @@ public final class SpendDbClient implements SpendClient {
     );
   }
 
-  @Nullable
+  @Nonnull
   @Step("SQL Создание категории")
   public CategoryJson createCategory(CategoryJson category) {
-    return xaTxTemplate.execute(() -> CategoryJson.fromEntity(
-            spendRepository.createCategory(CategoryEntity.fromJson(category))
+    return Objects.requireNonNull(
+        xaTxTemplate.execute(() -> CategoryJson.fromEntity(
+                spendRepository.createCategory(CategoryEntity.fromJson(category))
+            )
         )
     );
   }

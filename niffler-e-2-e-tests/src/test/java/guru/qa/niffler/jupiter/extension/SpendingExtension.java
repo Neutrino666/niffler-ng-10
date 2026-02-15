@@ -8,11 +8,13 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.service.category.CategoryClient;
 import guru.qa.niffler.service.spend.SpendClient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -28,6 +30,7 @@ public final class SpendingExtension implements BeforeEachCallback, ParameterRes
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(
       SpendingExtension.class);
   private final SpendClient spendClient = SpendClient.getInstance();
+  private final CategoryClient categoryClientClient = CategoryClient.getInstance();
 
   @Override
   public void beforeEach(final ExtensionContext context) {
@@ -41,14 +44,19 @@ public final class SpendingExtension implements BeforeEachCallback, ParameterRes
                     : anno.username();
 
                 List<SpendJson> results = new ArrayList<>();
+                List<CategoryJson> categories = categoryClientClient.findAllByUsername(username);
 
                 for (Spending spendAnno : anno.spendings()) {
+                  UUID uuid = categories.stream()
+                      .filter(c -> c.name().equals(spendAnno.category()))
+                      .map(CategoryJson::id)
+                      .findFirst().orElse(null);
                   SpendJson created = spendClient.create(
                       new SpendJson(
                           null,
                           new Date(),
                           new CategoryJson(
-                              null,
+                              uuid,
                               spendAnno.category(),
                               username,
                               false
