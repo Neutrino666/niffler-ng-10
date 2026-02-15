@@ -2,7 +2,7 @@ package guru.qa.niffler.service.category;
 
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
-import guru.qa.niffler.api.spend.CategoryApi;
+import guru.qa.niffler.api.rest.spend.CategoryApi;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;

@@ -1,4 +1,4 @@
-package guru.qa.niffler.test.grpc;
+package guru.qa.niffler.api.grpc;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.MessageOrBuilder;

@@ -1,4 +1,4 @@
-package guru.qa.niffler.api.spend;
+package guru.qa.niffler.api.rest.spend;
 
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;

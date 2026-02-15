@@ -1,4 +1,4 @@
-package guru.qa.niffler.api;
+package guru.qa.niffler.api.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import javax.annotation.Nonnull;
