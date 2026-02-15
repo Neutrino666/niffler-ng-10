@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "niffler-currency.proto";
+
+package guru.qa.grpc.niffler;
+
+option java_multiple_files = true;
+option java_package = "guru.qa.niffler.grpc";
+option java_outer_classname = "NifflerUserdataProto";
+
+service NifflerUserdataService {
+  rpc ListUsers (UserPageRequest) returns(UserPageResponse);
+  rpc ListFriends (UserPageRequest) returns(UserPageResponse);
+  rpc CurrentUser (CurrentUserRequest) returns(UserResponse);
+  rpc UpdateUser (UserRequest) returns(UserResponse);
+  rpc SendRequest (FriendshipRequest) returns (UserResponse);
+  rpc AcceptRequest (FriendshipRequest) returns (UserResponse);
+  rpc DeclineRequest (FriendshipRequest) returns (UserResponse);
+  rpc RemoveFriend (FriendshipRequest) returns (google.protobuf.Empty);
+}
+
+message FriendshipRequest {
+  string requester = 1;
+  string addressee = 2;
+}
+
+message UserRequest {
+  string username = 2;
+  string firstname = 3;
+  string surname = 4;
+  string fullname = 5;
+  CurrencyValues currency = 6;
+  string photo = 7;
+  string photoSmall = 8;
+}
+
+message CurrentUserRequest {
+  string username = 1;
+}
+
+message UserPageRequest {
+  string username = 1;
+  uint32 page = 2;
+  uint32 size = 3;
+  string searchQuery = 4;
+}
+
+message UserPageResponse {
+  uint64 totalElements = 1;
+  uint64 totalPages = 2;
+  bool first = 3;
+  bool last = 4;
+  uint32 size = 5;
+  repeated UserResponse edges = 6;
+}
+
+message UserResponse {
+  string id = 1;
+  string username = 2;
+  string firstname = 3;
+  string surname = 4;
+  string fullname = 5;
+  CurrencyValues currency = 6;
+  string photo = 7;
+  string photoSmall = 8;
+  FriendshipStatus friendshipStatus = 9;
+}
+
+enum FriendshipStatus {
+  UNSPECIFIED_STATUS = 0;
+  INVITE_SENT = 1;
+  INVITE_RECEIVED = 2;
+  FRIEND = 3;
+}
