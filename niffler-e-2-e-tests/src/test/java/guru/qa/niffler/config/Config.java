@@ -1,5 +1,6 @@
 package guru.qa.niffler.config;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -39,6 +40,14 @@ public interface Config {
 
   @Nonnull
   String currencyJdbcUrl();
+
+  @Nonnull
+  String currencyGrpcAddress();
+
+  @Nonnegative
+  default int currencyGrpcPort() {
+    return 8092;
+  }
 
   @Nonnull
   String githubUrl();
