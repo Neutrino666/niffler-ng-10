@@ -1,11 +1,18 @@
 package guru.qa.niffler.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import guru.qa.niffler.data.CategoryEntity;
 import guru.qa.niffler.data.repository.CategoryRepository;
 import guru.qa.niffler.ex.CategoryNotFoundException;
 import guru.qa.niffler.ex.InvalidCategoryNameException;
 import guru.qa.niffler.model.CategoryJson;
-import org.junit.jupiter.api.Assertions;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,15 +21,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
@@ -44,14 +42,9 @@ class CategoryServiceTest {
         true
     );
 
-    CategoryNotFoundException ex = Assertions.assertThrows(
-        CategoryNotFoundException.class,
-        () -> categoryService.update(categoryJson)
-    );
-    Assertions.assertEquals(
-        "Can`t find category by id: '" + id + "'",
-        ex.getMessage()
-    );
+    assertThatThrownBy(() -> categoryService.update(categoryJson))
+        .isInstanceOf(CategoryNotFoundException.class)
+        .hasMessage("Can`t find category by id: '" + id + "'");
   }
 
   @ValueSource(strings = {"Archived", "ARCHIVED", "ArchIved"})
@@ -75,14 +68,9 @@ class CategoryServiceTest {
         true
     );
 
-    InvalidCategoryNameException ex = Assertions.assertThrows(
-        InvalidCategoryNameException.class,
-        () -> categoryService.update(categoryJson)
-    );
-    Assertions.assertEquals(
-        "Can`t add category with name: '" + catName + "'",
-        ex.getMessage()
-    );
+    assertThatThrownBy(() -> categoryService.update(categoryJson))
+        .isInstanceOf(InvalidCategoryNameException.class)
+        .hasMessage("Can`t add category with name: '" + catName + "'");
   }
 
   @Test
@@ -110,13 +98,17 @@ class CategoryServiceTest {
         username,
         true
     );
+    CategoryEntity expected = new CategoryEntity();
+    expected.setId(categoryJson.id());
+    cat.setUsername(categoryJson.username());
+    cat.setName(categoryJson.name());
+    cat.setArchived(categoryJson.archived());
 
     categoryService.update(categoryJson);
+
     ArgumentCaptor<CategoryEntity> argumentCaptor = ArgumentCaptor.forClass(CategoryEntity.class);
     verify(categoryRepository).save(argumentCaptor.capture());
-    assertEquals("Бары", argumentCaptor.getValue().getName());
-    assertEquals("duck", argumentCaptor.getValue().getUsername());
-    assertTrue(argumentCaptor.getValue().isArchived());
-    assertEquals(id, argumentCaptor.getValue().getId());
+    assertThat(argumentCaptor.getValue())
+        .isEqualTo(expected);
   }
 }
