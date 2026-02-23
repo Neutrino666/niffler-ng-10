@@ -51,7 +51,7 @@ public class UserdataTest extends BaseGrpcTest {
   }
 
   @Test
-  @User(friends = 10)
+  @User(friends = 1)
   @DisplayName("Фильтрация по username и searchQuery")
   void filteredPageIsPresent(UserJson user) {
     final String searchUsername = user.testData().friends().getLast().username();
