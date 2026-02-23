@@ -1,5 +1,6 @@
 package guru.qa.niffler.service;
 
+import static guru.qa.niffler.model.FriendshipStatus.FRIEND;
 import static guru.qa.niffler.model.FriendshipStatus.INVITE_SENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import guru.qa.niffler.data.CurrencyValues;
+import guru.qa.niffler.data.FriendshipEntity;
 import guru.qa.niffler.data.FriendshipStatus;
 import guru.qa.niffler.data.UserEntity;
 import guru.qa.niffler.data.projection.UserWithStatus;
@@ -457,6 +459,69 @@ class UserServiceTest {
   }
 
   @Test
+  void createFriendshipRequestShouldCreateFriend(
+      @Mock UserRepository userRepository,
+      @Mock MessagingService messagingService
+  ) {
+    when(userRepository.findByUsername(eq(mainTestUserName)))
+        .thenReturn(Optional.of(mainTestUser));
+    when(userRepository.findByUsername(eq(secondTestUserName)))
+        .thenReturn(Optional.of(secondTestUser));
+    when(userRepository.save(any(UserEntity.class)))
+        .thenAnswer(answer -> answer.getArguments()[0]);
+
+    addFriendshipBetweenMainAndSecondUsers();
+
+    userService = new UserService(userRepository, messagingService);
+
+    UserJson user = userService.createFriendshipRequest(mainTestUserName, secondTestUserName);
+    then(userRepository).should(times(1)).findByUsername(mainTestUserName);
+    then(userRepository).should(times(1)).findByUsername(secondTestUserName);
+    assertThat(user)
+        .isEqualTo(UserJson.fromEntity(secondTestUser, FRIEND));
+    then(messagingService).should(times(1)).notifyUser(
+        eq(secondTestUserName),
+        eq("New friendship request"),
+        eq("User " + mainTestUserName + " send friendship request to you!"),
+        eq(null),
+        eq(null),
+        eq(null)
+    );
+    then(userRepository).should(times(1)).save(mainTestUser);
+  }
+
+  @Test
+  void createFriendshipRequestShouldInviteSent(
+      @Mock UserRepository userRepository,
+      @Mock MessagingService messagingService
+  ) {
+    when(userRepository.findByUsername(eq(mainTestUserName)))
+        .thenReturn(Optional.of(mainTestUser));
+    when(userRepository.findByUsername(eq(secondTestUserName)))
+        .thenReturn(Optional.of(secondTestUser));
+    when(userRepository.save(any(UserEntity.class)))
+        .thenAnswer(answer -> answer.getArguments()[0]);
+
+    userService = new UserService(userRepository, messagingService);
+
+    UserJson user = userService.createFriendshipRequest(mainTestUserName, secondTestUserName);
+    assertThat(user)
+        .isEqualTo(UserJson.fromEntity(secondTestUser, INVITE_SENT));
+    then(userRepository).should(times(1)).findByUsername(mainTestUserName);
+    then(userRepository).should(times(1)).findByUsername(secondTestUserName);
+    then(userRepository).should(times(1)).save(mainTestUser);
+    then(userRepository).should(times(1)).save(any());
+    then(messagingService).should(times(1)).notifyUser(
+        eq(secondTestUserName),
+        eq("New friendship request"),
+        eq("User " + mainTestUserName + " send friendship request to you!"),
+        eq(null),
+        eq(null),
+        eq(null)
+    );
+  }
+
+  @Test
   void createFriendshipRequestShouldThrowSameUsernameException(
       @Mock UserRepository userRepository,
       @Mock MessagingService messagingService
@@ -479,6 +544,46 @@ class UserServiceTest {
   }
 
   @Test
+  void acceptFriendshipRequestShouldThrowNotFoundException(
+      @Mock UserRepository userRepository,
+      @Mock MessagingService messagingService
+  ) {
+    FriendshipEntity addressee = new FriendshipEntity();
+    addressee.setRequester(new UserEntity());
+    mainTestUser.setFriendshipAddressees(List.of(addressee));
+    when(userRepository.findByUsername(eq(mainTestUserName)))
+        .thenReturn(Optional.of(mainTestUser));
+    when(userRepository.findByUsername(eq(secondTestUserName)))
+        .thenReturn(Optional.of(secondTestUser));
+
+    userService = new UserService(userRepository, messagingService);
+
+    assertThatThrownBy(() -> userService.acceptFriendshipRequest(mainTestUserName, secondTestUserName))
+        .isInstanceOf(NotFoundException.class)
+        .hasMessage("Can`t find invitation from username: '%s'".formatted(secondTestUserName));
+  }
+
+  @Test
+  void acceptFriendshipRequestShouldBeSuccess(
+      @Mock UserRepository userRepository,
+      @Mock MessagingService messagingService
+  ) {
+    addFriendshipBetweenMainAndSecondUsers();
+
+    when(userRepository.findByUsername(eq(mainTestUserName)))
+        .thenReturn(Optional.of(mainTestUser));
+    when(userRepository.findByUsername(eq(secondTestUserName)))
+        .thenReturn(Optional.of(secondTestUser));
+
+    userService = new UserService(userRepository, messagingService);
+
+    UserJson user = userService.acceptFriendshipRequest(mainTestUserName, secondTestUserName);
+    assertThat(user)
+        .isEqualTo(UserJson.fromEntity(secondTestUser, FRIEND));
+    then(userRepository).should(times(1)).save(eq(mainTestUser));
+  }
+
+  @Test
   void declineFriendshipRequestShouldThrowSameUsernameException(
       @Mock UserRepository userRepository,
       @Mock MessagingService messagingService
@@ -487,6 +592,36 @@ class UserServiceTest {
     assertThatThrownBy(() -> userService.declineFriendshipRequest(mainTestUserName, mainTestUserName))
         .isInstanceOf(SameUsernameException.class)
         .hasMessage("Can`t decline friendship request for self user");
+  }
+
+  @Test
+  void declineFriendshipRequestShouldBeSuccess(
+      @Mock UserRepository userRepository,
+      @Mock MessagingService messagingService
+  ) {
+    when(userRepository.findByUsername(eq(mainTestUserName)))
+        .thenReturn(Optional.of(mainTestUser));
+    when(userRepository.findByUsername(eq(secondTestUserName)))
+        .thenReturn(Optional.of(secondTestUser));
+    addFriendshipBetweenMainAndSecondUsers();
+
+    System.out.println(mainTestUser);
+    System.out.println(secondTestUser);
+
+    userService = new UserService(userRepository, messagingService);
+
+    UserJson result = userService.declineFriendshipRequest(mainTestUserName, secondTestUserName);
+
+    assertThat(mainTestUser)
+        .describedAs("Инициатор. Удалено предложение дружбы")
+        .matches(u -> u.getFriendshipAddressees().isEmpty());
+    assertThat(secondTestUser)
+        .describedAs("Реципиент. Удалено предложение дружбы")
+        .matches(u -> u.getFriendshipAddressees().isEmpty());
+    then(userRepository).should(times(1)).save(secondTestUser);
+    then(userRepository).should(times(1)).save(mainTestUser);
+    assertThat(result)
+        .isEqualTo(UserJson.fromEntity(secondTestUser));
   }
 
   @Test
@@ -509,6 +644,7 @@ class UserServiceTest {
         .thenReturn(Optional.of(mainTestUser));
     when(userRepository.findByUsername(eq(secondTestUserName)))
         .thenReturn(Optional.of(secondTestUser));
+    addFriendshipBetweenMainAndSecondUsers();
 
     userService = new UserService(userRepository, messagingService);
 
@@ -518,6 +654,7 @@ class UserServiceTest {
     Stream.of(mainTestUser, secondTestUser)
         .forEach(user ->
             assertThat(user)
+                .describedAs("%s. Удалён друг".formatted(user.getUsername()))
                 .matches(u -> u.getFriendshipAddressees().isEmpty())
                 .matches(u -> u.getFriendshipRequests().isEmpty())
         );
@@ -542,5 +679,14 @@ class UserServiceTest {
             FriendshipStatus.ACCEPTED
         )
     );
+  }
+
+  private void addFriendshipBetweenMainAndSecondUsers() {
+    FriendshipEntity mainUserFriend = new FriendshipEntity();
+    mainUserFriend.setRequester(secondTestUser);
+    mainTestUser.getFriendshipAddressees().add(mainUserFriend);
+    FriendshipEntity secondUserFriend = new FriendshipEntity();
+    secondUserFriend.setAddressee(mainTestUser);
+    secondTestUser.getFriendshipRequests().add(secondUserFriend);
   }
 }
