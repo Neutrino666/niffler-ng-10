@@ -1,4 +1,4 @@
-package guru.qa.niffler.api.core;
+package guru.qa.niffler.api.rest.core;
 
 import java.net.CookieManager;
 import java.net.CookiePolicy;

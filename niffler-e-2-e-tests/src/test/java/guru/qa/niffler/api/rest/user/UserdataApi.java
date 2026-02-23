@@ -1,4 +1,4 @@
-package guru.qa.niffler.api.user;
+package guru.qa.niffler.api.rest.user;
 
 import guru.qa.niffler.model.UserJson;
 import java.util.List;

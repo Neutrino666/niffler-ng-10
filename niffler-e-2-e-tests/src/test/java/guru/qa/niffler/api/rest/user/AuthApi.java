@@ -1,4 +1,4 @@
-package guru.qa.niffler.api.user;
+package guru.qa.niffler.api.rest.user;
 
 import javax.annotation.Nonnull;
 import retrofit2.Call;

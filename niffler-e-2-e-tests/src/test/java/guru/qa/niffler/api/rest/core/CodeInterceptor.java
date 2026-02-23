@@ -1,4 +1,4 @@
-package guru.qa.niffler.api.core;
+package guru.qa.niffler.api.rest.core;
 
 import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
 import java.io.IOException;

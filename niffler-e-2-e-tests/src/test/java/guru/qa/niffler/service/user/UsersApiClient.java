@@ -4,8 +4,8 @@ import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
 import com.google.common.base.Stopwatch;
-import guru.qa.niffler.api.user.AuthApi;
-import guru.qa.niffler.api.user.UserdataApi;
+import guru.qa.niffler.api.rest.user.AuthApi;
+import guru.qa.niffler.api.rest.user.UserdataApi;
 import guru.qa.niffler.helpers.RandomDataUtils;
 import guru.qa.niffler.jupiter.extension.UserExtension;
 import guru.qa.niffler.model.UserJson;

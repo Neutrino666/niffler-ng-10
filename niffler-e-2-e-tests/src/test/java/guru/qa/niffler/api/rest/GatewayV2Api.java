@@ -1,4 +1,4 @@
-package guru.qa.niffler.api;
+package guru.qa.niffler.api.rest;
 
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.DataFilterValues;

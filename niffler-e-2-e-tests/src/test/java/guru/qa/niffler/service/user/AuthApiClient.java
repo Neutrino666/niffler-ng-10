@@ -1,7 +1,7 @@
 package guru.qa.niffler.service.user;
 
-import guru.qa.niffler.api.core.ThreadSafeCookieStore;
-import guru.qa.niffler.api.user.AuthApi;
+import guru.qa.niffler.api.rest.core.ThreadSafeCookieStore;
+import guru.qa.niffler.api.rest.user.AuthApi;
 import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;
 import java.io.IOException;

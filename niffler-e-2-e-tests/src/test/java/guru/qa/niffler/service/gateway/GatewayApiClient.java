@@ -2,7 +2,7 @@ package guru.qa.niffler.service.gateway;
 
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
-import guru.qa.niffler.api.GatewayApi;
+import guru.qa.niffler.api.rest.GatewayApi;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.RestClient;
 import io.qameta.allure.Step;

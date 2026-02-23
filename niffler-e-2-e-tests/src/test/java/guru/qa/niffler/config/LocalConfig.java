@@ -42,6 +42,12 @@ enum LocalConfig implements Config {
 
   @Nonnull
   @Override
+  public String userdataGrpcAddress() {
+    return "127.0.0.1";
+  }
+
+  @Nonnull
+  @Override
   public String spendUrl() {
     return "http://localhost:8093/";
   }
