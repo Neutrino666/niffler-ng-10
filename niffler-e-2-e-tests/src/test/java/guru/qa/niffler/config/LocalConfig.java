@@ -25,11 +25,13 @@ enum LocalConfig implements Config {
   }
 
   @Nonnull
+  @Override
   public String gatewayUrl() {
     return "http://localhost:8090/";
   }
 
   @Nonnull
+  @Override
   public String userdataUrl() {
     return "http://localhost:8089/";
   }
@@ -68,11 +70,5 @@ enum LocalConfig implements Config {
   @Override
   public String currencyGrpcAddress() {
     return "127.0.0.1";
-  }
-
-  @Nonnull
-  @Override
-  public String githubUrl() {
-    return "https://api.github.com";
   }
 }

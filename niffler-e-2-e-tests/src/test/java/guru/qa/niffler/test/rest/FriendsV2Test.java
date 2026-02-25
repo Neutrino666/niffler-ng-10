@@ -3,8 +3,6 @@ package guru.qa.niffler.test.rest;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Token;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
-import guru.qa.niffler.jupiter.meta.RestTest;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.page.RestResponsePage;
 import guru.qa.niffler.service.gateway.GatewayV2ApiClient;
@@ -12,14 +10,10 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
-@RestTest
 @DisplayName("REST Friends V2")
-public final class FriendsV2Test {
+public final class FriendsV2Test extends BaseRestTest {
 
-  @RegisterExtension
-  private static ApiLoginExtension apiLoginExtension = ApiLoginExtension.rest();
   private final GatewayV2ApiClient gatewayV2ApiClient = new GatewayV2ApiClient();
 
   @User(

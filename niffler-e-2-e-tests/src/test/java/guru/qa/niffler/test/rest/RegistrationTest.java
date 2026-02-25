@@ -18,7 +18,7 @@ import retrofit2.Response;
 
 @ParametersAreNonnullByDefault
 @DisplayName("REST Registration")
-public final class RegistrationTest {
+public final class RegistrationTest extends BaseRestTest {
 
   private final AuthApiClient authApiClient = new AuthApiClient();
   private final UserClient userClient = new UsersApiClient();

@@ -39,7 +39,8 @@ public final class UserExtension implements
               if (userAnno.username().isEmpty()) {
                 final String username = RandomDataUtils.getRandomUserName();
                 final UserJson user = userClient.create(username, DEFAULT_PASSWORD);
-                List<UserJson> income = userClient.createIncomeInvitation(user,
+                List<UserJson> income = userClient
+                    .createIncomeInvitation(user,
                     userAnno.incomeInvitations());
                 List<UserJson> outcome = userClient.createOutcomeInvitation(user,
                     userAnno.outcomeInvitations());

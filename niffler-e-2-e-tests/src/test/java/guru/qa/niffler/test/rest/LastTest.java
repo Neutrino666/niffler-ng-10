@@ -15,7 +15,7 @@ import org.junit.jupiter.api.parallel.Isolated;
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("REST Users")
 @ParametersAreNonnullByDefault
-public final class LastTest {
+public final class LastTest extends BaseRestTest {
 
   private UserClient usersApiClient = new UsersApiClient();
 

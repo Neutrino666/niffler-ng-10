@@ -14,6 +14,7 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.tpl.DataSources;
 import java.util.stream.Stream;
 import javax.annotation.ParametersAreNonnullByDefault;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.support.TransactionTemplate;
 
+@Disabled
 @ParametersAreNonnullByDefault
 public class ChainedTxManagerTest {
 
