@@ -1,5 +1,6 @@
 #!/bin/bash
 source ./docker.properties
+export COMPOSE_PROFILES=dev
 export PROFILE=docker
 export PREFIX="${IMAGE_PREFIX}"
 
