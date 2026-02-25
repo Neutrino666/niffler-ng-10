@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.LifecycleMethodExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 @ParametersAreNonnullByDefault
 public final class BrowserExtension implements
@@ -25,14 +26,14 @@ public final class BrowserExtension implements
     TestExecutionExceptionHandler,
     LifecycleMethodExecutionExceptionHandler {
 
-  private static void doScreenshot() {
-    if (WebDriverRunner.hasWebDriverStarted()) {
-      Allure.addAttachment(
-          "Screen on fail",
-          new ByteArrayInputStream(
-              ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES)
-          )
-      );
+  static {
+    Configuration.browser = "chrome";
+    Configuration.timeout = 8000;
+    Configuration.pageLoadStrategy = "eager";
+    if ("docker".equals(System.getProperty("test.env"))) {
+      Configuration.remote = "http://selenoid:4444/wd/hub";
+      Configuration.browserVersion = "140.0";
+      Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox");
     }
   }
 
@@ -76,5 +77,16 @@ public final class BrowserExtension implements
       throws Throwable {
     doScreenshot();
     throw throwable;
+  }
+
+  private static void doScreenshot() {
+    if (WebDriverRunner.hasWebDriverStarted()) {
+      Allure.addAttachment(
+          "Screen on fail",
+          new ByteArrayInputStream(
+              ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES)
+          )
+      );
+    }
   }
 }

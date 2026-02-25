@@ -13,7 +13,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("REST Users")
 @ParametersAreNonnullByDefault
-public class FirstTest {
+public class FirstTest extends BaseRestTest {
 
   private UsersApiClient usersApiClient = new UsersApiClient();
 
