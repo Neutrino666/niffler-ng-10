@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serializable;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "category")
 public class CategoryEntity implements Serializable {
   @Id
