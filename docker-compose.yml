@@ -234,6 +234,7 @@ services:
       - BUILD_URL=${BUILD_URL}
       - HEAD_COMMIT_MESSAGE=${HEAD_COMMIT_MESSAGE}
       - EXECUTION_TYPE=${EXECUTION_TYPE}
+      - BROWSER=${BROWSER}
     depends_on:
       frontend.niffler.dc:
         condition: service_started

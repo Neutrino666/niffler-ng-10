@@ -4,6 +4,8 @@ import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.logevents.SelenideLogger;
+import guru.qa.niffler.config.Config;
+import guru.qa.niffler.page.auth.LoginPage;
 import io.qameta.allure.Allure;
 import io.qameta.allure.selenide.AllureSelenide;
 import java.io.ByteArrayInputStream;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 @ParametersAreNonnullByDefault
 public final class BrowserExtension implements
@@ -26,20 +29,32 @@ public final class BrowserExtension implements
     TestExecutionExceptionHandler,
     LifecycleMethodExecutionExceptionHandler {
 
+  private final static String BROWSER;
+
   static {
-    Configuration.browser = "chrome";
+    BROWSER = System.getenv("BROWSER") == null ? "chrome" : System.getenv("BROWSER");
+    Configuration.browser = BROWSER;
     Configuration.timeout = 8000;
     Configuration.pageLoadStrategy = "eager";
     if ("docker".equals(System.getProperty("test.env"))) {
       Configuration.remote = "http://selenoid:4444/wd/hub";
+    }
+    if (BROWSER.equals("chrome")) {
       Configuration.browserVersion = "140.0";
-      Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox");
+      Configuration.browserCapabilities = new ChromeOptions()
+          .addArguments("--no-sandbox")
+          .addArguments("--accept-lang=en_US");
+    } else if (BROWSER.equals("firefox")) {
+      Configuration.browserVersion = "120.0";
+      Configuration.browserCapabilities = new FirefoxOptions().addArguments("--no-sandbox");
+    } else {
+      throw new RuntimeException("Не поддерживается запуск тестов в браузере: " + BROWSER);
     }
   }
 
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
-    Configuration.browser = "chrome";
+    Configuration.browser = BROWSER;
     Configuration.timeout = 8000L;
   }
 

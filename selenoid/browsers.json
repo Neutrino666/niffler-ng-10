@@ -31,5 +31,107 @@
         ]
       }
     }
+  },
+  "firefox": {
+    "default": "120.0",
+    "versions": {
+      "120.0": {
+        "image": "selenoid/vnc_firefox:120.0",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "121.0": {
+        "image": "selenoid/vnc_firefox:121.0",
+        "port": "4444",
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "124.0": {
+        "image": "selenoid/vnc_firefox:124.0",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "111.0": {
+        "image": "selenoid/vnc_firefox:111.0",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "125.0": {
+        "image": "selenoid/vnc_firefox:125.0",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "144.0": {
+        "image": "twilio/selenoid:firefox_stable_144",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "147.0": {
+        "image": "twilio/selenoid:firefox_stable_147",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "146.0": {
+        "image": "twilio/selenoid:firefox_stable_146",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "145.0": {
+        "image": "twilio/selenoid:firefox_stable_145",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      },
+      "148.0": {
+        "image": "twilio/selenoid:firefox_stable_148",
+        "port": "4444",
+        "volumes": [
+          "/opt/docker/fileDownloadLocation:/home/selenium/Downloads"
+        ],
+        "env": [
+          "TZ=Europe/Moscow"
+        ]
+      }
+    }
   }
 }
