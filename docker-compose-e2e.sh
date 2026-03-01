@@ -16,7 +16,7 @@ browser=chrome
 gh_token=$GITHUB_TOKEN
 if ! -z  [ "$gh_token" ]; then
    echo "Для тестов необходима переменная OS: GITHUB_TOKEN"
-   exist 1
+   exit 1
 fi
 export GITHUB_TOKEN=$gh_token
 
