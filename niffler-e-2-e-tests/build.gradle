@@ -179,5 +179,6 @@ tasks.named {it == "generateNifflerApolloSources"}.configureEach {
 }
 
 test {
+    maxHeapSize = "2g"
     useJUnitPlatform()
 }

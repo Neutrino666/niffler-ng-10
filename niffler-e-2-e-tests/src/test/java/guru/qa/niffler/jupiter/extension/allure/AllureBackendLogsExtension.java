@@ -34,18 +34,21 @@ public final class AllureBackendLogsExtension implements SuiteExtension {
 
   @Override
   public void afterSuite() {
-    final AllureLifecycle allureLifecycle = Allure.getLifecycle();
-    final String caseId = UUID.randomUUID().toString();
-    allureLifecycle.scheduleTestCase(
-        new TestResult().setUuid(caseId)
-            .setName(caseName)
-    );
-    allureLifecycle.startTestCase(caseId);
+    // Создаёт много логов из-за чего - OutOfMemory heap
+    if (! "docker".equals(System.getProperty("test.env"))) {
+      final AllureLifecycle allureLifecycle = Allure.getLifecycle();
+      final String caseId = UUID.randomUUID().toString();
+      allureLifecycle.scheduleTestCase(
+          new TestResult().setUuid(caseId)
+              .setName(caseName)
+      );
+      allureLifecycle.startTestCase(caseId);
 
-    addAllLogs(allureLifecycle);
+      addAllLogs(allureLifecycle);
 
-    allureLifecycle.stopTestCase(caseId);
-    allureLifecycle.writeTestCase(caseId);
+      allureLifecycle.stopTestCase(caseId);
+      allureLifecycle.writeTestCase(caseId);
+    }
   }
 
   @SneakyThrows

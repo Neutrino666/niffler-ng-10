@@ -36,16 +36,17 @@ public final class BrowserExtension implements
     Configuration.browser = BROWSER;
     Configuration.timeout = 8000;
     Configuration.pageLoadStrategy = "eager";
-    if ("docker".equals(System.getProperty("test.env"))) {
+    boolean isRemote = "docker".equals(System.getProperty("test.env"));
+    if (isRemote) {
       Configuration.remote = "http://selenoid:4444/wd/hub";
     }
     if (BROWSER.equals("chrome")) {
-      Configuration.browserVersion = "140.0";
+      Configuration.browserVersion = "140" + (isRemote ? ".0" : "");
       Configuration.browserCapabilities = new ChromeOptions()
           .addArguments("--no-sandbox")
           .addArguments("--accept-lang=en_US");
     } else if (BROWSER.equals("firefox")) {
-      Configuration.browserVersion = "120.0";
+      Configuration.browserVersion = "120" + (isRemote ? ".0" : "");
       Configuration.browserCapabilities = new FirefoxOptions().addArguments("--no-sandbox");
     } else {
       throw new RuntimeException("Не поддерживается запуск тестов в браузере: " + BROWSER);

@@ -1,8 +1,6 @@
 #!/bin/bash
 source ./docker.properties
-export COMPOSE_PROFILES=local
 export PROFILE=docker
-export PREFIX="${IMAGE_PREFIX}"
 
 docker compose down
 docker_containers=$(docker ps -a -q)
@@ -50,5 +48,5 @@ fi
 echo '### Run mode ###'
 echo "fast: $fast, exist images: $docker_images"
 
-docker compose up -d
+docker compose -f docker-compose-local.yml up -d
 docker ps -a

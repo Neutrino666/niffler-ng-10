@@ -1,36 +1,42 @@
 #!/bin/bash
 source ./docker.properties
-export COMPOSE_PROFILES=test,dev
+export COMPOSE_PROFILES=test
 export PROFILE=docker
 export PREFIX="${IMAGE_PREFIX}"
 
 export ALLURE_DOCKER_API=http://allure:5050/
 export HEAD_COMMIT_MESSAGE="local build"
 export ARCH=$(uname -m)
-export BROWSER
 
 docker compose down
 docker_containers=$(docker ps -a -q)
 docker_images=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'niffler')
 fast=false;
 browser=chrome
+gh_token=$GITHUB_TOKEN
+if ! -z  [ "$gh_token" ]; then
+   echo "Для тестов необходима переменная OS: GITHUB_TOKEN"
+   exist 1
+fi
+export GITHUB_TOKEN=$gh_token
 
 usage() {
   cat <<EOF
 Скрипт поднятия окружения и прогона тестов в docker compose.
-
-Examples:
-${0##*/} [-f] [-b ARG]
-${0##*/} [-fb] [ARG]
-${0##*/} [-b] [ARG]
-${0##*/} [-f]
-${0##*/}
+Для прогона тестов необходима переменная OS: GITHUB_TOKEN
 
 Параметры:
   -f         fast - режим переиспользования images
   -b ARG     browser - браузер на котором будут запущены тесты 'chrome/firefox'
              default: chrome
   -h         help
+
+Примеры:
+${0##*/} [-f] [-b] [ARG]
+${0##*/} [-fb] [ARG]
+${0##*/} [-b] [ARG]
+${0##*/} [-f]
+${0##*/}
 EOF
 }
 
@@ -49,11 +55,10 @@ if [ ! -z "$docker_containers" ]; then
   docker rm $docker_containers
 fi
 
-#! $fast && echo "### Remove images: $docker_images ###"
 if [ ! -z "$browser" ]; then
     BROWSER=chrome
 fi
-BROWSER=$browser
+export BROWSER=$browser
 
 if [ $fast = false ]; then
   if [ ! -z "$docker_images"  ]; then
@@ -72,7 +77,7 @@ bash ./gradlew clean
 
 bash ./gradlew jibDockerBuild -x :niffler-e-2-e-tests:test -Duser.timezone=UTC
 
-if [ "$1" = "firefox" ]; then
+if [ "$browser" = "firefox" ]; then
   echo '### Download firefox image ###'
   docker pull twilio/selenoid:firefox_stable_148
 else

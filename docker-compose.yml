@@ -1,32 +1,6 @@
 services:
-  niffler-all-db-local:
-    profiles:
-      - local
-    container_name: niffler-all-db
-    image: postgres:15.1
-    environment:
-      - CREATE_DATABASES=niffler-auth,niffler-currency,niffler-spend,niffler-userdata
-      - PGUSER=postgres
-      - POSTGRES_PASSWORD=secret
-      - TZ=GMT+3
-      - PGTZ=GMT+3
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./postgres/script:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "postgres" ]
-      interval: 3s
-      timeout: 3s
-      retries: 5
-    ports:
-      - 5432:5432
-    command: [ "postgres", "-c", "max_prepared_transactions=100" ]
-    networks:
-      - niffler-network
 
   niffler-all-db:
-    profiles:
-      - dev
     container_name: niffler-all-db
     image: postgres:15.1
     environment:
@@ -77,8 +51,6 @@ services:
       - niffler-network
 
   auth.niffler.dc:
-    profiles:
-      - dev
     container_name: auth.niffler.dc
     image: ${PREFIX}/niffler-auth-docker:latest
     ports:
@@ -100,8 +72,6 @@ services:
       - niffler-network
 
   currency.niffler.dc:
-    profiles:
-      - dev
     container_name: currency.niffler.dc
     image: ${PREFIX}/niffler-currency-docker:latest
     ports:
@@ -117,8 +87,6 @@ services:
       - niffler-network
 
   gateway.niffler.dc:
-    profiles:
-      - dev
     container_name: gateway.niffler.dc
     image: ${PREFIX}/niffler-gateway-docker:latest
     ports:
@@ -138,8 +106,6 @@ services:
       - niffler-network
 
   spend.niffler.dc:
-    profiles:
-      - dev
     container_name: spend.niffler.dc
     image: ${PREFIX}/niffler-spend-docker:latest
     ports:
@@ -154,8 +120,6 @@ services:
       - niffler-network
 
   userdata.niffler.dc:
-    profiles:
-      - dev
     container_name: userdata.niffler.dc
     image: ${PREFIX}/niffler-userdata-docker:latest
     ports:
@@ -170,8 +134,6 @@ services:
       - niffler-network
 
   frontend.niffler.dc:
-    profiles:
-      - dev
     container_name: frontend.niffler.dc
     image: ${PREFIX}/niffler-ng-client-docker:latest
     build:
@@ -226,14 +188,12 @@ services:
     build:
       context: ./
       dockerfile: ./niffler-e-2-e-tests/Dockerfile
-    volumes:
-      - allure-results:/niffler/niffler-e-2-e-tests/build/allure-results
     environment:
-      - ALLURE_DOCKER_API=${ALLURE_DOCKER_API}
+      - ALLURE_DOCKER_API=${ALLURE_DOCKER_API:-http://allure:5050}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - BUILD_URL=${BUILD_URL}
-      - HEAD_COMMIT_MESSAGE=${HEAD_COMMIT_MESSAGE}
-      - EXECUTION_TYPE=${EXECUTION_TYPE}
+      - BUILD_URL=${BUILD_URL:-http://allure:5252}
+      - HEAD_COMMIT_MESSAGE=${HEAD_COMMIT_MESSAGE:-not_exist_commit_message}
+      - EXECUTION_TYPE=${EXECUTION_TYPE:-regress}
       - BROWSER=${BROWSER}
     depends_on:
       frontend.niffler.dc:
@@ -248,7 +208,7 @@ services:
     depends_on:
       - niffler-e-2-e
     environment:
-      - CHECK_RESULTS_EVERY_SECONDS=5
+      - CHECK_RESULTS_EVERY_SECONDS=NONE
       - KEEP_HISTORY=1
     volumes:
       - allure-results:/app/allure-results
@@ -273,8 +233,7 @@ services:
 networks:
   niffler-network:
     driver: bridge
+
 volumes:
   allure-results:
-    external: true
-  pgdata:
     external: true
