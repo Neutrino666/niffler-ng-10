@@ -57,6 +57,9 @@ services:
       - 9000:9000
     environment:
       - JAVA_TOOL_OPTIONS=-XX:InitialHeapSize=512m -XX:MaxHeapSize=768m
+      - LOG_PATH=/logs/niffler-auth/app.log
+    volumes:
+      - ./logs/niffler-auth:/logs/niffler-auth
     healthcheck:
       test: "wget --spider http://localhost:9000/actuator/health || exit 1"
       interval: 5s
@@ -79,6 +82,9 @@ services:
       - 8092:8092
     environment:
       - JAVA_TOOL_OPTIONS=-XX:InitialHeapSize=384m -XX:MaxHeapSize=512m
+      - LOG_PATH=/logs/niffler-currency/app.log
+    volumes:
+      - ./logs/niffler-currency:/logs/niffler-currency
     restart: always
     depends_on:
       niffler-all-db:
@@ -93,6 +99,9 @@ services:
       - 8090:8090
     environment:
       - JAVA_TOOL_OPTIONS=-XX:InitialHeapSize=384m -XX:MaxHeapSize=512m
+      - LOG_PATH=/logs/niffler-gateway/app.log
+    volumes:
+      - ./logs/niffler-gateway:/logs/niffler-gateway
     healthcheck:
       test: "wget --spider http://localhost:8090/actuator/health || exit 1"
       interval: 5s
@@ -112,6 +121,9 @@ services:
       - 8093:8093
     environment:
       - JAVA_TOOL_OPTIONS=-XX:InitialHeapSize=384m -XX:MaxHeapSize=512m
+      - LOG_PATH=/logs/niffler-spend/app.log
+    volumes:
+      - ./logs/niffler-spend:/logs/niffler-spend
     restart: always
     depends_on:
       niffler-all-db:
@@ -126,6 +138,9 @@ services:
       - 8089:8089
     environment:
       - JAVA_TOOL_OPTIONS=-XX:InitialHeapSize=384m -XX:MaxHeapSize=512m
+      - LOG_PATH=/logs/niffler-userdata/app.log
+    volumes:
+      - ./logs/niffler-userdata:/logs/niffler-userdata
     restart: always
     depends_on:
       auth.niffler.dc:
@@ -153,7 +168,7 @@ services:
     profiles:
       - test
     container_name: selenoid
-    image: aerokube/selenoid:1.11.3
+    image: adtechqatools/selenoid:latest-release
     platform: linux/${ARCH}
     volumes:
       - ./selenoid:/etc/selenoid
@@ -195,6 +210,9 @@ services:
       - HEAD_COMMIT_MESSAGE=${HEAD_COMMIT_MESSAGE:-not_exist_commit_message}
       - EXECUTION_TYPE=${EXECUTION_TYPE:-regress}
       - BROWSER=${BROWSER}
+    volumes:
+      - ./niffler-e-2-e-tests/.screen-output/screenshots/selenoid:/home/gradle/niffler-ng-10/niffler-e-2-e-tests/.screen-output/screenshots/selenoid
+      - ./logs:/home/gradle/niffler-ng-10/logs
     depends_on:
       frontend.niffler.dc:
         condition: service_started
@@ -212,6 +230,8 @@ services:
       - KEEP_HISTORY=1
     volumes:
       - allure-results:/app/allure-results
+      - ./niffler-e-2-e-tests/.screen-output/screenshots/selenoid:/home/gradle/niffler-ng-10/niffler-e-2-e-tests/.screen-output/screenshots/selenoid
+      - ./logs:/home/gradle/niffler-ng-10/logs
     ports:
       - 5050:5050
     networks:

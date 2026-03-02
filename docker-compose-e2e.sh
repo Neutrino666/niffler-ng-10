@@ -12,9 +12,10 @@ docker compose down
 docker_containers=$(docker ps -a -q)
 docker_images=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'niffler')
 fast=false;
+clean_containers=false
 browser=chrome
 gh_token=$GITHUB_TOKEN
-if ! -z  [ "$gh_token" ]; then
+if [ -z "$gh_token" ]; then
    echo "Для тестов необходима переменная OS: GITHUB_TOKEN"
    exit 1
 fi
@@ -40,10 +41,11 @@ ${0##*/}
 EOF
 }
 
-while getopts ":fb:h" opt; do
+while getopts ":fbc:h" opt; do
   case $opt in
   b) browser=$OPTARG;;
   f) fast=true;;
+  c) clean_containers=true ;;
   h) usage ; exit 0;;
   \?) echo "Неизвестная опция -$OPTARG" >&2; usage ; exit 0 ;;
   esac
@@ -52,7 +54,10 @@ done
 if [ ! -z "$docker_containers" ]; then
   echo "### Stop containers: $docker_containers ###"
   docker stop $docker_containers
-  docker rm $docker_containers
+  if [ $clean_containers = true  ]; then
+        echo "### Remove containers: $docker_containers ###"
+        docker rm $docker_containers
+  fi
 fi
 
 if [ ! -z "$browser" ]; then
@@ -82,7 +87,7 @@ if [ "$browser" = "firefox" ]; then
   docker pull twilio/selenoid:firefox_stable_148
 else
   echo '### Download chrome image ###'
-  docker pull twilio/selenoid:chrome_stable_140
+  docker pull twilio/selenoid:chrome_stable_145
 fi
 
 docker compose up -d

@@ -1,5 +1,6 @@
 package guru.qa.niffler.data.jpa;
 
+import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import guru.qa.niffler.data.tpl.DataSources;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -23,7 +24,8 @@ public final class EntityManagers {
             jdbcUrl,
             key -> {
               DataSources.dataSource(jdbcUrl);
-              return Persistence.createEntityManagerFactory(jdbcUrl);
+              final String persistenceUnitName = StringUtils.substringAfter(jdbcUrl, "5432/");
+              return Persistence.createEntityManagerFactory(persistenceUnitName);
             }
         ).createEntityManager()
     );
