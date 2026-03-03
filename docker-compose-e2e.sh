@@ -30,6 +30,7 @@ usage() {
   -f         fast - режим переиспользования images
   -b ARG     browser - браузер на котором будут запущены тесты 'chrome/firefox'
              default: chrome
+  -c         containers - для переиспользования контейнеров
   -h         help
 
 Примеры:
@@ -41,7 +42,7 @@ ${0##*/}
 EOF
 }
 
-while getopts ":fbc:h" opt; do
+while getopts ":fcb:h" opt; do
   case $opt in
   b) browser=$OPTARG;;
   f) fast=true;;
@@ -60,8 +61,17 @@ if [ ! -z "$docker_containers" ]; then
   fi
 fi
 
-if [ ! -z "$browser" ]; then
-    BROWSER=chrome
+
+if [ "$browser" = "firefox" ]; then
+  echo '### Download firefox image ###'
+  docker pull twilio/selenoid:firefox_stable_148
+elif [ "$browser" = "chrome" ]; then
+  echo '### Download chrome image ###'
+  docker pull twilio/selenoid:chrome_stable_145
+else
+  echo "### Not supported browser: -b $browser ###"
+  echo  usage
+  exist 1
 fi
 export BROWSER=$browser
 
@@ -79,16 +89,7 @@ echo '### Java version ###'
 java --version
 bash ./gradlew clean
 
-
 bash ./gradlew jibDockerBuild -x :niffler-e-2-e-tests:test -Duser.timezone=UTC
-
-if [ "$browser" = "firefox" ]; then
-  echo '### Download firefox image ###'
-  docker pull twilio/selenoid:firefox_stable_148
-else
-  echo '### Download chrome image ###'
-  docker pull twilio/selenoid:chrome_stable_145
-fi
 
 docker compose up -d
 docker ps -a
