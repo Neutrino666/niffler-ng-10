@@ -11,12 +11,12 @@ logging:
   file:
     path: ./logs/niffler-gateway
   level:
-    root: INFO
-    org.springframework.web: INFO
-    org.springframework.security: INFO
-    org.springframework.security.oauth2: INFO
-    net.devh.boot.grpc: INFO
-    org.springframework.boot.autoconfigure: INFO
+    root: ERROR
+    org.springframework.web: ERROR
+    org.springframework.security: ERROR
+    org.springframework.security.oauth2: ERROR
+    net.devh.boot.grpc: ERROR
+    org.springframework.boot.autoconfigure: ERROR
 
 niffler-userdata:
   client: soap

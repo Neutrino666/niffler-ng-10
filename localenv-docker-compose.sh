@@ -1,8 +1,6 @@
 #!/bin/bash
 source ./docker.properties
-export COMPOSE_PROFILES=dev
 export PROFILE=docker
-export PREFIX="${IMAGE_PREFIX}"
 
 docker compose down
 docker_containers=$(docker ps -a -q)
@@ -11,7 +9,7 @@ fast=false;
 
 usage() {
   cat <<EOF
-Скрипт поднятия окружения и прогона тестов в docker compose.
+Скрипт поднятия окружения.
 
 Examples:
 ${0##*/} [-f]
@@ -44,17 +42,8 @@ if [ $fast = false ]; then
   fi
 fi
 
-echo '### Java version ###'
-java --version
-bash ./gradlew clean
-if [ "$1" = "push" ]; then
-  echo "### Build & push images ###"
-  bash ./gradlew jib -x :niffler-e-2-e-tests:test -Duser.timezone=UTC
-  docker compose push frontend.niffler.dc
-else
-  echo "### Build images ###"
-  bash ./gradlew jibDockerBuild -x :niffler-e-2-e-tests:test -Duser.timezone=UTC
-fi
+echo '### Run mode ###'
+echo "fast: $fast, exist images: $docker_images"
 
-docker compose up -d
+docker compose -f docker-compose-local.yml up -d
 docker ps -a

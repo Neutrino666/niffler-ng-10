@@ -40,11 +40,11 @@ logging:
   file:
     path: ./logs/niffler-userdata
   level:
-    root: INFO
-    org.springframework.kafka: INFO
-    org.springframework.web: INFO
-    org.springframework.ws: INFO
-    org.springframework.boot.autoconfigure: INFO
+    root: ERROR
+    org.springframework.kafka: ERROR
+    org.springframework.web: ERROR
+    org.springframework.ws: ERROR
+    org.springframework.boot.autoconfigure: ERROR
 
 ---
 spring:
