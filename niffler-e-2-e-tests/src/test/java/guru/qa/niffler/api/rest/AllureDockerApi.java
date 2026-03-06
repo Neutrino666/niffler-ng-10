@@ -1,7 +1,7 @@
 package guru.qa.niffler.api.rest;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.model.allure.Project;
+import guru.qa.niffler.model.allure.ProjectResponse;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -16,11 +16,11 @@ public interface AllureDockerApi {
 
   @GET("projects")
   @Nonnull
-  Call<JsonNode> projects();
+  Call<ProjectResponse> projects();
 
   @GET("generate-report")
   @Nonnull
-  Call<JsonNode> generateReport(
+  Call<Void> generateReport(
       @Query("project_id") String projectId,
       @Query("execution_name") String executionName,
       @Query("execution_from") String executionFrom,

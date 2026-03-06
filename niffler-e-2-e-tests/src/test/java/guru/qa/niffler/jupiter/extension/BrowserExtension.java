@@ -47,7 +47,8 @@ public final class BrowserExtension implements
           .addArguments("--accept-lang=en_US");
     } else if (BROWSER.equals("firefox")) {
       Configuration.browserVersion = "148" + (isRemote ? ".0" : "");
-      Configuration.browserCapabilities = new FirefoxOptions().addArguments("--no-sandbox");
+      Configuration.browserCapabilities = new FirefoxOptions()
+          .addArguments("--no-sandbox");
     } else {
       throw new RuntimeException("Не поддерживается запуск тестов в браузере: " + BROWSER);
     }

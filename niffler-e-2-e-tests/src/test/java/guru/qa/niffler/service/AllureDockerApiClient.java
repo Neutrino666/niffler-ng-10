@@ -3,16 +3,15 @@ package guru.qa.niffler.service;
 import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.rest.AllureDockerApi;
 import guru.qa.niffler.helpers.FileUtils;
 import guru.qa.niffler.model.allure.Project;
+import guru.qa.niffler.model.allure.ProjectResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import javax.annotation.ParametersAreNonnullByDefault;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 import org.assertj.core.api.Assertions;
@@ -28,19 +27,16 @@ public final class AllureDockerApiClient extends RestClient {
   private static final String HEAD_COMMIT_MESSAGE;
   private static final String BUILD_URL;
 
+  private static String getEnvVariable(String key, String defaultValue) {
+    return Optional.ofNullable(System.getenv(key))
+        .orElse(defaultValue);
+  }
+
   static {
-    ALLURE_DOCKER_API = System.getenv("ALLURE_DOCKER_API") == null
-        ? "not_found_allure_docker_api"
-        : System.getenv("ALLURE_DOCKER_API");
-    EXECUTION_TYPE = System.getenv("EXECUTION_TYPE") == null
-        ? "not_found_execution_type"
-        : System.getenv("EXECUTION_TYPE");
-    HEAD_COMMIT_MESSAGE = System.getenv("HEAD_COMMIT_MESSAGE") == null
-        ? "not_found_commit_message"
-        : System.getenv("HEAD_COMMIT_MESSAGE");
-    BUILD_URL = System.getenv("BUILD_URL") == null
-        ? "not_found_build_url"
-        : System.getenv("BUILD_URL");
+    ALLURE_DOCKER_API = getEnvVariable("ALLURE_DOCKER_API", "http://127.0.0.1:5050");
+    EXECUTION_TYPE = getEnvVariable("EXECUTION_TYPE", "not_found_execution_type");
+    HEAD_COMMIT_MESSAGE = getEnvVariable("HEAD_COMMIT_MESSAGE", "not_found_commit_message");
+    BUILD_URL = getEnvVariable("BUILD_URL", "http://127.0.0.1:5252");
   }
 
   public AllureDockerApiClient() {
@@ -55,28 +51,22 @@ public final class AllureDockerApiClient extends RestClient {
     final Response<Void> response;
     try {
       List<Map<String, String>> files = FileUtils.getAllureResults();
-
       response = allureDockerApi.sendResults(PROJECT_NAME, "false", Map.of("results", files)).execute();
     } catch (IOException e) {
-      throw new AssertionError(e);
+      throw new RuntimeException("Error while executing request", e);
     }
     Assertions.assertThat(response.code())
         .isEqualTo(SC_OK);
   }
 
-  public List<String> getProjects() {
-    final JsonNode response;
+  public Set<String> getProjects() {
+    final ProjectResponse projectResponse;
     try {
-      response = allureDockerApi.projects().execute().body();
+      projectResponse = allureDockerApi.projects().execute().body();
     } catch (IOException e) {
-      throw new AssertionError(e);
+      throw new RuntimeException("Error while executing request", e);
     }
-    Iterator<String> stringIterator = response.path("data").path("projects").fieldNames();
-    List<String> projects = new ArrayList<>();
-    while (stringIterator.hasNext()) {
-      projects.add(stringIterator.next());
-    }
-    return Objects.requireNonNull(projects);
+    return projectResponse.data().projects().keySet();
   }
 
   public void createProject() {
@@ -85,14 +75,14 @@ public final class AllureDockerApiClient extends RestClient {
       response = allureDockerApi.createProject(new Project(PROJECT_NAME))
           .execute();
     } catch (IOException e) {
-      throw new AssertionError(e);
+      throw new RuntimeException("Error while executing request", e);
     }
     Assertions.assertThat(response.code())
         .isEqualTo(SC_CREATED);
   }
 
   public void generateReport() {
-    final Response<JsonNode> response;
+    final Response<Void> response;
     try {
       response = allureDockerApi.generateReport(
               PROJECT_NAME,
@@ -102,7 +92,7 @@ public final class AllureDockerApiClient extends RestClient {
           )
           .execute();
     } catch (IOException e) {
-      throw new AssertionError(e);
+      throw new RuntimeException("Error while executing request", e);
     }
     Assertions.assertThat(response.code())
         .isEqualTo(SC_OK);
