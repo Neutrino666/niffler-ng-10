@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk
+FROM gradle:8.14-jdk21
 
 WORKDIR /niffler
 ENV TZ=Europe/Moscow
@@ -18,4 +18,4 @@ COPY ./build.gradle ./
 COPY ./settings.gradle ./
 COPY ./gradle.properties ./
 
-CMD ./gradlew test -Dtest.env=docker -Dclient.impl=api -Drepository=jpa -Duser.timezone=Europe/Moscow
+CMD gradle test -Dtest.env=docker -Dclient.impl=api -Drepository=jpa -Duser.timezone=Europe/Moscow

@@ -11,7 +11,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.chrome.ChromeOptions;
 
 @WebTest
 @DisplayName("Идентификация => Аутентификация => Авторизация")
@@ -23,7 +22,6 @@ public class LoginTest {
 
   @BeforeEach
   void before() {
-    Configuration.browserCapabilities = new ChromeOptions().addArguments("--accept-lang=en_US");
     loginPage = Selenide.open(CFG.frontUrl(), LoginPage.class);
   }
 
